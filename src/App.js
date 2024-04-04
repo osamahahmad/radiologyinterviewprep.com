@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CssVarsProvider, Button, ButtonGroup, Typography, IconButton, Card, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/joy';
+import { CssVarsProvider, Button, ButtonGroup, Typography, IconButton, Card, Divider, Accordion, AccordionSummary, AccordionDetails, Grid } from '@mui/joy';
 import logo from './logo.png';
 import './App.css';
 
@@ -61,15 +61,102 @@ function App() {
             <Typography level='h2'>Example Questions</Typography>
             <Card variant='soft' color='warning'>
               <Typography level='h3'>Clinical Prioritisation</Typography>
-              <Card variant='plain' color='warning'>
-                <Typography level='h4'>Question 1</Typography>
-                <Typography>Here is a question.</Typography>
-                <Accordion>
-                  <AccordionSummary>Reveal Model Answer</AccordionSummary>
-                  <AccordionDetails>Answer</AccordionDetails>
-                </Accordion>
-              </Card>
+              <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+                <Grid sm={12} md={6}>
+                  <Card variant='plain' color='warning'>
+                    <Typography level='h4'>Question 1</Typography>
+                    <Typography>Here is a question.</Typography>
+                    <Accordion>
+                      <AccordionSummary>Reveal Model Answer</AccordionSummary>
+                      <AccordionDetails>Answer</AccordionDetails>
+                    </Accordion>
+                  </Card>
+                </Grid>
+                <Grid sm={12} md={6}>
+                  <Card variant='plain' color='warning'>
+                    <Typography level='h4'>Question 2</Typography>
+                    <Typography>Here is a question.</Typography>
+                    <Accordion>
+                      <AccordionSummary>Reveal Model Answer</AccordionSummary>
+                      <AccordionDetails>Answer</AccordionDetails>
+                    </Accordion>
+                  </Card>
+                </Grid>
+                <Grid sm={12} md={6}>
+                  <Card variant='plain' color='warning'>
+                    <Typography level='h4'>Question 3</Typography>
+                    <Typography>Here is a question.</Typography>
+                    <Accordion>
+                      <AccordionSummary>Reveal Model Answer</AccordionSummary>
+                      <AccordionDetails>Answer</AccordionDetails>
+                    </Accordion>
+                  </Card>
+                </Grid>
+                <Grid sm={12} md={6}>
+                  <Card variant='plain' color='warning'>
+                    <Typography level='h4'>Question 4</Typography>
+                    <Typography>Here is a question.</Typography>
+                    <Accordion>
+                      <AccordionSummary>Reveal Model Answer</AccordionSummary>
+                      <AccordionDetails>Answer</AccordionDetails>
+                    </Accordion>
+                  </Card>
+                </Grid>
+              </Grid>
             </Card>
+            <Card variant='soft' color='danger'>
+              <Typography level='h3'>Specialty Skills</Typography>
+              <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+                <Grid sm={12} md={6}>
+                  <Card variant='plain' color='warning'>
+                    <Typography level='h4'>Question 1</Typography>
+                    <Typography>Here is a question.</Typography>
+                    <Accordion>
+                      <AccordionSummary>Reveal Model Answer</AccordionSummary>
+                      <AccordionDetails>Answer</AccordionDetails>
+                    </Accordion>
+                  </Card>
+                </Grid>
+                <Grid sm={12} md={6}>
+                  <Card variant='plain' color='warning'>
+                    <Typography level='h4'>Question 2</Typography>
+                    <Typography>Here is a question.</Typography>
+                    <Accordion>
+                      <AccordionSummary>Reveal Model Answer</AccordionSummary>
+                      <AccordionDetails>Answer</AccordionDetails>
+                    </Accordion>
+                  </Card>
+                </Grid>
+                <Grid sm={12} md={6}>
+                  <Card variant='plain' color='warning'>
+                    <Typography level='h4'>Question 3</Typography>
+                    <Typography>Here is a question.</Typography>
+                    <Accordion>
+                      <AccordionSummary>Reveal Model Answer</AccordionSummary>
+                      <AccordionDetails>Answer</AccordionDetails>
+                    </Accordion>
+                  </Card>
+                </Grid>
+                <Grid sm={12} md={6}>
+                  <Card variant='plain' color='warning'>
+                    <Typography level='h4'>Question 4</Typography>
+                    <Typography>Here is a question.</Typography>
+                    <Accordion>
+                      <AccordionSummary>Reveal Model Answer</AccordionSummary>
+                      <AccordionDetails>Answer</AccordionDetails>
+                    </Accordion>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Card>
+          </Card>
+          <Card>
+            <Typography level='h2'>My Method</Typography>
+            <Typography>ToDo!</Typography>
+          </Card>
+          <Card variant='outlined' color='success'>
+            <Typography level='h2' startDecorator='£' color='success'>My Answers</Typography>
+            <Typography color='success'>ToDo!</Typography>
           </Card>
           <footer>
             <Typography>
