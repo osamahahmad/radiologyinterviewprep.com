@@ -17,8 +17,8 @@ function App() {
           </Typography>
           <IconButton>:</IconButton>
           <nav>
-            <ButtonGroup variant='plain'>
-              <Button sx={{ backgroundColor: 'var(--joy-palette-neutral-plainActiveBg)', pointerEvents: 'none' }}>Welcome</Button>
+            <ButtonGroup variant='outlined' color='primary'>
+              <Button sx={{ backgroundColor: 'var(--joy-palette-primary-outlinedActiveBg)', pointerEvents: 'none' }}>Welcome</Button>
               <Button>Interview Structure</Button>
               <Button>Example Questions</Button>
               <Button>My Method</Button>
@@ -40,9 +40,9 @@ function App() {
             <Typography>
               In 2024, I ranked in the <strong>top 1% of all Clinical Radiology ST1 applicants</strong>. 🌟
               <br />
-              I achieved <strong>93%+ at interview</strong>. 🎉
+              I achieved <strong>90% at interview</strong>. 🎉
               <br />
-              I've made this site to help you do even better. 💪
+              I've made this site so you can do even better. 💪
             </Typography>
           </div>
           <Divider />
