@@ -1,29 +1,70 @@
 header {
+    font-size: larger;
     display: flex;
     align-items: center;
     padding: .5em 1em;
-}
-
-header>img {
-    width: 5em;
-    height: auto
+    position: sticky;
+    top: 0;
+    background-color: var(--joy-palette-primary-softBg);
 }
 
 header>h1 {
-    margin-left: .5em;
+    flex: 1;
 }
 
-header>div {
-    display: flex;
-    align-items: center;
-    justify-content: right;
-    flex: 1;
-    gap: .5em;
+header>nav {
+    display: none;
+}
+
+@media screen and (min-width: 1024px) {
+    header>.MuiIconButton-root {
+        display: none;
+    }
+
+    header>nav {
+        display: flex;
+        align-items: center;
+        justify-content: right;
+        flex: 1;
+        gap: .5em;
+        white-space: nowrap;
+    }
 }
 
 .content {
     flex: 1;
-    padding: 1em;
+    padding: 1.5em;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+}
+
+.content>.welcome {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.content>.welcome>h1, .content>.welcome>p {
+    flex: 1;
+}
+
+@media screen and (min-width: 720px) {
+    .content>.welcome {
+        flex-direction: row;
+        gap: 2em;
+        align-items: center;
+    }
+
+    .content>.welcome>h1 {
+        font-size: 4em;
+    }
+}
+
+.content>nav {
+    display: flex;
+    flex-direction: column;
+    gap: .5em;
 }
 
 footer {
