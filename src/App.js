@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CssVarsProvider, Button, ButtonGroup, Typography, IconButton, Card, Divider } from '@mui/joy';
+import { CssVarsProvider, Button, ButtonGroup, Typography, IconButton, Card, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/joy';
 import logo from './logo.png';
 import './App.css';
 
@@ -48,19 +48,40 @@ function App() {
           <Divider />
           <Card>
             <Typography level='h2'>Interview Structure</Typography>
-            <Typography>For 2024 recruitment</Typography>
+            <Typography>The ST1 Clinical Radiology interview structure has undergone a significant revamp for the 2024 application cycle! 📝 Say goodbye to the previous format and hello to two new stations: Clinical Prioritisation and Specialty Skills. 🩺💪
+              Our team has been hard at work updating the question bank with relevant scenarios to reflect these changes. 🌟 Stay tuned for more in-depth blog posts breaking down the new format and how to tackle each station! 📌
+              So, what's behind this shake-up? 🤔 The introduction of the Multi-Specialty Recruitment Assessment (MSRA) has led to some candidates with less-than-stellar portfolios securing interview spots. 😅 The new station design aims to differentiate between those with a genuine passion for radiology and those who may be less committed. 🔍
+              In the past, the ST1 interview consisted of three stations: CV and Portfolio, Clinical, and Presentation. 📋 While these assessed a range of skills, the new format hones in on key competencies essential for radiologists. 🎯
+              Clinical Prioritisation likely tests candidates' ability to make crucial decisions under pressure, mimicking real-world scenarios. 🏥 Specialty Skills may delve deeper into radiology-specific knowledge and problem-solving abilities. 🧠
+              By focusing on these areas, the interview process seeks to identify candidates who not only have the academic credentials but also the practical skills and dedication to excel in this demanding specialty. 💼
+              As always, we're here to support you through this transition. 🤝 Keep an eye out for our updated resources, and don't hesitate to reach out with any questions! 📧
+            </Typography>
           </Card>
-          <Typography>
-            &copy; Osamah Ahmad 2024
-            <br />
-            Terms · Privacy · Cookies
-          </Typography>
+          <Card>
+            <Typography level='h2'>Example Questions</Typography>
+            <Card variant='soft' color='warning'>
+              <Typography level='h3'>Clinical Prioritisation</Typography>
+              <Card variant='plain' color='warning'>
+                <Typography level='h4'>Question 1</Typography>
+                <Typography>Here is a question.</Typography>
+                <Accordion>
+                  <AccordionSummary>Reveal Model Answer</AccordionSummary>
+                  <AccordionDetails>Answer</AccordionDetails>
+                </Accordion>
+              </Card>
+            </Card>
+          </Card>
+          <footer>
+            <Typography>
+              &copy; Osamah Ahmad 2024
+            </Typography>
+            <Typography>
+              Terms · Privacy · Cookies
+            </Typography>
+          </footer>
         </div>
-        <footer>
-          Logged in as osamah_a@outlook.com. Logout. Unsubscribe.
-        </footer>
       </div >
-    </CssVarsProvider >
+    </CssVarsProvider>
   );
 }
 
