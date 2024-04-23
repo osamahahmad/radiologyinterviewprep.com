@@ -42,8 +42,24 @@ function App() {
     };
   }, [sections]);
 
-  const activeButtonSx = { backgroundColor: 'var(--joy-palette-primary-outlinedActiveBg) !important', pointerEvents: 'none' };
-  const activeSuccessButtonSx = { ...activeButtonSx, backgroundColor: 'var(--joy-palette-success-outlinedActiveBg) !important' };
+  const activeMenuItemSx = {
+    backgroundColor: 'var(--joy-palette-neutral-outlinedActiveBg)'
+  };
+  const activeSuccessMenuItemSx = {
+    backgroundColor: 'var(--joy-palette-success-outlinedActiveBg)'
+  };
+  const activeButtonSx = {
+    backgroundColor: 'var(--joy-palette-neutral-outlinedHoverBg)',
+    '&:hover': {
+      backgroundColor: 'var(--joy-palette-neutral-outlinedHoverBg)'
+    }
+  };
+  const activeSuccessButtonSx = {
+    backgroundColor: 'var(--joy-palette-success-outlinedHoverBg)',
+    '&:hover': {
+      backgroundColor: 'var(--joy-palette-success-outlinedHoverBg)'
+    }
+  };;
 
   return (
     <CssVarsProvider>
@@ -59,15 +75,16 @@ function App() {
           <Dropdown>
             <MenuButton
               slots={{ root: IconButton }}
-              slotProps={{ root: { variant: 'outlined', color: 'primary' } }}
+              slotProps={{ root: { variant: 'outlined' } }}
             >
               <MdMoreVert />
             </MenuButton>
-            <Menu color='primary'>
+            <Menu>
               {sections.map(section => {
                 return <MenuItem
-                  color={section === 'answers' ? 'success' : 'primary'}
+                  color={section === 'answers' ? 'success' : 'neutral'}
                   onClick={() => handleSectionClick(section)}
+                  sx={activeSection === section ? (section === 'answers' ? activeSuccessMenuItemSx : activeMenuItemSx) : {}}
                 >
                   {sectionTitles[section]}
                 </MenuItem>
@@ -78,11 +95,21 @@ function App() {
             <ButtonGroup variant='outlined' color='primary'>
               {sections.map(section => {
                 return <Button
-                  color={section === 'answers' ? 'success' : 'primary'}
+                  color='neutral'
                   onClick={() => handleSectionClick(section)}
-                  sx={activeSection === section ? (section === 'answers' ? activeSuccessButtonSx : activeButtonSx) : {}}
+                  sx={[
+                    section === 'answers' ? {
+                      '&:hover': {
+                        backgroundColor: 'var(--joy-palette-success-outlinedHoverBg)'
+                      },
+                      '&:active': {
+                        backgroundColor: 'var(--joy-palette-success-outlinedActiveBg)'
+                      }
+                    } : {},
+                    activeSection === section ? (section === 'answers' ? activeSuccessButtonSx : activeButtonSx) : {}
+                  ]}
                 >
-                  {sectionTitles[section]}
+                  {section === 'answers' ? <Typography level='body' color='success'>{sectionTitles[section]}</Typography> : sectionTitles[section]}
                 </Button>
               })}
             </ButtonGroup>
@@ -197,7 +224,7 @@ function App() {
           <Card className='questions'>
             <Typography level='h2'>Example Questions</Typography>
             <Card variant='soft' color='warning'>
-              <Typography level='h3'>Prioritisation of Clinical Situations</Typography>
+              <Typography level='h3' color='warning'>Prioritisation of Clinical Situations</Typography>
               <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                 <Grid xs={12} md={6}>
                   <Card variant='plain' color='warning'>
@@ -213,7 +240,7 @@ function App() {
                     </Typography>
                     <Accordion>
                       <AccordionSummary>Reveal Answer</AccordionSummary>
-                      <AccordionDetails>
+                      <AccordionDetails color='warning'>
                         <ol>
                           <li>A (CT head) - This patient is likely having an acute stroke and is within the thrombolysis window of 4.5 hours. As per NICE guidelines, a CT head should be performed immediately to assess eligibility for thrombolysis or thrombectomy. Delaying this scan could lead to worse outcomes, so I should communicate with the clinical team directly to coordinate.</li>
                           <li>B (MRI lumbar spine) - This patient likely has cauda equina syndrome (CES) based on the classic triad of severe back pain, saddle anaesthesia, and urinary dysfunction. The RCR recommends scanning within 4 hours to prevent permanent neurological deficits. Timely imaging is important but the 4-hour window allows for the acute stroke to go first.</li>
@@ -238,7 +265,7 @@ function App() {
                     </Typography>
                     <Accordion>
                       <AccordionSummary>Reveal Answer</AccordionSummary>
-                      <AccordionDetails>
+                      <AccordionDetails color='warning'>
                         <ol>
                           <li>A (CT head/trauma scan) - This patient requires an emergent trauma scan based on the mechanism and haemodynamic instability. The primary survey should be completed within 15 minutes per RCR guidelines, followed by a full report within 1 hour. I should communicate with the clinical team directly to coordinate.</li>
                           <li>B (CT abdomen/pelvis) - The patient likely has ischaemic bowel or another intra-abdominal catastrophe based on the abdominal exam and elevated lactate. Emergent CT is indicated after the trauma patient. This scan will likely be delayed because of the trauma patient, so It would be important to explain this to the clinical team in case they need to modify their management plan.</li>
@@ -263,7 +290,7 @@ function App() {
                     </Typography>
                     <Accordion>
                       <AccordionSummary>Reveal Answer</AccordionSummary>
-                      <AccordionDetails>
+                      <AccordionDetails color='warning'>
                         <ol>
                           <li>C (US Doppler scrotum) - This patient likely has testicular torsion given his age and acute presentation. Ultrasound within 4 hours is crucial to assess salvageability of the testis, and I would coordinate with the sonographers to make sure this happens. This is so that the definitive management of bilateral fixation can be performed as soon as possible.</li>
                           <li>B (CT head) - This patient likely has an acute intracranial haemorrhage given the clinical scenario and supratherapeutic INR. Delaying CT could lead to herniation and death. A non-contrast CT head is indicated, and I would ask the clinical team to monitor for deterioration while pending scan.</li>
@@ -277,7 +304,7 @@ function App() {
               </Grid>
             </Card>
             <Card variant='soft' color='danger'>
-              <Typography level='h3'>Specialty Skills</Typography>
+              <Typography level='h3' color='danger'>Specialty Skills</Typography>
               <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                 <Grid xs={12} md={6}>
                   <Card variant='plain' color='warning'>
@@ -287,7 +314,7 @@ function App() {
                     </Typography>
                     <Accordion>
                       <AccordionSummary>Reveal Answer</AccordionSummary>
-                      <AccordionDetails>
+                      <AccordionDetails color='danger'>
                         <p>
                           As a foundation doctor, there have been many instances where I felt I was working at the edge of my clinical competence. One specific example was when I was the sole FY1 covering the urology ward on a busy weekend. My registrar was called to theatre, leaving me to manage the entire ward independently.
                         </p>
@@ -310,7 +337,7 @@ function App() {
                     </Accordion>
                     <Accordion>
                       <AccordionSummary>Reveal Rationale</AccordionSummary>
-                      <AccordionDetails>
+                      <AccordionDetails color='danger'>
                         <p>
                           This answer demonstrates key qualities necessary for managing pressure and uncertainty in radiology: recognising when feeling out of depth, taking a systematic approach, communicating effectively, seeking senior support appropriately, and reflecting on how skills transfer to radiology. The answer uses a relevant clinical example, maintains patient focus, and links back to radiology.
                         </p>
@@ -326,7 +353,7 @@ function App() {
                     </Typography>
                     <Accordion>
                       <AccordionSummary>Reveal Answer</AccordionSummary>
-                      <AccordionDetails>
+                      <AccordionDetails color='danger'>
                         <p>
                           Effective multidisciplinary teamwork is fundamental to quality patient care. A great example of this was during my time as an FY1 in haematology.
                           We had a chemotherapy patient who contacted the clinical nurse specialist (CNS) suspecting febrile neutropenia. The CNS promptly arranged for the patient to attend the day unit and asked me to review them.
@@ -350,7 +377,7 @@ function App() {
                     </Accordion>
                     <Accordion>
                       <AccordionSummary>Reveal Rationale</AccordionSummary>
-                      <AccordionDetails>
+                      <AccordionDetails color='danger'>
                         <p>
                           This answer provides a clear example demonstrating effective MDT work, with specific actions taken by the candidate and others to improve patient care. Key teamwork skills are highlighted and the importance of respecting all team members is emphasised. The answer maintains a strong patient focus throughout and links the experience to what was observed in radiology.
                         </p>
@@ -366,7 +393,7 @@ function App() {
                     </Typography>
                     <Accordion>
                       <AccordionSummary>Reveal Answer</AccordionSummary>
-                      <AccordionDetails>
+                      <AccordionDetails color='danger'>
                         <p>
                           I believe I possess several skills that would enable me to become an effective radiologist. Firstly, I have strong problem-solving abilities. As an avid coder since my school days, I've developed a systematic approach to tackling complex issues. Recently, I taught myself the React framework and was the lead developer on a software package for medical handover - all done in my spare time. The logical thinking and tenacity required for coding are skills I believe will serve me well in radiology, especially when faced with challenging diagnostic conundrums.
                         </p>
@@ -386,7 +413,7 @@ function App() {
                     </Accordion>
                     <Accordion>
                       <AccordionSummary>Reveal Rationale</AccordionSummary>
-                      <AccordionDetails>
+                      <AccordionDetails color='danger'>
                         <p>
                           This answer highlights a range of skills relevant to radiology, including problem-solving, research and innovation, academic ability, communication, teamwork and commitment to the specialty. Specific examples are provided to illustrate these skills. The answer touches on key aspects of a radiologist's role (diagnostic challenges, AI, FRCR exams, patient communication, MDTs) demonstrating good insight.
                         </p>
@@ -478,7 +505,7 @@ function App() {
               </ul>
             </Typography>
           </Card>
-          <Card className='answers' variant='outlined' color='success'>
+          <Card className='answers' variant='outlined'>
             <Typography level='h2' startDecorator='£' color='success'>My Answers</Typography>
             <Typography color='success'>Coming soon!</Typography>
           </Card>
