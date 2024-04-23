@@ -27,7 +27,7 @@ function App() {
 
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = sections[i];
-        const element = document.getElementById(section);
+        const element = document.getElementsByClassName(section)[0];
 
         if (element && scrollPosition >= element.offsetTop - 100) {
           setActiveSection(section);
