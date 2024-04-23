@@ -36,6 +36,7 @@ header>nav {
     flex-direction: column;
     gap: 2em;
     overflow-y: auto;
+    position: relative;
 }
 
 .content>.welcome {
@@ -73,6 +74,27 @@ header>nav {
     display: flex;
     flex-direction: column;
     gap: .5em;
+}
+
+.content p>ul>li {
+    margin-bottom: 1em;
+}
+
+.content .MuiAccordionSummary-button {
+    padding-left: .25em;
+}
+
+.content>.questions div>ol>li {
+    margin-bottom: 1em;
+}
+
+.content>.questions .MuiAccordionDetails-content>p {
+    margin: 1em;
+    margin-top: 0;
+}
+
+.content>.questions .MuiAccordionDetails-content>p:first-of-type {
+    margin-top: 1em;
 }
 
 footer {
