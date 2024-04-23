@@ -162,7 +162,7 @@ function App() {
                   </ul>
                 </li>
                 <li>
-                  <Typography color='danger'><strong>Specialty Skills station:</strong></Typography>
+                  <Typography color='danger'><strong>Specialty Skills:</strong></Typography>
                   <ul>
                     <li>
                       Trainees suggested I review basic plain film, CT head, and CTPA interpretation
@@ -460,20 +460,6 @@ function App() {
                   </ul>
                 </li>
                 <li>
-                  <Typography color='warning'><strong>Prioritisation of Clinical Situations:</strong></Typography>
-                  <ul>
-                    <li>
-                      Demonstrate understanding of clinical concerns when prioritising, such as the need for urgent intervention and the effects of radiation, especially in paediatric or obstetric cases
-                    </li>
-                    <li>
-                      Consider differential diagnoses and alternative investigations
-                    </li>
-                    <li>
-                      Showcase your previous experience and knowledge to present yourself as a well-rounded clinician
-                    </li>
-                  </ul>
-                </li>
-                <li>
                   Understanding Clinical Radiology:
                   <ul>
                     <li>
@@ -484,6 +470,20 @@ function App() {
                     </li>
                     <li>
                       Know the structure of Clinical Radiology training inside out, including the importance of the FRCR exam schedule and a day in the life of a trainee
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <Typography color='warning'><strong>Prioritisation of Clinical Situations:</strong></Typography>
+                  <ul>
+                    <li>
+                      Demonstrate understanding of clinical concerns when prioritising, such as the need for urgent intervention and the effects of radiation, especially in paediatric or obstetric cases
+                    </li>
+                    <li>
+                      Consider differential diagnoses and alternative investigations
+                    </li>
+                    <li>
+                      Showcase your previous experience and knowledge to present yourself as a well-rounded clinician
                     </li>
                   </ul>
                 </li>
