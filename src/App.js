@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CssVarsProvider, Button, ButtonGroup, Typography, Card, Divider, Accordion, AccordionSummary, AccordionDetails, Grid, Dropdown, MenuButton, Menu, IconButton, MenuItem, Link } from '@mui/joy';
+import { CssVarsProvider, Button, ButtonGroup, Typography, Card, Divider, Accordion, AccordionSummary, AccordionDetails, Grid, Dropdown, MenuButton, Menu, IconButton, MenuItem, Link, List } from '@mui/joy';
 import logo from './logo.png';
 import './App.css';
 import { MdMoreVert } from 'react-icons/md';
@@ -140,7 +140,7 @@ function App() {
           <Card className='structure'>
             <Typography level='h2'>Interview Structure</Typography>
             <Typography>
-              <ul>
+              <List>
                 <li>
                   In 2024, the radiology interview format underwent an unexpected change, shifting from the familiar <strong>Commitment to Specialty</strong> and <strong>Personal Skills</strong> stations to the newly introduced <Typography color='warning'><strong>Prioritisation of Clinical Situations</strong></Typography> and <Typography color='danger'><strong>Specialty Skills</strong></Typography> stations.
                 </li>
@@ -207,7 +207,7 @@ function App() {
                   </ul>
                 </li>
                 <li>
-                  Adapting to the new era of radiology interviews:
+                  Adapting to the new radiology interviews:
                   <ul>
                     <li>
                       Don't be afraid to showcase your skills!
@@ -220,7 +220,7 @@ function App() {
                     </li>
                   </ul>
                 </li>
-              </ul>
+              </List>
             </Typography>
           </Card>
           <Card className='questions'>
@@ -430,7 +430,7 @@ function App() {
             <Typography level='h2'>My Method</Typography>
 
             <Typography>
-              <ul>
+              <List>
                 <li>
                   Don't stress over a low portfolio score &#8212; mine was one of the lowest of all successful candidates. Focus on nailing the interview for maximum points.
                 </li>
@@ -460,7 +460,7 @@ function App() {
                   </ul>
                 </li>
                 <li>
-                  Understanding Clinical Radiology:
+                  Show an understanding of Clinical Radiology:
                   <ul>
                     <li>
                       Display enthusiasm and discuss personal experiences in Radiology
@@ -504,7 +504,7 @@ function App() {
                     </li>
                   </ul>
                 </li>
-              </ul>
+              </List>
             </Typography>
           </Card>
           <Card className='answers' variant='outlined'>

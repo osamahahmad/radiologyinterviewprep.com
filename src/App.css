@@ -71,38 +71,50 @@ header>nav {
     }
 }
 
-.content>nav {
-    display: flex;
-    flex-direction: column;
-    gap: .5em;
+.content p>ul>li {
+    font-weight: bold;
 }
 
-.content ol, .content ul {
+.content p>ul>li:first-of-type {
+    font-weight: normal;
+}
+
+.content p>ul>li>ul {
+    font-weight: normal;
+    list-style-type: disc;
+    padding-left: 1.25em;
+    margin-top: .25em;
+}
+
+.content>.structure>p>ul, .content>.method>p>ul {
+    gap: 1em;
+}
+
+.content div>div>div>p>ol {
     padding-left: 1.5em;
 }
 
-.content p>ul>li {
-    margin-bottom: 1em;
+.content div>div>div>p>ol {
+    padding-left: 1.5em;
 }
 
-.content .MuiAccordionSummary-button {
-    padding-left: .25em;
+.content div>div>div>div>div>div>ol {
+    margin-top: 1em;
+    padding-left: 1.5em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
 }
 
-.content>.questions div>ol>li {
-    margin-bottom: 1em;
-}
-
-.content>.questions .MuiAccordionDetails-content {
+.content .MuiAccordionDetails-content {
     padding: 0 1em;
+    gap: 1em;
 }
 
-.content>.questions .MuiAccordionDetails-content>p {
+.content .MuiAccordionDetails-content>p {
     margin: 0;
-    margin-bottom: 1em;
 }
-
-.content>.questions .MuiAccordionDetails-content>p:first-of-type {
+.content .MuiAccordionDetails-content>p:first-of-type {
     margin-top: 1em;
 }
 
