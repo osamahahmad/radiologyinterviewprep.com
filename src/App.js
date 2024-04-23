@@ -69,6 +69,8 @@ function App() {
             level='h1'
             fontSize='inherit'
             startDecorator={<img src={logo} alt="Logo" style={{ width: '2em' }} />}
+            onClick={() => handleSectionClick('welcome')}
+            sx={{ cursor: 'pointer' }}
           >
             Radiology Interview Prep.
           </Typography>
