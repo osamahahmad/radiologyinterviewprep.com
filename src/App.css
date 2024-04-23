@@ -43,6 +43,7 @@ header>nav {
     display: flex;
     flex-direction: column;
     gap: 1em;
+    padding: .5em;
 }
 
 .content>.welcome>h1,
