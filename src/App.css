@@ -43,12 +43,16 @@ header>nav {
     display: flex;
     flex-direction: column;
     gap: 1em;
-    padding: .5em;
+    padding: 0em;
 }
 
 .content>.welcome>h1,
 .content>.welcome>p {
     flex: 1;
+}
+
+.content>.welcome>h1 {
+    font-size: 2em;
 }
 
 @media screen and (min-width: 868px) {
