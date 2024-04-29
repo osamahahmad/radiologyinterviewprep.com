@@ -8,8 +8,10 @@ function App() {
   const sections = React.useMemo(() => { return ['welcome', 'structure', 'questions', 'method', 'answers'] }, []);
   const sectionTitles = { 'welcome': 'Welcome', 'structure': 'Interview Structure', 'questions': 'Example Questions', 'method': 'My Method', 'answers': '£ My Answers' }
 
+  // state to track active section
   const [activeSection, setActiveSection] = React.useState('welcome');
 
+  // set active section when clicked + scroll to bring it into view
   const handleSectionClick = (section) => {
     setActiveSection(section);
     const element = document.getElementsByClassName(section)[0];
@@ -19,6 +21,7 @@ function App() {
       element.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // set active section on scroll
   React.useEffect(() => {
     const scrollable = document.getElementsByClassName('content')[0];
 
@@ -42,18 +45,22 @@ function App() {
     };
   }, [sections]);
 
+  // Joy UI sx for active nav buttons & menu items
   const activeMenuItemSx = {
     backgroundColor: 'var(--joy-palette-neutral-outlinedActiveBg)'
   };
+
   const activeSuccessMenuItemSx = {
     backgroundColor: 'var(--joy-palette-success-outlinedActiveBg)'
   };
+
   const activeButtonSx = {
     backgroundColor: 'var(--joy-palette-neutral-outlinedHoverBg)',
     '&:hover': {
       backgroundColor: 'var(--joy-palette-neutral-outlinedHoverBg)'
     }
   };
+
   const activeSuccessButtonSx = {
     backgroundColor: 'var(--joy-palette-success-outlinedHoverBg)',
     '&:hover': {
