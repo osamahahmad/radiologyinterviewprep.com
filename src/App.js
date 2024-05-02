@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { CssVarsProvider, Button, ButtonGroup, Typography, Card, Divider, Accordion, AccordionSummary, AccordionDetails, Grid, Dropdown, MenuButton, Menu, IconButton, MenuItem, Link, List } from '@mui/joy';
-import logo from './logo.png';
+import logo from './radiology-interview-prep-logo.png';
 import './App.css';
 import { MdMoreVert } from 'react-icons/md';
 
@@ -140,7 +140,7 @@ function App() {
               <br />
               I achieved <strong>90% at interview</strong>. 🎉
               <br />
-              I've made this site so you can do even better. 💪
+              I've made this site so you can smash yours too. 💪
             </Typography>
           </div>
           <Divider />
