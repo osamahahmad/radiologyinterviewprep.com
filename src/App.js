@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CssVarsProvider, Button, ButtonGroup, Typography, Card, Divider, Accordion, AccordionSummary, AccordionDetails, Grid, Dropdown, MenuButton, Menu, IconButton, MenuItem, Link, List } from '@mui/joy';
+import { CssVarsProvider, Button, ButtonGroup, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Dropdown, MenuButton, Menu, IconButton, MenuItem, Link, List } from '@mui/joy';
 import logo from './radiology-interview-prep-logo.png';
 import './App.css';
 import { MdMoreVert } from 'react-icons/md';
@@ -143,7 +143,6 @@ function App() {
               I've made this site so you can smash yours too. 💪
             </Typography>
           </div>
-          <Divider />
           <Card className='structure'>
             <Typography level='h2'>Interview Structure</Typography>
             <Typography>
