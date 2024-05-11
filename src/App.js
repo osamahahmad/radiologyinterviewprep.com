@@ -20,7 +20,7 @@ const router = createBrowserRouter([
   },
   {
     path: Paths.SignUp,
-    element: <Authentication background='var(--joy-palette-primary-100)' mode={0} />
+    element: <Authentication background='var(--joy-palette-primary-100)' tagline='Smash Your Clinical Radiology ST1 Interview' mode={0} />
   },
   {
     path: Paths.SignIn,

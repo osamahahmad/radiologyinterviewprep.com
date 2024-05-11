@@ -2,6 +2,7 @@
     --authentication-background: white;
     --authentication-padding: var(--joy-fontSize-xl4);
     --authentication-gap: var(--joy-fontSize-xl);
+    --authentication-divider: 1px solid rgba(0, 0, 0, .25);
     min-height: 100svh;
     display: flex;
     align-items: center;
@@ -25,7 +26,7 @@
     text-align: center;
 }
 
-.authentication-password-wrapper {
+.authentication-passwords-wrapper {
     overflow: hidden;
     --input-height: 36px;
     height: var(--input-height);
@@ -33,15 +34,7 @@
     position: relative;
 }
 
-.authentication-password-wrapper.confirm {
-    height: calc(var(--input-height) * 2 + var(--authentication-gap));
-}
-
-.authentication-password-wrapper>*:first-child {
-    z-index: 1;
-}
-
-.authentication-password-wrapper>*:last-child {
+.authentication-passwords-wrapper>*:nth-child(2) {
     position: absolute;
     left: 0;
     bottom: 0;
@@ -50,9 +43,17 @@
     pointer-events: none;
 }
 
-.authentication-password-wrapper.confirm>*:last-child {
+.authentication-passwords-wrapper.confirm>*:nth-child(2) {
     user-select: auto;
     pointer-events: auto;
+}
+
+.authentication-passwords-wrapper>*:first-child {
+    z-index: 1;
+}
+
+.authentication-passwords-wrapper.confirm {
+    height: calc(var(--input-height) * 2 + var(--authentication-gap));
 }
 
 .authentication-divider {
@@ -63,7 +64,6 @@
 }
 
 .authentication-divider>p {
-    color: rgba(0,0,0,.5);
     z-index: 1;
     background-color: var(--authentication-background);
     padding: calc(.5 * var(--authentication-gap)) 1em;
@@ -76,5 +76,5 @@
     left: 0;
     bottom: 50%;
     right: 0;
-    border-bottom: 1px solid rgba(0,0,0,.25) /* todo */;
+    border-bottom: var(--authentication-divider);
 }
