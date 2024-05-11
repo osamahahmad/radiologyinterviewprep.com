@@ -1,0 +1,4 @@
+/* root */
+body>div {
+    --transition: .3s ease;
+}

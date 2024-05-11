@@ -1,10 +1,13 @@
 import * as React from 'react';
-import { CssVarsProvider } from '@mui/joy';
+import { CssVarsProvider, extendTheme } from '@mui/joy';
 import './App.css';
 import { Paths } from './resources/Paths.ts';
 import Landing from './pages/Landing.tsx';
 import Questions from './pages/Questions.tsx';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Authentication from './pages/Authentication.tsx';
+
+const theme = extendTheme({});
 
 const router = createBrowserRouter([
   {
@@ -14,12 +17,20 @@ const router = createBrowserRouter([
   {
     path: Paths.Questions,
     element: <Questions />
+  },
+  {
+    path: Paths.SignUp,
+    element: <Authentication background='var(--joy-palette-primary-100)' mode={0} />
+  },
+  {
+    path: Paths.SignIn,
+    element: <Authentication background='var(--joy-palette-primary-100)' mode={1} />
   }
 ]);
 
 function App() {
 
-  return <CssVarsProvider>
+  return <CssVarsProvider theme={theme}>
     <RouterProvider router={router} />
   </CssVarsProvider>
 }
