@@ -165,7 +165,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
                 />}
                 <Input
                     type="email"
-                    name="email-address"
+                    name="email"
                     placeholder="Email Address"
                     onChange={e => setEmail(e.currentTarget.value)}
                     color={mode === 0 ? colorBasedOnValidity(isEmailValid) : 'neutral'}
