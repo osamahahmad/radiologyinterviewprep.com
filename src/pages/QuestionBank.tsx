@@ -1,10 +1,10 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import "./QuestionBank.css";
 import JSZip from "jszip";
 import { DOMParser } from "@xmldom/xmldom";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-import { Alert, Button, CircularProgress, LinearProgress, Link, Typography } from "@mui/joy";
-import { getAuth, onAuthStateChanged, sendEmailVerification } from "firebase/auth";
+import { Alert, Button, CircularProgress, Link, Typography } from "@mui/joy";
+import { onAuthStateChanged, sendEmailVerification } from "firebase/auth";
 import { auth } from "../resources/Firebase.js";
 
 const str2xml = (str: string) => {
@@ -160,7 +160,7 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ }) => {
     /* parse data */
     const [paragraphs, setParagraphs] = useState<string[]>([]);
 
-    const onFileUpload = async () => {
+    const onFileUpload = useCallback(async () => {
         try {
             const response = await fetch('/question-bank.docx');
             const blob = await response.blob();
@@ -170,7 +170,11 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ }) => {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        onFileUpload();
+    }, [onFileUpload]);
 
     return (
         <div>

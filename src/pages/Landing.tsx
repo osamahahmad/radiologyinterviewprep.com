@@ -18,17 +18,17 @@ const Landing: React.FC<LandingProps> = () => {
 
     const Logo = require('../resources/radiology-interview-prep-logo.png');
 
-    const sections = React.useMemo(() => { return ['welcome', 'structure', 'questions', 'method', 'answers'] }, []);
-    const sectionTitles = { 'welcome': 'Welcome', 'structure': 'Interview Structure', 'questions': 'Example Questions', 'method': 'My Method', 'answers': '£ My Answers' }
+    const sections = React.useMemo(() => { return ['welcome', 'structure', 'questions', 'method', 'question-bank'] }, []);
+    const sectionTitles = { [sections[0]]: 'Welcome', [sections[1]]: 'Interview Structure', [sections[2]]: 'Example Questions', [sections[3]]: 'My Method', [sections[4]]: '£ Question Bank' }
 
     // state to track active section
-    const [activeSection, setActiveSection] = React.useState('welcome');
+    const [activeSection, setActiveSection] = React.useState(sections[0]);
 
     // set active section when clicked + scroll to bring it into view
     const handleSectionClick = (section) => {
         setActiveSection(section);
         const element = document.getElementsByClassName(section)[0];
-        if (section === 'welcome')
+        if (section === sections[0])
             document.getElementsByClassName('content')[0].scrollTo({ top: 0, behavior: 'smooth' });
         else if (element)
             element.scrollIntoView({ behavior: 'smooth' });
@@ -88,7 +88,7 @@ const Landing: React.FC<LandingProps> = () => {
                 level='h1'
                 fontSize='inherit'
                 startDecorator={<img src={Logo} alt="Logo" style={{ width: '2em' }} />}
-                onClick={() => handleSectionClick('welcome')}
+                onClick={() => handleSectionClick(sections[0])}
                 sx={{ cursor: 'pointer' }}
             >
                 Radiology Interview Prep.
@@ -103,9 +103,9 @@ const Landing: React.FC<LandingProps> = () => {
                 <Menu>
                     {sections.map(section => {
                         return <MenuItem
-                            color={section === 'answers' ? 'success' : 'neutral'}
+                            color={section === 'question-bank' ? 'success' : 'neutral'}
                             onClick={() => handleSectionClick(section)}
-                            sx={activeSection === section ? (section === 'answers' ? activeSuccessMenuItemSx : activeMenuItemSx) : {}}
+                            sx={activeSection === section ? (section === 'question-bank' ? activeSuccessMenuItemSx : activeMenuItemSx) : {}}
                         >
                             {sectionTitles[section]}
                         </MenuItem>
@@ -119,7 +119,7 @@ const Landing: React.FC<LandingProps> = () => {
                             color='neutral'
                             onClick={() => handleSectionClick(section)}
                             sx={[
-                                section === 'answers' ? {
+                                section === 'question-bank' ? {
                                     '&:hover': {
                                         backgroundColor: 'var(--joy-palette-success-outlinedHoverBg)'
                                     },
@@ -127,17 +127,17 @@ const Landing: React.FC<LandingProps> = () => {
                                         backgroundColor: 'var(--joy-palette-success-outlinedActiveBg)'
                                     }
                                 } : {},
-                                activeSection === section ? (section === 'answers' ? activeSuccessButtonSx : activeButtonSx) : {}
+                                activeSection === section ? (section === 'question-bank' ? activeSuccessButtonSx : activeButtonSx) : {}
                             ]}
                         >
-                            {section === 'answers' ? <Typography level='body-sm' color='success'>{sectionTitles[section]}</Typography> : sectionTitles[section]}
+                            {section === 'question-bank' ? <Typography level='body-sm' color='success'>{sectionTitles[section]}</Typography> : sectionTitles[section]}
                         </Button>
                     })}
                 </ButtonGroup>
             </nav>
         </header>
         <div className='content'>
-            <div className='welcome'>
+            <div className={sections[0]}>
                 <Typography
                     level='h1'>
                     Hello from the <Typography
@@ -155,7 +155,7 @@ const Landing: React.FC<LandingProps> = () => {
                     I've made this site so you can smash yours too. 💪
                 </Typography>
             </div>
-            <Card className='structure'>
+            <Card className={sections[1]}>
                 <Typography level='h2'>Interview Structure</Typography>
                 <Typography>
                     <List>
@@ -241,7 +241,7 @@ const Landing: React.FC<LandingProps> = () => {
                     </List>
                 </Typography>
             </Card>
-            <Card className='questions'>
+            <Card className={sections[2]}>
                 <Typography level='h2'>Example Questions</Typography>
                 <Card variant='soft' color='warning'>
                     <Typography level='h3' color='warning'>Prioritisation of Clinical Situations</Typography>
@@ -444,7 +444,7 @@ const Landing: React.FC<LandingProps> = () => {
                     </Grid>
                 </Card>
             </Card>
-            <Card className='method'>
+            <Card className={sections[3]}>
                 <Typography level='h2'>My Method</Typography>
 
                 <Typography>
@@ -525,8 +525,8 @@ const Landing: React.FC<LandingProps> = () => {
                     </List>
                 </Typography>
             </Card>
-            <Card className='answers' variant='outlined'>
-                <Typography level='h2' startDecorator='£' color='success'>My Answers</Typography>
+            <Card className={sections[4]} variant='outlined'>
+                <Typography level='h2' color='success'>{sectionTitles[sections[4]]}</Typography>
                 <Button color='success' sx={{width: 'fit-content'}} onClick={() => navigate(Paths.QuestionBank)}>Access the Question Bank</Button>
                 {auth && auth.currentUser && <Typography>You're currently signed in as {auth.currentUser.email}. <Link onClick={() => auth.signOut()}>Sign Out</Link>.</Typography>}
             </Card>
