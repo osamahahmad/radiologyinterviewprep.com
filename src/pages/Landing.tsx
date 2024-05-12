@@ -4,9 +4,16 @@ import './Landing.css';
 import { MdMoreVert } from 'react-icons/md';
 import { useNavigate } from "react-router-dom";
 import { Paths } from "../resources/Paths.ts";
+import { auth } from "../resources/Firebase.js";
+import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 
-const Landing: React.FC = () => {
+interface LandingProps {
+}
+
+const Landing: React.FC<LandingProps> = () => {
     const navigate = useNavigate();
+
+    useDocumentTitle();
 
     const Logo = require('../resources/radiology-interview-prep-logo.png');
 
@@ -520,6 +527,7 @@ const Landing: React.FC = () => {
             <Card className='answers' variant='outlined'>
                 <Typography level='h2' startDecorator='£' color='success'>My Answers</Typography>
                 <Button color='success' sx={{width: 'fit-content'}} onClick={() => navigate(Paths.QuestionBank)}>Access the Question Bank</Button>
+                {auth && auth.currentUser && <Typography>You are currently signed in as {auth.currentUser.email}. <Link onClick={() => auth.signOut()}>Sign Out</Link>.</Typography>}
             </Card>
             <footer>
                 <Typography>

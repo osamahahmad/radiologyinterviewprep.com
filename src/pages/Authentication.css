@@ -20,6 +20,8 @@
     box-shadow: var(--joy-shadow-md);
     padding: var(--authentication-padding);
     background-color: var(--authentication-background);
+    width: 100%;
+    max-width: 480px;
 }
 
 .authentication>form>p {
@@ -60,6 +62,10 @@
     height: calc(var(--input-height) * 2 + var(--authentication-gap));
 }
 
+.authentication-passwords-wrapper>#password-constraints {
+    display: none;
+}
+
 .authentication-submit-wrapper {
     --alert-height: 45px;
 }
@@ -78,7 +84,7 @@
 .authentication-divider>p {
     z-index: 1;
     background-color: var(--authentication-background);
-    padding: calc(.5 * var(--authentication-gap)) 1em;
+    padding: 0 1em;
 }
 
 .authentication-divider::before {
@@ -89,4 +95,8 @@
     bottom: 50%;
     right: 0;
     border-bottom: var(--authentication-divider);
+}
+
+.authentication-compliance {
+    text-align: left !important;
 }

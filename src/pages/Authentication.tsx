@@ -1,20 +1,19 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import "./Authentication.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-import { Alert, Button, Input, Link, Typography } from '@mui/joy';
-import { useNavigate } from "react-router-dom";
+import { Alert, Button, Checkbox, Input, Link, Typography } from '@mui/joy';
+import { useLocation, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../resources/Firebase.js";
-import { FirebaseError } from "firebase/app";
 
 const enum Strings {
     SignUp = 'Create Account',
     SignIn = 'Sign In',
-    TooShort = 'too short',
-    TooLong = 'too long'
+    TooShort = 'Too Short',
+    TooLong = 'Too Long'
 }
 
-const isValidBasedOnLength = (input: string, minimum: number, maximum: number = 32) => {
+const isValidBasedOnLength = (input: string, minimum: number, maximum: number = 36) => {
     return input.length === 0 ? 0 /* empty */ : (input.length < minimum ? 2 : (input.length > maximum ? 3 : 1 /* valid */));
 }
 
@@ -37,14 +36,12 @@ interface AuthenticationProps {
     tagline?: string
     switchTitle?: string
     switchPath?: string
-    nextPath: string
+    appName: string
+    termsOfUsePath?: string
+    privacyPolicyPath?: string
 }
 
-const Authentication: React.FC<AuthenticationProps> = ({ mode, background, padding, gap, logo, divider, title, tagline, switchTitle, switchPath, nextPath }) => {
-    const navigate = useNavigate();
-
-    auth.currentUser && navigate(nextPath);
-
+const Authentication: React.FC<AuthenticationProps> = ({ mode, background, padding, gap, logo, divider, title, tagline, switchTitle, switchPath, appName, termsOfUsePath, privacyPolicyPath }) => {
     if (!title)
         title = mode === 0 ? Strings.SignUp : Strings.SignIn;
 
@@ -54,28 +51,33 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
     if (!switchPath)
         switchPath = mode === 0 ? '/sign-in' : '/create-account';
 
+    const navigate = useNavigate();
+
+    const location = useLocation();
+
+    auth.currentUser && navigate(location.state?.from?.pathname || '/');
+
     useDocumentTitle(title);
 
     const [name, setName] = useState<string>('');
     const [isNameValid, setIsNameValid] = useState<0 | 1 | 2 | 3>(0); /* empty | valid | short | long */
     const [email, setEmail] = useState<string>('');
-    const [isEmailValid, setIsEmailValid] = useState<0 | 1 | 2 | 3 | 4>(0); /* empty | valid | short | long | not an email address */
+    const [isEmailValid, setIsEmailValid] = useState<0 | 1 | 2 | 3 | 4>(0); /* empty | valid | invalid */
     const [password, setPassword] = useState<string>('');
     const [isPasswordValid, setIsPasswordValid] = useState<0 | 1 | 2 | 3>(0); /* empty | valid | short | long */
     const [confirmPassword, setConfirmPassword] = useState<string>('');
-    const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState<0 | 1 | 2>(0); /* empty | valid | wrong */
+    const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState<0 | 1 | 2>(0); /* empty | valid | doesn't matchs */
 
     useEffect(() => {
         setIsNameValid(isValidBasedOnLength(name, 1));
     }, [name, setIsNameValid]);
 
     useEffect(() => {
-        const validity = isValidBasedOnLength(email, 5);
-        setIsEmailValid(validity === 1 ? (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 1 : 4) : validity);
+        setIsEmailValid(email.length === 0 ? 0 : (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 1 : 2));
     }, [email, setIsEmailValid]);
 
     useEffect(() => {
-        setIsPasswordValid(isValidBasedOnLength(password, 8));
+        setIsPasswordValid(isValidBasedOnLength(password, 6, 4096));
     }, [password, setIsPasswordValid]);
 
     useEffect(() => {
@@ -90,46 +92,52 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
     gap && (style['--authentication-gap'] = gap);
     divider && (style['--authentication-divider'] = divider);
 
-    const isValid: boolean = mode === 0 ? !!(isNameValid === 1 && isEmailValid === 1 && isPasswordValid === 1 && isConfirmPasswordValid) : (isEmailValid === 1 && isPasswordValid === 1)
+    const isValid: boolean = mode === 0 ? !!(isNameValid === 1 && isEmailValid === 1 && isPasswordValid === 1 && isConfirmPasswordValid === 1) : (isEmailValid === 1 && isPasswordValid === 1);
 
     const [error, setError] = useState<string | null>();
 
-    const signUp = async () => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (!isValid) return;
+
         setIsLoading(true);
 
-        if (isValid)
+        if (mode === 0)
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
-                nextPath && navigate(nextPath);
             } catch (error) {
-                setError(error.code);
+                if (error.code === 'auth/email-already-in-use')
+                    setError('Email already in use.');
+                else
+                    setError(error.code);
+            }
+        else
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                if (error.code === 'auth/invalid-credential')
+                    setError('Invalid credentials.');
+                else
+                    setError('Something went wrong.');
             }
 
         setIsLoading(false);
     };
 
-    const signIn = async () => {
-        setIsLoading(true);
+    const isSignUpPasswordValid = mode === 0 && isPasswordValid === 1;
 
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            nextPath && navigate(nextPath);
-        } catch (error) {
-            if (error.code === 'auth/invalid-credential')
-                setError('That\'s not quite right.');
-            else
-                setError(error.code);
-        }
+    const [isPasswordHidden, setIsPasswordHidden] = useState<boolean>(true);
 
-        setIsLoading(false);
-    };
+    const passwordId = mode === 0 ? 'new-password' : 'current-password';
+
+    const passwordType = isPasswordHidden ? 'password' : 'text';
+
+    const titleWithGoogle = title + ' with Google';
 
     return (
         <div className='authentication' style={style}>
-            <form onSubmit={e => {
-                e.preventDefault();
-                mode === 0 ? signUp() : signIn();
-            }}>
+            <form onSubmit={handleSubmit}>
                 {logo && <Typography level='h1'>{logo}</Typography>}
                 <Typography>
                     <Typography level='h1'>{title}</Typography>
@@ -140,7 +148,6 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
                 </Typography>
                 {mode === 0 && <Input
                     type="text"
-                    id="name"
                     name="name"
                     placeholder="Name"
                     onChange={e => setName(e.currentTarget.value)} color={colorBasedOnValidity(isNameValid)}
@@ -150,37 +157,43 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
                 />}
                 <Input
                     type="email"
-                    id="email"
-                    name="email"
-                    placeholder="Email"
+                    name="email-address"
+                    placeholder="Email Address"
                     onChange={e => setEmail(e.currentTarget.value)}
                     color={mode === 0 ? colorBasedOnValidity(isEmailValid) : 'neutral'}
-                    endDecorator={mode === 0 && (isEmailValid === 4 ? <Typography level='body-sm' color='danger'>wrong format</Typography> : errorTypographyBasedOnLength(isEmailValid))}
                     value={email}
                     autoFocus={mode === 1}
                 />
-                <div className={'authentication-passwords-wrapper' + ((mode === 0 && isPasswordValid === 1) ? ' confirm' : '')}>
+                <div className={'authentication-passwords-wrapper' + (isSignUpPasswordValid ? ' confirm' : '')}>
                     <Input
-                        type="password"
-                        id="password"
-                        name="password"
+                        type={passwordType}
+                        id={passwordId}
+                        name={passwordId}
                         placeholder="Password"
                         onChange={e => setPassword(e.currentTarget.value)}
                         color={mode === 0 ? colorBasedOnValidity(isPasswordValid) : 'neutral'}
                         endDecorator={mode === 0 && errorTypographyBasedOnLength(isPasswordValid)}
                         value={password}
+                        autoComplete={passwordId}
+                        aria-describedby="password-constraints"
                     />
                     {mode === 0 && <Input
-                        type="password"
-                        id="confirm-password"
+                        type={passwordType}
                         name="confirm-password"
                         placeholder="Confirm Password"
                         onChange={e => setConfirmPassword(e.currentTarget.value)}
                         color={isConfirmPasswordValid === 0 ? 'neutral' : (isConfirmPasswordValid === 1 ? 'success' : 'danger')}
-                        endDecorator={isConfirmPasswordValid === 2 && <Typography level='body-sm' color='danger'>Doesn't Match</Typography>}
                         value={confirmPassword}
+                        aria-describedby="password-constraints"
                     />}
+                    <div id="password-constraints">Six or more characters.</div>
                 </div>
+                <Checkbox
+                    label={'Show Password' + (isSignUpPasswordValid ? 's' : '')}
+                    defaultChecked={!isPasswordHidden}
+                    onChange={() => setIsPasswordHidden(!isPasswordHidden)}
+                    aria-label="Show password as plain text. Warning: this will display your password on the screen.">
+                </Checkbox>
                 <div className={'authentication-submit-wrapper' + (error ? ' error' : '')}>
                     <Button
                         type="submit"
@@ -192,8 +205,11 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
                     {error && <Alert color='danger'>{error}</Alert> /* can do this because error won't disappear again */}
                 </div>
                 <Typography>{mode === 0 ? 'Have an account' : 'New to us'}? <Link onClick={() => { setError(null); navigate(switchPath); }}>{switchTitle}</Link></Typography>
-                <div className='authentication-divider'><Typography level='body-sm'>or</Typography></div>
-                <Button variant='outlined'>{title} with Google</Button>
+                <div className='authentication-divider'><Typography level='body-sm'>Or</Typography></div>
+                <Button variant='outlined'>{titleWithGoogle}</Button>
+                {mode === 0 && termsOfUsePath && privacyPolicyPath && <Typography className='authentication-compliance' level='body-sm'>
+                    By clicking {title} or {titleWithGoogle}, you agree to {appName}'s <Link onClick={() => navigate(termsOfUsePath)}>Terms of Use</Link> and <Link onClick={() => navigate(privacyPolicyPath)}>Privacy Policy</Link>. You may receive communications and, if so, can change your preferences in your account settings.
+                </Typography>}
             </form>
         </div>
     );
