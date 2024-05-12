@@ -1,5 +1,5 @@
 export enum Paths {
-    Questions = '/questions',
+    QuestionBank = '/question-bank',
     SignUp = '/create-account',
     SignIn = '/sign-in'
 }

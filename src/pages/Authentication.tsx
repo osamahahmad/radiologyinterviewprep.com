@@ -1,14 +1,17 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import "./Authentication.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-import { Button, Input, Link, Typography } from '@mui/joy';
+import { Alert, Button, Input, Link, Typography } from '@mui/joy';
 import { useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../resources/Firebase.js";
+import { FirebaseError } from "firebase/app";
 
 const enum Strings {
     SignUp = 'Create Account',
     SignIn = 'Sign In',
-    TooShort = 'Too Short',
-    TooLong = 'Too Long'
+    TooShort = 'too short',
+    TooLong = 'too long'
 }
 
 const isValidBasedOnLength = (input: string, minimum: number, maximum: number = 32) => {
@@ -24,20 +27,23 @@ const errorTypographyBasedOnLength = (validity: number) => {
 }
 
 interface AuthenticationProps {
+    mode?: 0 | 1
     background?: string
     padding?: string
     gap?: string
     logo?: ReactNode
-    mode?: 0 | 1
     divider?: string
     title?: string
     tagline?: string
     switchTitle?: string
     switchPath?: string
+    nextPath: string
 }
 
-const Authentication: React.FC<AuthenticationProps> = ({ background, padding, gap, logo, mode, divider, title, tagline, switchTitle, switchPath }) => {
+const Authentication: React.FC<AuthenticationProps> = ({ mode, background, padding, gap, logo, divider, title, tagline, switchTitle, switchPath, nextPath }) => {
     const navigate = useNavigate();
+
+    auth.currentUser && navigate(nextPath);
 
     if (!title)
         title = mode === 0 ? Strings.SignUp : Strings.SignIn;
@@ -64,7 +70,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ background, padding, ga
     }, [name, setIsNameValid]);
 
     useEffect(() => {
-        const validity = isValidBasedOnLength(email, 1);
+        const validity = isValidBasedOnLength(email, 5);
         setIsEmailValid(validity === 1 ? (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 1 : 4) : validity);
     }, [email, setIsEmailValid]);
 
@@ -79,22 +85,50 @@ const Authentication: React.FC<AuthenticationProps> = ({ background, padding, ga
     const [isLoading, setIsLoading] = useState(false);
 
     const style: React.CSSProperties = {};
-    if (background)
-        style['background'] = background;
-    if (padding)
-        style['--authentication-padding'] = padding;
-    if (gap)
-        style['--authentication-gap'] = gap;
-    if (divider)
-        style['--authentication-divider'] = divider;
+    background && (style['background'] = background);
+    padding && (style['--authentication-padding'] = padding);
+    gap && (style['--authentication-gap'] = gap);
+    divider && (style['--authentication-divider'] = divider);
+
+    const isValid: boolean = mode === 0 ? !!(isNameValid === 1 && isEmailValid === 1 && isPasswordValid === 1 && isConfirmPasswordValid) : (isEmailValid === 1 && isPasswordValid === 1)
+
+    const [error, setError] = useState<string | null>();
+
+    const signUp = async () => {
+        setIsLoading(true);
+
+        if (isValid)
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                nextPath && navigate(nextPath);
+            } catch (error) {
+                setError(error.code);
+            }
+
+        setIsLoading(false);
+    };
+
+    const signIn = async () => {
+        setIsLoading(true);
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            nextPath && navigate(nextPath);
+        } catch (error) {
+            if (error.code === 'auth/invalid-credential')
+                setError('That\'s not quite right.');
+            else
+                setError(error.code);
+        }
+
+        setIsLoading(false);
+    };
 
     return (
         <div className='authentication' style={style}>
             <form onSubmit={e => {
                 e.preventDefault();
-                setIsLoading(true);
-                // todo validation
-                // todo submission
+                mode === 0 ? signUp() : signIn();
             }}>
                 {logo && <Typography level='h1'>{logo}</Typography>}
                 <Typography>
@@ -121,7 +155,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ background, padding, ga
                     placeholder="Email"
                     onChange={e => setEmail(e.currentTarget.value)}
                     color={mode === 0 ? colorBasedOnValidity(isEmailValid) : 'neutral'}
-                    endDecorator={mode === 0 && (isEmailValid === 4 ? <Typography level='body-sm' color='danger'>Wrong Format</Typography> : errorTypographyBasedOnLength(isEmailValid))}
+                    endDecorator={mode === 0 && (isEmailValid === 4 ? <Typography level='body-sm' color='danger'>wrong format</Typography> : errorTypographyBasedOnLength(isEmailValid))}
                     value={email}
                     autoFocus={mode === 1}
                 />
@@ -147,14 +181,17 @@ const Authentication: React.FC<AuthenticationProps> = ({ background, padding, ga
                         value={confirmPassword}
                     />}
                 </div>
-                <Button
-                    type="submit"
-                    fullWidth
-                    disabled={mode === 0 ? !(isNameValid === 1 && isEmailValid === 1 && isPasswordValid === 1 && isConfirmPasswordValid) : false}
-                    loading={isLoading}>
-                    {title}
-                </Button>
-                <Typography>{mode === 0 ? 'Have an account' : 'New to us'}? <Link onClick={() => navigate(switchPath)}>{switchTitle}</Link></Typography>
+                <div className={'authentication-submit-wrapper' + (error ? ' error' : '')}>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        disabled={!isValid}
+                        loading={isLoading}>
+                        {title}
+                    </Button>
+                    {error && <Alert color='danger'>{error}</Alert> /* can do this because error won't disappear again */}
+                </div>
+                <Typography>{mode === 0 ? 'Have an account' : 'New to us'}? <Link onClick={() => { setError(null); navigate(switchPath); }}>{switchTitle}</Link></Typography>
                 <div className='authentication-divider'><Typography level='body-sm'>or</Typography></div>
                 <Button variant='outlined'>{title} with Google</Button>
             </form>

@@ -2,8 +2,12 @@ import React from "react";
 import {Button, ButtonGroup, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Dropdown, MenuButton, Menu, IconButton, MenuItem, Link, List } from '@mui/joy';
 import './Landing.css';
 import { MdMoreVert } from 'react-icons/md';
+import { useNavigate } from "react-router-dom";
+import { Paths } from "../resources/Paths.ts";
 
 const Landing: React.FC = () => {
+    const navigate = useNavigate();
+
     const Logo = require('../resources/radiology-interview-prep-logo.png');
 
     const sections = React.useMemo(() => { return ['welcome', 'structure', 'questions', 'method', 'answers'] }, []);
@@ -515,13 +519,13 @@ const Landing: React.FC = () => {
             </Card>
             <Card className='answers' variant='outlined'>
                 <Typography level='h2' startDecorator='£' color='success'>My Answers</Typography>
-                <Typography color='success'>Coming soon!</Typography>
+                <Button color='success' sx={{width: 'fit-content'}} onClick={() => navigate(Paths.QuestionBank)}>Access the Question Bank</Button>
             </Card>
             <footer>
                 <Typography>
                     &copy; Osamah Ahmad 2024
                 </Typography>
-                {/*<Typography>Terms · Privacy · Cookies</Typography>*/}
+                <Typography>Terms · Privacy · Cookies</Typography>
             </footer>
         </div>
     </div>
