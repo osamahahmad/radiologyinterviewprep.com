@@ -1,6 +1,6 @@
 enum Strings {
     AppName = 'Radiology Interview Prep.',
-    TermsOfUse = 'Terms of Use',
+    TermsOfService = 'Terms of Service',
     PrivacyPolicy = 'Privacy Policy'
 }
 

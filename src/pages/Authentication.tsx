@@ -3,8 +3,8 @@ import "./Authentication.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import { Alert, Button, Checkbox, Input, Link, Typography } from '@mui/joy';
 import { useLocation, useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../resources/Firebase.js";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../resources/Firebase.js";
 
 const enum Strings {
     SignUp = 'Create Account',
@@ -37,13 +37,13 @@ interface AuthenticationProps {
     switchTitle?: string
     switchPath?: string
     appName: string
-    termsOfUseTitle?: string
-    termsOfUsePath?: string
+    termsOfServiceTitle?: string
+    termsOfServicePath?: string
     privacyPolicyTitle?: string
     privacyPolicyPath?: string
 }
 
-const Authentication: React.FC<AuthenticationProps> = ({ mode, background, padding, gap, logo, divider, title, tagline, switchTitle, switchPath, appName, termsOfUseTitle, termsOfUsePath, privacyPolicyTitle, privacyPolicyPath }) => {
+const Authentication: React.FC<AuthenticationProps> = ({ mode, background, padding, gap, logo, divider, title, tagline, switchTitle, switchPath, appName, termsOfServiceTitle, termsOfServicePath, privacyPolicyTitle, privacyPolicyPath }) => {
     if (!title)
         title = mode === 0 ? Strings.SignUp : Strings.SignIn;
 
@@ -53,8 +53,8 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
     if (!switchPath)
         switchPath = mode === 0 ? '/sign-in' : '/create-account';
 
-    if (!termsOfUseTitle)
-        termsOfUseTitle = 'Terms of Use';
+    if (!termsOfServiceTitle)
+        termsOfServiceTitle = 'Terms of Service';
 
     if (!privacyPolicyTitle)
         privacyPolicyTitle = 'Privacy Policy'
@@ -143,6 +143,14 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
 
     const titleWithGoogle = title + ' with Google';
 
+    const handleGoogleSignInOrSignUp = async () => {
+        try {
+            await signInWithPopup(auth, googleProvider);
+        } catch (error) {
+            setError(error.code);
+        }
+    };
+
     return (
         <div className='authentication' style={style}>
             <form onSubmit={handleSubmit}>
@@ -214,9 +222,9 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
                 </div>
                 <Typography>{mode === 0 ? 'Have an account' : 'New to us'}? <Link onClick={() => { setError(null); navigate(switchPath); }}>{switchTitle}</Link></Typography>
                 <div className='authentication-divider'><Typography level='body-sm'>Or</Typography></div>
-                <Button variant='outlined'>{titleWithGoogle}</Button>
-                {mode === 0 && termsOfUsePath && privacyPolicyPath && <Typography className='authentication-compliance' level='body-sm'>
-                    By clicking {title} or {titleWithGoogle}, you agree to {appName}'s <Link onClick={() => navigate(termsOfUsePath)}>{termsOfUseTitle}</Link> and <Link onClick={() => navigate(privacyPolicyPath)}>{privacyPolicyTitle}</Link>. You may receive communications and, if so, can change your preferences in your account settings.
+                <Button variant='outlined' onClick={handleGoogleSignInOrSignUp}>{titleWithGoogle}</Button>
+                {mode === 0 && termsOfServicePath && privacyPolicyPath && <Typography className='authentication-compliance' level='body-sm'>
+                    By clicking {title} or {titleWithGoogle}, you agree to {appName}'s <Link onClick={() => navigate(termsOfServicePath)}>{termsOfServiceTitle}</Link> and <Link onClick={() => navigate(privacyPolicyPath)}>{privacyPolicyTitle}</Link>. You may receive communications and, if so, can change your preferences in your account settings.
                 </Typography>}
             </form>
         </div>

@@ -528,13 +528,13 @@ const Landing: React.FC<LandingProps> = () => {
             <Card className='answers' variant='outlined'>
                 <Typography level='h2' startDecorator='£' color='success'>My Answers</Typography>
                 <Button color='success' sx={{width: 'fit-content'}} onClick={() => navigate(Paths.QuestionBank)}>Access the Question Bank</Button>
-                {auth && auth.currentUser && <Typography>You are currently signed in as {auth.currentUser.email}. <Link onClick={() => auth.signOut()}>Sign Out</Link>.</Typography>}
+                {auth && auth.currentUser && <Typography>You're currently signed in as {auth.currentUser.email}. <Link onClick={() => auth.signOut()}>Sign Out</Link>.</Typography>}
             </Card>
             <footer>
                 <Typography>
                     &copy; Osamah Ahmad 2024
                 </Typography>
-                <Typography><Link onClick={() => navigate(Paths.TermsOfUse)}>{Strings.TermsOfUse}</Link> · <Link onClick={() => navigate(Paths.PrivacyPolicy)}>{Strings.PrivacyPolicy}</Link> · Cookies</Typography>
+                <Typography><Link onClick={() => navigate(Paths.TermsOfService)}>{Strings.TermsOfService}</Link> · <Link onClick={() => navigate(Paths.PrivacyPolicy)}>{Strings.PrivacyPolicy}</Link> · Cookies</Typography>
             </footer>
         </div>
     </div>

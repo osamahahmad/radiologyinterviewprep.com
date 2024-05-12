@@ -29,7 +29,7 @@ function App() {
       mode={1}
       background='var(--joy-palette-primary-100)'
       appName={Strings.AppName}
-      termsOfUsePath={Paths.TermsOfUse}
+      termsOfServicePath={Paths.TermsOfService}
       privacyPolicyPath={Paths.PrivacyPolicy}
     />;
 
@@ -45,7 +45,7 @@ function App() {
               background='var(--joy-palette-primary-100)'
               tagline='Smash your interview.'
               appName={Strings.AppName}
-              termsOfUsePath={Paths.TermsOfUse}
+              termsOfServicePath={Paths.TermsOfService}
               privacyPolicyPath={Paths.PrivacyPolicy} />} />
         <Route
           path={Paths.SignIn}
