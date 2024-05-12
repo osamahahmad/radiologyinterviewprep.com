@@ -2,6 +2,7 @@
     --authentication-background: white;
     --authentication-padding: var(--joy-fontSize-xl4);
     --authentication-gap: var(--joy-fontSize-xl);
+    --authentication-animation: .3s ease;
     --authentication-divider: 1px solid rgba(0, 0, 0, .25);
     min-height: 100svh;
     display: flex;
@@ -33,7 +34,7 @@
     overflow: hidden;
     --input-height: 36px;
     height: var(--input-height);
-    transition: height .3s ease;
+    transition: height var(--authentication-animation);
     position: relative;
 }
 

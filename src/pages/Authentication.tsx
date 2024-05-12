@@ -27,83 +27,83 @@ const errorTypographyBasedOnLength = (validity: number) => {
 
 interface AuthenticationProps {
     mode?: 0 | 1
+    logo?: ReactNode
     background?: string
     padding?: string
     gap?: string
-    logo?: ReactNode
+    animation?: string
     divider?: string
     title?: string
     tagline?: string
     switchTitle?: string
     switchPath?: string
-    appName: string
+    creatingAnAccount: string
+    appName?: string
     termsOfServiceTitle?: string
     termsOfServicePath?: string
     privacyPolicyTitle?: string
     privacyPolicyPath?: string
 }
 
-const Authentication: React.FC<AuthenticationProps> = ({ mode, background, padding, gap, logo, divider, title, tagline, switchTitle, switchPath, appName, termsOfServiceTitle, termsOfServicePath, privacyPolicyTitle, privacyPolicyPath }) => {
-    if (!title)
-        title = mode === 0 ? Strings.SignUp : Strings.SignIn;
+const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background, padding, gap, animation, divider, title, tagline, switchTitle, switchPath, creatingAnAccount = 'creating an account', appName, termsOfServiceTitle = 'Terms of Service', termsOfServicePath, privacyPolicyTitle = 'Privacy Policy', privacyPolicyPath }) => {
 
-    if (!switchTitle)
-        switchTitle = mode === 0 ? Strings.SignIn : Strings.SignUp;
+    /* set dynamic default values */
+    !title && (title = mode === 0 ? Strings.SignUp : Strings.SignIn);
+    !switchTitle && (switchTitle = mode === 0 ? Strings.SignIn : Strings.SignUp);
+    !switchPath && (switchPath = mode === 0 ? '/sign-in' : '/create-account');
 
-    if (!switchPath)
-        switchPath = mode === 0 ? '/sign-in' : '/create-account';
-
-    if (!termsOfServiceTitle)
-        termsOfServiceTitle = 'Terms of Service';
-
-    if (!privacyPolicyTitle)
-        privacyPolicyTitle = 'Privacy Policy'
-
+    /* hooks */
     const navigate = useNavigate();
-
     const location = useLocation();
-
-    auth.currentUser && navigate(location.state?.from?.pathname || '/');
-
     useDocumentTitle(title);
 
+    /* redirect */
+    auth.currentUser && navigate(location.state?.from?.pathname || '/');
+
+    /* css vars */
+    const style: React.CSSProperties = {};
+
+    background && (style['background'] = background);
+    padding && (style['--authentication-padding'] = padding);
+    gap && (style['--authentication-gap'] = gap);
+    animation && (style['--authentication-animation'] = animation);
+    divider && (style['--authentication-divider'] = divider);
+
+    /* validation */
     const [name, setName] = useState<string>('');
     const [isNameValid, setIsNameValid] = useState<0 | 1 | 2 | 3>(0); /* empty | valid | short | long */
-    const [email, setEmail] = useState<string>('');
-    const [isEmailValid, setIsEmailValid] = useState<0 | 1 | 2 | 3 | 4>(0); /* empty | valid | invalid */
-    const [password, setPassword] = useState<string>('');
-    const [isPasswordValid, setIsPasswordValid] = useState<0 | 1 | 2 | 3>(0); /* empty | valid | short | long */
-    const [confirmPassword, setConfirmPassword] = useState<string>('');
-    const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState<0 | 1 | 2>(0); /* empty | valid | doesn't matchs */
 
     useEffect(() => {
         setIsNameValid(isValidBasedOnLength(name, 1));
     }, [name, setIsNameValid]);
 
+    const [email, setEmail] = useState<string>('');
+    const [isEmailValid, setIsEmailValid] = useState<0 | 1 | 2 | 3 | 4>(0); /* empty | valid | invalid */
+
     useEffect(() => {
         setIsEmailValid(email.length === 0 ? 0 : (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 1 : 2));
     }, [email, setIsEmailValid]);
+
+    const [password, setPassword] = useState<string>('');
+    const [isPasswordValid, setIsPasswordValid] = useState<0 | 1 | 2 | 3>(0); /* empty | valid | short | long */
 
     useEffect(() => {
         setIsPasswordValid(isValidBasedOnLength(password, 6, 4096));
     }, [password, setIsPasswordValid]);
 
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState<0 | 1 | 2>(0); /* empty | valid | doesn't match */
+
     useEffect(() => {
         setIsConfirmPasswordValid(confirmPassword.length === 0 ? 0 : (password === confirmPassword ? 1 : 2))
     }, [password, confirmPassword, setIsConfirmPasswordValid]);
 
-    const [isLoading, setIsLoading] = useState(false);
-
-    const style: React.CSSProperties = {};
-    background && (style['background'] = background);
-    padding && (style['--authentication-padding'] = padding);
-    gap && (style['--authentication-gap'] = gap);
-    divider && (style['--authentication-divider'] = divider);
-
     const isValid: boolean = mode === 0 ? !!(isNameValid === 1 && isEmailValid === 1 && isPasswordValid === 1 && isConfirmPasswordValid === 1) : (isEmailValid === 1 && isPasswordValid === 1);
 
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>();
 
+    /* functions */
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -133,6 +133,17 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
         setIsLoading(false);
     };
 
+    const handleGoogleSignInOrSignUp = async () => {
+        try {
+            await signInWithPopup(auth, googleProvider);
+        } catch (error) {
+            if (error.code !== 'auth/popup-closed-by-user'
+                && error.code !== 'auth/cancelled-popup-request')
+                setError(error.code);
+        }
+    };
+
+    /* other */
     const isSignUpPasswordValid = mode === 0 && isPasswordValid === 1;
 
     const [isPasswordHidden, setIsPasswordHidden] = useState<boolean>(true);
@@ -142,14 +153,6 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
     const passwordType = isPasswordHidden ? 'password' : 'text';
 
     const titleWithGoogle = title + ' with Google';
-
-    const handleGoogleSignInOrSignUp = async () => {
-        try {
-            await signInWithPopup(auth, googleProvider);
-        } catch (error) {
-            setError(error.code);
-        }
-    };
 
     return (
         <div className='authentication' style={style}>
@@ -223,8 +226,8 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
                 <Typography>{mode === 0 ? 'Have an account' : 'New to us'}? <Link onClick={() => { setError(null); navigate(switchPath); }}>{switchTitle}</Link></Typography>
                 <div className='authentication-divider'><Typography level='body-sm'>Or</Typography></div>
                 <Button variant='outlined' onClick={handleGoogleSignInOrSignUp}>{titleWithGoogle}</Button>
-                {mode === 0 && termsOfServicePath && privacyPolicyPath && <Typography className='authentication-compliance' level='body-sm'>
-                    By clicking {title} or {titleWithGoogle}, you agree to {appName}'s <Link onClick={() => navigate(termsOfServicePath)}>{termsOfServiceTitle}</Link> and <Link onClick={() => navigate(privacyPolicyPath)}>{privacyPolicyTitle}</Link>. You may receive communications and, if so, can change your preferences in your account settings.
+                {mode === 0 && appName && termsOfServicePath && privacyPolicyPath && <Typography className='authentication-compliance' level='body-sm'>
+                    By {creatingAnAccount}, you agree to {appName}'s <Link onClick={() => navigate(termsOfServicePath)}>{termsOfServiceTitle}</Link> and <Link onClick={() => navigate(privacyPolicyPath)}>{privacyPolicyTitle}</Link>. You may receive communications and, if so, can change your preferences in your account settings.
                 </Typography>}
             </form>
         </div>

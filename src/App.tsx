@@ -23,36 +23,28 @@ function App() {
     return () => unsubscribe();
   }, [setIsLoggedIn]);
 
-  const questionBank = isLoggedIn
-    ? <QuestionBank />
-    : <Authentication
-      mode={1}
-      background='var(--joy-palette-primary-100)'
-      appName={Strings.AppName}
-      termsOfServicePath={Paths.TermsOfService}
-      privacyPolicyPath={Paths.PrivacyPolicy}
-    />;
+  const signIn = <Authentication
+    mode={1}
+    background='var(--joy-palette-primary-100)'
+  />;
 
   return <CssVarsProvider theme={theme}>
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Landing />} />
-        <Route path={Paths.QuestionBank} element={questionBank} />
+        <Route path={Paths.QuestionBank} element={isLoggedIn ? <QuestionBank /> : signIn} />
         <Route
           path={Paths.SignUp}
           element={<Authentication
-              mode={0}
-              background='var(--joy-palette-primary-100)'
-              tagline='Smash your interview.'
-              appName={Strings.AppName}
-              termsOfServicePath={Paths.TermsOfService}
-              privacyPolicyPath={Paths.PrivacyPolicy} />} />
+            mode={0}
+            background='var(--joy-palette-primary-100)'
+            tagline='Smash your interview.'
+            appName={Strings.AppName}
+            termsOfServicePath={Paths.TermsOfService}
+            privacyPolicyPath={Paths.PrivacyPolicy} />} />
         <Route
           path={Paths.SignIn}
-          element={<Authentication
-              mode={1}
-              background='var(--joy-palette-primary-100)'
-              appName={Strings.AppName} />} />
+          element={signIn} />
       </Routes>
     </BrowserRouter>
   </CssVarsProvider>
