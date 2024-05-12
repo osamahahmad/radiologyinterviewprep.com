@@ -4,7 +4,7 @@ import JSZip from "jszip";
 import { DOMParser } from "@xmldom/xmldom";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import { Alert, Button, CircularProgress, LinearProgress, Link, Typography } from "@mui/joy";
-import { getAuth, sendEmailVerification } from "firebase/auth";
+import { getAuth, onAuthStateChanged, sendEmailVerification } from "firebase/auth";
 import { auth } from "../resources/Firebase.js";
 
 const str2xml = (str: string) => {
@@ -87,22 +87,34 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ }) => {
     useDocumentTitle('My Answers');
 
     /* verification */
-    
     const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState<boolean>(false);
-
     const [sentVerificationEmail, setSentVerificationEmail] = useState<boolean>(false);
-
     const [errorSendingVerificationEmail, setErrorSendingVerificationEmail] = useState<boolean>(false);
+    const [resendCount, setResendCount] = useState<number>(0);
+    const [emailVerified, setEmailVerified] = useState<boolean>(false);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setEmailVerified(user.emailVerified);
+            } else {
+                setEmailVerified(false);
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
 
     const sendVerificationEmail = async () => {
         const user = auth.currentUser;
 
-        if (user) {
+        if (user && resendCount < 3) {
             setIsSendingVerificationEmail(true);
 
             try {
                 await sendEmailVerification(user);
                 setSentVerificationEmail(true);
+                setResendCount((prevCount) => prevCount + 1);
             } catch (error) {
                 setErrorSendingVerificationEmail(true);
             }
@@ -110,6 +122,40 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ }) => {
             setIsSendingVerificationEmail(false);
         }
     };
+
+    const resendVerificationEmail: ReactNode = (
+        <>
+            {sentVerificationEmail ? (
+                <Typography color="success">Sent.</Typography>
+            ) : isSendingVerificationEmail ? (
+                errorSendingVerificationEmail ? (
+                    <Typography color="danger">Something went wrong.</Typography>
+                ) : (
+                    <CircularProgress
+                        color="warning"
+                        sx={{
+                            marginLeft: ".25em",
+                            "--CircularProgress-size": "1em",
+                            "--CircularProgress-trackThickness": ".15em",
+                            "--CircularProgress-progressThickness": ".15em",
+                        }}
+                    />
+                )
+            ) : resendCount < 3 ? (
+                <Typography>
+                    Didn't receive it?{" "}
+                    <Link level="body-sm" onClick={sendVerificationEmail}>
+                        Resend Verification Email
+                    </Link>
+                    .
+                </Typography>
+            ) : (
+                <Typography color="warning">
+                    Resend limit exceeded. Please try again later.
+                </Typography>
+            )}
+        </>
+    );
 
     /* parse data */
     const [paragraphs, setParagraphs] = useState<string[]>([]);
@@ -126,27 +172,19 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ }) => {
         }
     };
 
-    useEffect(() => {
-        onFileUpload();
-    });
-
-    const resendVerificationEmail: ReactNode = <>
-        {sentVerificationEmail
-            ? <Typography color='success'>Sent.</Typography>
-            : (isSendingVerificationEmail
-                ? (errorSendingVerificationEmail
-                    ? <Typography color='danger'>Something went wrong.</Typography>
-                    : <CircularProgress color='warning' sx={{ marginLeft: '.25em', '--CircularProgress-size': '1em', '--CircularProgress-trackThickness': '.15em', '--CircularProgress-progressThickness': '.15em' }} />)
-                : <Typography>Didn't receive it? <Link level='body-sm' onClick={sendVerificationEmail}>Resend Verification Email</Link>.</Typography>)}
-    </>
-
     return (
         <div>
-            {auth.currentUser && !auth.currentUser.emailVerified && <Alert color='warning'>
-                <Typography level='body-sm' sx={{ color: 'inherit', display: 'flex', gap: '.25em', alignItems: 'center' }}>
-                    Please verify your email address using the link we've sent you. {resendVerificationEmail}
-                </Typography>
-            </Alert>}
+            {auth.currentUser && !emailVerified && (
+                <Alert color="warning">
+                    <Typography
+                        level="body-sm"
+                        sx={{ color: "inherit", display: "flex", gap: ".25em", alignItems: "center" }}
+                    >
+                        Please verify your email address using the link we've sent you.{" "}
+                        {resendVerificationEmail}
+                    </Typography>
+                </Alert>
+            )}
             <Button>Purchase</Button>
             {paragraphs.map((paragraph, index) => (
                 <div key={index}>{paragraph}</div>
