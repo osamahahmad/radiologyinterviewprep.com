@@ -3,5 +3,6 @@ export enum Paths {
     SignUp = '/create-account',
     SignIn = '/sign-in',
     TermsOfService = 'terms-of-service',
-    PrivacyPolicy = 'privacy-policy'
+    PrivacyPolicy = 'privacy-policy',
+    Verification = 'verification'
 }

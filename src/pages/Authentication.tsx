@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useState } from "react";
 import "./Authentication.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import { Alert, Button, Checkbox, Input, Link, Typography } from '@mui/joy';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../resources/Firebase.js";
 
@@ -37,7 +37,7 @@ interface AuthenticationProps {
     tagline?: string
     switchTitle?: string
     switchPath?: string
-    creatingAnAccount: string
+    creatingAnAccount?: string
     appName?: string
     termsOfServiceTitle?: string
     termsOfServicePath?: string
@@ -46,7 +46,6 @@ interface AuthenticationProps {
 }
 
 const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background, padding, gap, animation, divider, title, tagline, switchTitle, switchPath, creatingAnAccount = 'creating an account', appName, termsOfServiceTitle = 'Terms of Service', termsOfServicePath, privacyPolicyTitle = 'Privacy Policy', privacyPolicyPath }) => {
-
     /* set dynamic default values */
     !title && (title = mode === 0 ? Strings.SignUp : Strings.SignIn);
     !switchTitle && (switchTitle = mode === 0 ? Strings.SignIn : Strings.SignUp);
@@ -54,11 +53,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
 
     /* hooks */
     const navigate = useNavigate();
-    const location = useLocation();
     useDocumentTitle(title);
-
-    /* redirect */
-    auth.currentUser && navigate(location.state?.from?.pathname || '/');
 
     /* css vars */
     const style: React.CSSProperties = {};
@@ -154,84 +149,82 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
 
     const titleWithGoogle = title + ' with Google';
 
-    return (
-        <div className='authentication' style={style}>
-            <form onSubmit={handleSubmit}>
-                {logo && <Typography level='h1'>{logo}</Typography>}
-                <Typography>
-                    <Typography level='h1'>{title}</Typography>
-                    {tagline && <>
-                        <br />
-                        <Typography level='body-lg'>{tagline}</Typography>
-                    </>}
-                </Typography>
-                {mode === 0 && <Input
-                    type="text"
-                    name="name"
-                    placeholder="Name"
-                    onChange={e => setName(e.currentTarget.value)} color={colorBasedOnValidity(isNameValid)}
-                    endDecorator={errorTypographyBasedOnLength(isNameValid)}
-                    value={name}
-                    autoFocus
-                />}
+    return <div className='authentication' style={style}>
+        <form onSubmit={handleSubmit}>
+            {logo && <Typography level='h1'>{logo}</Typography>}
+            <Typography>
+                <Typography level='h1'>{title}</Typography>
+                {tagline && <>
+                    <br />
+                    <Typography level='body-lg'>{tagline}</Typography>
+                </>}
+            </Typography>
+            {mode === 0 && <Input
+                type="text"
+                name="name"
+                placeholder="Name"
+                onChange={e => setName(e.currentTarget.value)} color={colorBasedOnValidity(isNameValid)}
+                endDecorator={errorTypographyBasedOnLength(isNameValid)}
+                value={name}
+                autoFocus
+            />}
+            <Input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                onChange={e => setEmail(e.currentTarget.value)}
+                color={mode === 0 ? colorBasedOnValidity(isEmailValid) : 'neutral'}
+                value={email}
+                autoFocus={mode === 1}
+            />
+            <div className={'authentication-passwords-wrapper' + (isSignUpPasswordValid ? ' confirm' : '')}>
                 <Input
-                    type="email"
-                    name="email"
-                    placeholder="Email Address"
-                    onChange={e => setEmail(e.currentTarget.value)}
-                    color={mode === 0 ? colorBasedOnValidity(isEmailValid) : 'neutral'}
-                    value={email}
-                    autoFocus={mode === 1}
+                    type={passwordType}
+                    id={passwordId}
+                    name={passwordId}
+                    placeholder="Password"
+                    onChange={e => setPassword(e.currentTarget.value)}
+                    color={mode === 0 ? colorBasedOnValidity(isPasswordValid) : 'neutral'}
+                    endDecorator={mode === 0 && errorTypographyBasedOnLength(isPasswordValid)}
+                    value={password}
+                    autoComplete={passwordId}
+                    aria-describedby="password-constraints"
                 />
-                <div className={'authentication-passwords-wrapper' + (isSignUpPasswordValid ? ' confirm' : '')}>
-                    <Input
-                        type={passwordType}
-                        id={passwordId}
-                        name={passwordId}
-                        placeholder="Password"
-                        onChange={e => setPassword(e.currentTarget.value)}
-                        color={mode === 0 ? colorBasedOnValidity(isPasswordValid) : 'neutral'}
-                        endDecorator={mode === 0 && errorTypographyBasedOnLength(isPasswordValid)}
-                        value={password}
-                        autoComplete={passwordId}
-                        aria-describedby="password-constraints"
-                    />
-                    {mode === 0 && <Input
-                        type={passwordType}
-                        name="confirm-password"
-                        placeholder="Confirm Password"
-                        onChange={e => setConfirmPassword(e.currentTarget.value)}
-                        color={isConfirmPasswordValid === 0 ? 'neutral' : (isConfirmPasswordValid === 1 ? 'success' : 'danger')}
-                        value={confirmPassword}
-                        aria-describedby="password-constraints"
-                    />}
-                    <div id="password-constraints">Six or more characters.</div>
-                </div>
-                <Checkbox
-                    label={'Show Password' + (isSignUpPasswordValid ? 's' : '')}
-                    defaultChecked={!isPasswordHidden}
-                    onChange={() => setIsPasswordHidden(!isPasswordHidden)}
-                    aria-label="Show password as plain text. Warning: this will display your password on the screen.">
-                </Checkbox>
-                <div className={'authentication-submit-wrapper' + (error ? ' error' : '')}>
-                    <Button
-                        type="submit"
-                        fullWidth
-                        disabled={!isValid}
-                        loading={isLoading}>
-                        {title}
-                    </Button>
-                    {error && <Alert color='danger'>{error}</Alert> /* can do this because error won't disappear again */}
-                </div>
-                <Typography>{mode === 0 ? 'Have an account' : 'New to us'}? <Link onClick={() => { setError(null); navigate(switchPath); }}>{switchTitle}</Link></Typography>
-                <div className='authentication-divider'><Typography level='body-sm'>Or</Typography></div>
-                <Button variant='outlined' onClick={handleGoogleSignInOrSignUp}>{titleWithGoogle}</Button>
-                {mode === 0 && appName && termsOfServicePath && privacyPolicyPath && <Typography className='authentication-compliance' level='body-sm'>
-                    By {creatingAnAccount}, you agree to {appName}'s <Link onClick={() => navigate(termsOfServicePath)}>{termsOfServiceTitle}</Link> and <Link onClick={() => navigate(privacyPolicyPath)}>{privacyPolicyTitle}</Link>. You may receive communications and, if so, can change your preferences in your account settings.
-                </Typography>}
-            </form>
-        </div>
-    );
+                {mode === 0 && <Input
+                    type={passwordType}
+                    name="confirm-password"
+                    placeholder="Confirm Password"
+                    onChange={e => setConfirmPassword(e.currentTarget.value)}
+                    color={isConfirmPasswordValid === 0 ? 'neutral' : (isConfirmPasswordValid === 1 ? 'success' : 'danger')}
+                    value={confirmPassword}
+                    aria-describedby="password-constraints"
+                />}
+                <div id="password-constraints">Six or more characters.</div>
+            </div>
+            <Checkbox
+                label={'Show Password' + (isSignUpPasswordValid ? 's' : '')}
+                defaultChecked={!isPasswordHidden}
+                onChange={() => setIsPasswordHidden(!isPasswordHidden)}
+                aria-label="Show password as plain text. Warning: this will display your password on the screen.">
+            </Checkbox>
+            <div className={'authentication-submit-wrapper' + (error ? ' error' : '')}>
+                <Button
+                    type="submit"
+                    fullWidth
+                    disabled={!isValid}
+                    loading={isLoading}>
+                    {title}
+                </Button>
+                {error && <Alert color='danger'>{error}</Alert> /* can do this because error won't disappear again */}
+            </div>
+            <Typography>{mode === 0 ? 'Have an account' : 'New to us'}? <Link onClick={() => { setError(null); navigate(switchPath); }}>{switchTitle}</Link></Typography>
+            <div className='authentication-divider'><Typography level='body-sm'>Or</Typography></div>
+            <Button variant='outlined' onClick={handleGoogleSignInOrSignUp}>{titleWithGoogle}</Button>
+            {mode === 0 && appName && termsOfServicePath && privacyPolicyPath && <Typography className='authentication-compliance' level='body-sm'>
+                By {creatingAnAccount}, you agree to {appName}'s <Link onClick={() => navigate(termsOfServicePath)}>{termsOfServiceTitle}</Link> and <Link onClick={() => navigate(privacyPolicyPath)}>{privacyPolicyTitle}</Link>. You may receive communications and, if so, can change your preferences in your account settings.
+            </Typography>}
+        </form>
+    </div>
 };
 
 export default Authentication;
