@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Paths } from "../resources/Paths.ts";
 import { auth } from "../resources/Firebase.js";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
+import Strings from "../resources/Strings.ts";
 
 interface LandingProps {
 }
@@ -533,7 +534,7 @@ const Landing: React.FC<LandingProps> = () => {
                 <Typography>
                     &copy; Osamah Ahmad 2024
                 </Typography>
-                <Typography>Terms · Privacy · Cookies</Typography>
+                <Typography><Link onClick={() => navigate(Paths.TermsOfUse)}>{Strings.TermsOfUse}</Link> · <Link onClick={() => navigate(Paths.PrivacyPolicy)}>{Strings.PrivacyPolicy}</Link> · Cookies</Typography>
             </footer>
         </div>
     </div>

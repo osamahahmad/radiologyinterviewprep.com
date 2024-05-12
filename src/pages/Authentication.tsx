@@ -37,11 +37,13 @@ interface AuthenticationProps {
     switchTitle?: string
     switchPath?: string
     appName: string
+    termsOfUseTitle?: string
     termsOfUsePath?: string
+    privacyPolicyTitle?: string
     privacyPolicyPath?: string
 }
 
-const Authentication: React.FC<AuthenticationProps> = ({ mode, background, padding, gap, logo, divider, title, tagline, switchTitle, switchPath, appName, termsOfUsePath, privacyPolicyPath }) => {
+const Authentication: React.FC<AuthenticationProps> = ({ mode, background, padding, gap, logo, divider, title, tagline, switchTitle, switchPath, appName, termsOfUseTitle, termsOfUsePath, privacyPolicyTitle, privacyPolicyPath }) => {
     if (!title)
         title = mode === 0 ? Strings.SignUp : Strings.SignIn;
 
@@ -50,6 +52,12 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
 
     if (!switchPath)
         switchPath = mode === 0 ? '/sign-in' : '/create-account';
+
+    if (!termsOfUseTitle)
+        termsOfUseTitle = 'Terms of Use';
+
+    if (!privacyPolicyTitle)
+        privacyPolicyTitle = 'Privacy Policy'
 
     const navigate = useNavigate();
 
@@ -208,7 +216,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, background, paddi
                 <div className='authentication-divider'><Typography level='body-sm'>Or</Typography></div>
                 <Button variant='outlined'>{titleWithGoogle}</Button>
                 {mode === 0 && termsOfUsePath && privacyPolicyPath && <Typography className='authentication-compliance' level='body-sm'>
-                    By clicking {title} or {titleWithGoogle}, you agree to {appName}'s <Link onClick={() => navigate(termsOfUsePath)}>Terms of Use</Link> and <Link onClick={() => navigate(privacyPolicyPath)}>Privacy Policy</Link>. You may receive communications and, if so, can change your preferences in your account settings.
+                    By clicking {title} or {titleWithGoogle}, you agree to {appName}'s <Link onClick={() => navigate(termsOfUsePath)}>{termsOfUseTitle}</Link> and <Link onClick={() => navigate(privacyPolicyPath)}>{privacyPolicyTitle}</Link>. You may receive communications and, if so, can change your preferences in your account settings.
                 </Typography>}
             </form>
         </div>
