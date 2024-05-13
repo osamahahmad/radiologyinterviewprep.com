@@ -76,7 +76,7 @@ const QuestionBank: React.FC = ({ }) => {
     useDocumentTitle('My Answers');
 
     /* verification */
-    const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState<boolean>(true);
+    const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState<boolean>(false);
     const [sentVerificationEmail, setSentVerificationEmail] = useState<boolean>(false);
     const [errorSendingVerificationEmail, setErrorSendingVerificationEmail] = useState<boolean>(false);
     const [resendCount, setResendCount] = useState<number>(0);
@@ -147,7 +147,7 @@ const QuestionBank: React.FC = ({ }) => {
         </>
     );
 
-    /* subscription */
+    /* subscription & question bank */
     const [subscriptionPortalUrl, setSubscriptionPortalUrl] = useState<string | null>(null);
     const [subscriptionCancelAtPeriodEnd, setSubscriptionCancelAtPeriodEnd] = useState<boolean>();
     const [subscriptionExpiryDate, setSubscriptionExpiryDate] = useState<Date>();
