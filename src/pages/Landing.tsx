@@ -527,8 +527,7 @@ const Landing: React.FC<LandingProps> = () => {
             </Card>
             <Card className={sections[4]} variant='outlined'>
                 <Typography level='h2' color='success'>{sectionTitles[sections[4]]}</Typography>
-                <Button color='success' sx={{ width: 'fit-content' }} onClick={() => navigate(Paths.QuestionBank)}>Access the Question Bank</Button>
-                {auth && auth.currentUser && <Typography>You're currently signed in as {auth.currentUser.email}. <Link onClick={() => auth.signOut()}>Sign Out</Link>.</Typography>}
+                <Button color='success' sx={{ width: 'fit-content' }} onClick={() => navigate(auth.currentUser ? Paths.QuestionBank : Paths.SignUp)}>{auth.currentUser ? 'Access' : 'Sign up to'} the Question Bank</Button>
             </Card>
             <footer>
                 <Typography>

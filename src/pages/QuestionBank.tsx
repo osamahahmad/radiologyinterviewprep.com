@@ -156,6 +156,7 @@ const QuestionBank: React.FC = ({ }) => {
 
     /* subscription */
     const [subscriptionChecked, setSubscriptionChecked] = useState<boolean>(false);
+    const [subscriptionWillRenew, setSubscriptionWillRenew] = useState<boolean>();
     const [subscriptionExpiryDate, setSubscriptionExpiryDate] = useState<Date>();
 
     const checkSubscription = useCallback(async () => {
@@ -178,6 +179,7 @@ const QuestionBank: React.FC = ({ }) => {
     }, [checkSubscription]);
 
     const hasSubscriptionExpired = subscriptionExpiryDate && (subscriptionExpiryDate < new Date(Date.now()));
+    const willSubscriptionExpireThisWeek = !subscriptionWillRenew && subscriptionExpiryDate && (subscriptionExpiryDate < new Date(Date.now() + (7 * 86400000)));
 
     /* parse data */
     const [paragraphs, setParagraphs] = useState<string[]>([]);
@@ -213,16 +215,16 @@ const QuestionBank: React.FC = ({ }) => {
             )}
             {subscriptionExpiryDate && (
                 <>
-                    <Alert color={hasSubscriptionExpired ? 'danger' : 'success'}>
+                    <Alert color={hasSubscriptionExpired ? 'danger' : (willSubscriptionExpireThisWeek ? 'warning' : 'success')}>
                         <Typography
                             level="body-sm"
                             sx={{ color: "inherit", display: "flex", gap: ".25em", alignItems: "center" }}
                         >
-                            Your subscription {hasSubscriptionExpired ? 'expired' : 'will renew'} on {
+                            Your subscription {hasSubscriptionExpired ? 'expired' : (subscriptionWillRenew ? 'will renew' : 'will expire')} at {
                                 subscriptionExpiryDate && (
                                     subscriptionExpiryDate.toLocaleString('en-GB', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
+                                        hour: 'numeric',
+                                        minute: 'numeric',
                                         hour12: true
                                     }) +
                                     ' on ' +
@@ -233,6 +235,7 @@ const QuestionBank: React.FC = ({ }) => {
                                         year: 'numeric'
                                     }))
                             }.
+                            {subscriptionWillRenew && <Typography><Link>Cancel Renewal</Link>.</Typography>}
                         </Typography>
                     </Alert>
                     {paragraphs.map((paragraph, index) => (
