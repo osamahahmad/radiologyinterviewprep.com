@@ -6,6 +6,7 @@ import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import { Alert, Button, CircularProgress, Link, Typography } from "@mui/joy";
 import { onAuthStateChanged, sendEmailVerification } from "firebase/auth";
 import { auth } from "../resources/Firebase.js";
+import Paths from '../resources/Paths.ts';
 
 const str2xml = (str: string) => {
     if (str.charCodeAt(0) === 65279) {
@@ -78,11 +79,7 @@ const getParagraphs = async (file: File) => {
     return paragraphs;
 };
 
-interface QuestionBankProps {
-
-}
-
-const QuestionBank: React.FC<QuestionBankProps> = ({ }) => {
+const QuestionBank: React.FC = ({ }) => {
     /* hooks */
     useDocumentTitle('My Answers');
 
@@ -157,6 +154,31 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ }) => {
         </>
     );
 
+    /* subscription */
+    const [subscriptionChecked, setSubscriptionChecked] = useState<boolean>(false);
+    const [subscriptionExpiryDate, setSubscriptionExpiryDate] = useState<Date>();
+
+    const checkSubscription = useCallback(async () => {
+        try {
+            const response = await fetch(Paths.Serverless + '?user-uid=' + auth.currentUser?.uid);
+            if (response.status === 200) {
+                const timestamp = await response.text();
+                const timestampInt = parseInt(timestamp, 10);
+                setSubscriptionChecked(true);
+                setSubscriptionExpiryDate(new Date(timestampInt * 1000));
+            }
+        } catch (error) {
+            setSubscriptionChecked(true);
+            console.error(error);
+        }
+    }, [setSubscriptionChecked, setSubscriptionExpiryDate]);
+
+    useEffect(() => {
+        checkSubscription();
+    }, [checkSubscription]);
+
+    const hasSubscriptionExpired = subscriptionExpiryDate && (subscriptionExpiryDate < new Date(Date.now()));
+
     /* parse data */
     const [paragraphs, setParagraphs] = useState<string[]>([]);
 
@@ -178,8 +200,8 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ }) => {
 
     return (
         <div>
-            {auth.currentUser && !emailVerified && (
-                <Alert color="warning">
+            {!emailVerified && (
+                <Alert color='success'>
                     <Typography
                         level="body-sm"
                         sx={{ color: "inherit", display: "flex", gap: ".25em", alignItems: "center" }}
@@ -189,10 +211,44 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ }) => {
                     </Typography>
                 </Alert>
             )}
-            <Button>Purchase</Button>
-            {paragraphs.map((paragraph, index) => (
-                <div key={index}>{paragraph}</div>
-            ))}
+            {subscriptionExpiryDate && (
+                <>
+                    <Alert color={hasSubscriptionExpired ? 'danger' : 'success'}>
+                        <Typography
+                            level="body-sm"
+                            sx={{ color: "inherit", display: "flex", gap: ".25em", alignItems: "center" }}
+                        >
+                            Your subscription {hasSubscriptionExpired ? 'expired' : 'will renew'} on {
+                                subscriptionExpiryDate && (
+                                    subscriptionExpiryDate.toLocaleString('en-GB', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: true
+                                    }) +
+                                    ' on ' +
+                                    subscriptionExpiryDate.toLocaleString('en-GB', {
+                                        weekday: 'long',
+                                        day: 'numeric',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    }))
+                            }.
+                        </Typography>
+                    </Alert>
+                    {paragraphs.map((paragraph, index) => (
+                        <div key={index}>{paragraph}</div>
+                    ))}
+                </>
+            )}
+            {subscriptionChecked
+                ? (!subscriptionExpiryDate || hasSubscriptionExpired) &&
+                <Button onClick={() => {
+                    auth.currentUser && (window.location.href = Paths.Subscribe + auth.currentUser.uid)
+                }}>
+                    Purchase
+                </Button>
+                : <CircularProgress />
+            }
         </div>
     );
 };

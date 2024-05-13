@@ -1,9 +1,9 @@
 import React from "react";
-import {Button, ButtonGroup, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Dropdown, MenuButton, Menu, IconButton, MenuItem, Link, List } from '@mui/joy';
+import { Button, ButtonGroup, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Dropdown, MenuButton, Menu, IconButton, MenuItem, Link, List } from '@mui/joy';
 import './Landing.css';
 import { MdMoreVert } from 'react-icons/md';
 import { useNavigate } from "react-router-dom";
-import { Paths } from "../resources/Paths.ts";
+import Paths from "../resources/Paths.ts";
 import { auth } from "../resources/Firebase.js";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import Strings from "../resources/Strings.ts";
@@ -527,7 +527,7 @@ const Landing: React.FC<LandingProps> = () => {
             </Card>
             <Card className={sections[4]} variant='outlined'>
                 <Typography level='h2' color='success'>{sectionTitles[sections[4]]}</Typography>
-                <Button color='success' sx={{width: 'fit-content'}} onClick={() => navigate(Paths.QuestionBank)}>Access the Question Bank</Button>
+                <Button color='success' sx={{ width: 'fit-content' }} onClick={() => navigate(Paths.QuestionBank)}>Access the Question Bank</Button>
                 {auth && auth.currentUser && <Typography>You're currently signed in as {auth.currentUser.email}. <Link onClick={() => auth.signOut()}>Sign Out</Link>.</Typography>}
             </Card>
             <footer>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CssVarsProvider, extendTheme } from '@mui/joy';
 import './App.css';
-import { Paths } from './resources/Paths.ts';
+import Paths from './resources/Paths.ts';
 import Landing from './pages/Landing.tsx';
 import QuestionBank from './pages/QuestionBank.tsx';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
