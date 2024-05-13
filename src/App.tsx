@@ -41,7 +41,9 @@ function App() {
               : <Authentication
                 mode={0}
                 background='var(--joy-palette-primary-100)'
+                title={Strings.SignUp}
                 tagline='Smash your interview.'
+                switchTitle={Strings.SignIn}
                 appName={Strings.AppName}
                 termsOfServicePath={Paths.TermsOfService}
                 privacyPolicyPath={Paths.PrivacyPolicy} />
@@ -52,6 +54,8 @@ function App() {
             : <Authentication
               mode={1}
               background='var(--joy-palette-primary-100)'
+              title={Strings.SignIn}
+              switchTitle={Strings.SignUp}
             />
         } />
         <Route path='/stringify' element={<Stringify />} />

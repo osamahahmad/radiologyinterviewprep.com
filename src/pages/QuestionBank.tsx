@@ -3,9 +3,10 @@ import "./QuestionBank.css";
 import { DOMParser } from "@xmldom/xmldom";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import { Alert, Button, CircularProgress, Link, Typography } from "@mui/joy";
-import { onAuthStateChanged, sendEmailVerification } from "firebase/auth";
+import { onAuthStateChanged, sendEmailVerification, signOut } from "firebase/auth";
 import { auth } from "../resources/Firebase.js";
 import Paths from '../resources/Paths.ts';
+import { useNavigate } from "react-router-dom";
 
 const parseQuestionBank = async (questionBank: string) => {
     if (questionBank.charCodeAt(0) === 65279)
@@ -71,9 +72,10 @@ const parseQuestionBank = async (questionBank: string) => {
     return paragraphs;
 };
 
-const QuestionBank: React.FC = ({ }) => {
+const QuestionBank: React.FC = () => {
     /* hooks */
     useDocumentTitle('My Answers');
+    const navigate = useNavigate();
 
     /* verification */
     const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState<boolean>(false);
@@ -151,8 +153,8 @@ const QuestionBank: React.FC = ({ }) => {
     const [subscriptionPortalUrl, setSubscriptionPortalUrl] = useState<string | null>(null);
     const [subscriptionCancelAtPeriodEnd, setSubscriptionCancelAtPeriodEnd] = useState<boolean>();
     const [subscriptionExpiryDate, setSubscriptionExpiryDate] = useState<Date>();
-
     const [questionBank, setQuestionBank] = useState<string[]>([]);
+    const [subscriptionWasChecked, setSubscriptionWasChecked] = useState<boolean>(false);
 
     const checkSubscription = useCallback(async () => {
         try {
@@ -173,18 +175,23 @@ const QuestionBank: React.FC = ({ }) => {
         } catch (error) {
             console.error(error);
         }
-    }, [setSubscriptionPortalUrl, setSubscriptionCancelAtPeriodEnd, setSubscriptionExpiryDate, setQuestionBank]);
+
+        setSubscriptionWasChecked(true);
+    }, [setSubscriptionPortalUrl, setSubscriptionCancelAtPeriodEnd, setSubscriptionExpiryDate, setQuestionBank, setSubscriptionWasChecked]);
 
     useEffect(() => {
         checkSubscription();
     }, [checkSubscription]);
 
-    const subscriptionWasChecked = subscriptionPortalUrl !== null
     const hasSubscriptionExpired = subscriptionExpiryDate && (subscriptionExpiryDate < new Date(Date.now()));
     const willSubscriptionExpireThisWeek = !subscriptionCancelAtPeriodEnd && subscriptionExpiryDate && (subscriptionExpiryDate < new Date(Date.now() + (7 * 86400000)));
 
     return (
         <div>
+            <Button onClick={() => {
+                signOut(auth);
+                navigate('/');
+            }}>Sign Out</Button>
             {!emailVerified && (
                 <Alert color='warning'>
                     <Typography level="body-sm" sx={{ color: "inherit" }}                    >
