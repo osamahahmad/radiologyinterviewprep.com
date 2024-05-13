@@ -1,6 +1,5 @@
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import "./QuestionBank.css";
-import JSZip from "jszip";
 import { DOMParser } from "@xmldom/xmldom";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import { Alert, Button, CircularProgress, Link, Typography } from "@mui/joy";
@@ -8,17 +7,10 @@ import { onAuthStateChanged, sendEmailVerification } from "firebase/auth";
 import { auth } from "../resources/Firebase.js";
 import Paths from '../resources/Paths.ts';
 
-const str2xml = (str: string) => {
-    if (str.charCodeAt(0) === 65279) {
-        str = str.slice(1);
-    }
-    return new DOMParser().parseFromString(str, "text/xml");
-};
-
-const getParagraphs = async (file: File) => {
-    const zip = new JSZip();
-    const content = await zip.loadAsync(file);
-    const xml = str2xml(await content.file("word/document.xml")?.async("text") as string);
+const parseQuestionBank = async (questionBank: string) => {
+    if (questionBank.charCodeAt(0) === 65279)
+        questionBank = questionBank.slice(1);
+    const xml = new DOMParser().parseFromString(questionBank, "text/xml");
     const paragraphsXml = xml.getElementsByTagName("w:p");
     const paragraphs: string[] = [];
     const stack: number[] = [];
@@ -84,7 +76,7 @@ const QuestionBank: React.FC = ({ }) => {
     useDocumentTitle('My Answers');
 
     /* verification */
-    const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState<boolean>(false);
+    const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState<boolean>(true);
     const [sentVerificationEmail, setSentVerificationEmail] = useState<boolean>(false);
     const [errorSendingVerificationEmail, setErrorSendingVerificationEmail] = useState<boolean>(false);
     const [resendCount, setResendCount] = useState<number>(0);
@@ -131,7 +123,8 @@ const QuestionBank: React.FC = ({ }) => {
                     <CircularProgress
                         color="warning"
                         sx={{
-                            marginLeft: ".25em",
+                            left: ".125em",
+                            top: ".125em",
                             "--CircularProgress-size": "1em",
                             "--CircularProgress-trackThickness": ".15em",
                             "--CircularProgress-progressThickness": ".15em",
@@ -155,72 +148,55 @@ const QuestionBank: React.FC = ({ }) => {
     );
 
     /* subscription */
-    const [subscriptionChecked, setSubscriptionChecked] = useState<boolean>(false);
-    const [subscriptionWillRenew, setSubscriptionWillRenew] = useState<boolean>();
+    const [subscriptionPortalUrl, setSubscriptionPortalUrl] = useState<string | null>(null);
+    const [subscriptionCancelAtPeriodEnd, setSubscriptionCancelAtPeriodEnd] = useState<boolean>();
     const [subscriptionExpiryDate, setSubscriptionExpiryDate] = useState<Date>();
+
+    const [questionBank, setQuestionBank] = useState<string[]>([]);
 
     const checkSubscription = useCallback(async () => {
         try {
             const response = await fetch(Paths.Serverless + '?user-uid=' + auth.currentUser?.uid);
             if (response.status === 200) {
-                const timestamp = await response.text();
+                const data = JSON.parse(await response.text());
+
+                setSubscriptionPortalUrl(data['url']);
+
+                setSubscriptionCancelAtPeriodEnd(data['cancel_at_period_end']);
+
+                const timestamp = data['current_period_end'];
                 const timestampInt = parseInt(timestamp, 10);
-                setSubscriptionChecked(true);
                 setSubscriptionExpiryDate(new Date(timestampInt * 1000));
+
+                setQuestionBank(await parseQuestionBank(data['question-bank']));
             }
         } catch (error) {
-            setSubscriptionChecked(true);
             console.error(error);
         }
-    }, [setSubscriptionChecked, setSubscriptionExpiryDate]);
+    }, [setSubscriptionPortalUrl, setSubscriptionCancelAtPeriodEnd, setSubscriptionExpiryDate, setQuestionBank]);
 
     useEffect(() => {
         checkSubscription();
     }, [checkSubscription]);
 
+    const subscriptionWasChecked = subscriptionPortalUrl !== null
     const hasSubscriptionExpired = subscriptionExpiryDate && (subscriptionExpiryDate < new Date(Date.now()));
-    const willSubscriptionExpireThisWeek = !subscriptionWillRenew && subscriptionExpiryDate && (subscriptionExpiryDate < new Date(Date.now() + (7 * 86400000)));
-
-    /* parse data */
-    const [paragraphs, setParagraphs] = useState<string[]>([]);
-
-    const onFileUpload = useCallback(async () => {
-        try {
-            const response = await fetch('/question-bank.docx');
-            const blob = await response.blob();
-            const file = new File([blob], 'question-bank.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-            const paragraphs = await getParagraphs(file);
-            setParagraphs(paragraphs);
-        } catch (error) {
-            console.error(error);
-        }
-    }, []);
-
-    useEffect(() => {
-        onFileUpload();
-    }, [onFileUpload]);
+    const willSubscriptionExpireThisWeek = !subscriptionCancelAtPeriodEnd && subscriptionExpiryDate && (subscriptionExpiryDate < new Date(Date.now() + (7 * 86400000)));
 
     return (
         <div>
             {!emailVerified && (
-                <Alert color='success'>
-                    <Typography
-                        level="body-sm"
-                        sx={{ color: "inherit", display: "flex", gap: ".25em", alignItems: "center" }}
-                    >
-                        Please verify your email address using the link we've sent you.{" "}
-                        {resendVerificationEmail}
+                <Alert color='warning'>
+                    <Typography level="body-sm" sx={{ color: "inherit" }}                    >
+                        Please verify your email address using the link we've sent you. {resendVerificationEmail}
                     </Typography>
                 </Alert>
             )}
             {subscriptionExpiryDate && (
                 <>
                     <Alert color={hasSubscriptionExpired ? 'danger' : (willSubscriptionExpireThisWeek ? 'warning' : 'success')}>
-                        <Typography
-                            level="body-sm"
-                            sx={{ color: "inherit", display: "flex", gap: ".25em", alignItems: "center" }}
-                        >
-                            Your subscription {hasSubscriptionExpired ? 'expired' : (subscriptionWillRenew ? 'will renew' : 'will expire')} at {
+                        <Typography level="body-sm" sx={{ color: "inherit" }}>
+                            Your subscription {hasSubscriptionExpired ? 'expired' : (subscriptionCancelAtPeriodEnd ? 'will expire' : 'will renew')} at {
                                 subscriptionExpiryDate && (
                                     subscriptionExpiryDate.toLocaleString('en-GB', {
                                         hour: 'numeric',
@@ -234,16 +210,15 @@ const QuestionBank: React.FC = ({ }) => {
                                         month: 'long',
                                         year: 'numeric'
                                     }))
-                            }.
-                            {subscriptionWillRenew && <Typography><Link>Cancel Renewal</Link>.</Typography>}
+                            }. {subscriptionPortalUrl && <><Link onClick={() => { window.location.href = subscriptionPortalUrl }}>{subscriptionCancelAtPeriodEnd ? 'Renew' : 'Cancel Renewal'}</Link>.</>}
                         </Typography>
                     </Alert>
-                    {paragraphs.map((paragraph, index) => (
+                    {questionBank.map((paragraph, index) => (
                         <div key={index}>{paragraph}</div>
                     ))}
                 </>
             )}
-            {subscriptionChecked
+            {subscriptionWasChecked
                 ? (!subscriptionExpiryDate || hasSubscriptionExpired) &&
                 <Button onClick={() => {
                     auth.currentUser && (window.location.href = Paths.Subscribe + auth.currentUser.uid)

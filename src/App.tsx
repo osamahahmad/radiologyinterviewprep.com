@@ -9,6 +9,7 @@ import Authentication from './pages/Authentication.tsx';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './resources/Firebase.js';
 import Strings from './resources/Strings.ts';
+import Stringify from './pages/Stringify.tsx';
 
 const theme = extendTheme({});
 
@@ -53,6 +54,7 @@ function App() {
               background='var(--joy-palette-primary-100)'
             />
         } />
+        <Route path='/stringify' element={<Stringify />} />
       </Routes>
     </BrowserRouter>
   </CssVarsProvider>
