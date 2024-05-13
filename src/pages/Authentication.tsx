@@ -112,7 +112,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
                 auth.currentUser && !auth.currentUser.emailVerified && await sendEmailVerification(auth.currentUser);
             } catch (error) {
                 if (error.code === 'auth/email-already-in-use')
-                    setError('Email already in use');
+                    setError('Email Already in Use');
                 else
                     setError(error.code);
             }
@@ -121,9 +121,9 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
                 if (error.code === 'auth/invalid-credential')
-                    setError('Invalid credentials');
+                    setError('Invalid Credentials');
                 else
-                    setError('Something went wrong');
+                    setError(error.code);
             }
 
         setIsLoading(false);
