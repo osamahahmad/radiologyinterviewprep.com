@@ -34,7 +34,7 @@ const AuthAction: React.FC<AuthActionProps> = ({ setEmailAddressVerified, setEma
         } else {
             setNavigate(<Navigate to={Paths.NotFound} replace={true} />);
         }
-    }, [searchParams, setEmailAddressJustVerified]);
+    }, [searchParams, setEmailAddressVerified, setEmailAddressJustVerified]);
 
     useEffect(() => {
         act();
