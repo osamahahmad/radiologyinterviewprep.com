@@ -22,16 +22,16 @@ const AuthAction: React.FC<AuthActionProps> = ({ setEmailAddressJustVerified }) 
             try {
                 applyActionCode(auth, oobCode).then(() => {
                     setEmailAddressJustVerified(true);
-                    setNavigate(<Navigate to={Paths.QuestionBank} replace />);
+                    setNavigate(<Navigate to={Paths.QuestionBank} replace={true} />);
                 });
             } catch (error) {
                 console.error(error);
-                setNavigate(<Navigate to={Paths.Gone} replace />);
+                setNavigate(<Navigate to={Paths.Gone} replace={true} />);
             }
         } else if (mode === 'forgotPassword' && oobCode) {
 
         } else {
-            setNavigate(<Navigate to={Paths.NotFound} replace />);
+            setNavigate(<Navigate to={Paths.NotFound} replace={true} />);
         }
     }, [searchParams, setEmailAddressJustVerified]);
 

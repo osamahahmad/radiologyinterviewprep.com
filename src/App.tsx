@@ -6,7 +6,7 @@ import Landing from './pages/Landing.tsx';
 import QuestionBank from './pages/QuestionBank.tsx';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Authentication from './pages/Authentication.tsx';
-import { onAuthStateChanged } from 'firebase/auth';
+import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from './resources/Firebase.js';
 import Strings from './resources/Strings.ts';
 import Stringify from './pages/Stringify.tsx';
@@ -16,10 +16,12 @@ const theme = extendTheme({});
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [emailAddressVerified, setEmailAddressVerified] = useState<boolean>(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsLoggedIn(user ? true : false);
+      user && setEmailAddressVerified(user.emailVerified);
     });
 
     return () => unsubscribe();
@@ -33,7 +35,7 @@ function App() {
         <Route path='/' element={<Landing />} />
         <Route path={Paths.QuestionBank} element={
           isLoggedIn
-            ? <QuestionBank emailAddressJustVerified={emailAddressJustVerified} setEmailAddressJustVerified={setEmailAddressJustVerified} />
+            ? <QuestionBank emailAddressVerified={emailAddressVerified} emailAddressJustVerified={emailAddressJustVerified} setEmailAddressJustVerified={setEmailAddressJustVerified} />
             : <Navigate to={Paths.SignIn} replace />
         } />
         <Route

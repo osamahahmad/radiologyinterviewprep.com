@@ -73,11 +73,12 @@ const parseQuestionBank = async (questionBank: string) => {
 };
 
 interface QuestionBankProps {
+    emailAddressVerified: boolean
     emailAddressJustVerified: boolean
     setEmailAddressJustVerified: Function
 }
 
-const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressJustVerified, setEmailAddressJustVerified }) => {
+const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, emailAddressJustVerified, setEmailAddressJustVerified }) => {
     /* hooks */
     useDocumentTitle('My Answers');
     const navigate = useNavigate();
@@ -87,19 +88,6 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressJustVerified, s
     const [sentVerificationEmail, setSentVerificationEmail] = useState<boolean>(false);
     const [errorSendingVerificationEmail, setErrorSendingVerificationEmail] = useState<boolean>(false);
     const [resendCount, setResendCount] = useState<number>(0);
-    const [emailVerified, setEmailVerified] = useState<boolean>(false);
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                setEmailVerified(user.emailVerified);
-            } else {
-                setEmailVerified(false);
-            }
-        });
-
-        return () => unsubscribe();
-    }, []);
 
     const sendVerificationEmail = async () => {
         const user = auth.currentUser;
@@ -197,7 +185,7 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressJustVerified, s
                 signOut(auth);
                 navigate('/');
             }}>Sign Out</Button>
-            {!emailVerified && (
+            {!(emailAddressVerified || emailAddressJustVerified) && (
                 <Alert color='warning'>
                     <Typography level="body-sm" sx={{ color: "inherit" }}                    >
                         Please verify your email address using the link we've sent you. {resendVerificationEmail}
