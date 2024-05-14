@@ -3,7 +3,7 @@ import "./Authentication.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import { Alert, Button, Checkbox, Input, Link, Typography } from '@mui/joy';
 import { useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
 import { auth, googleProvider } from "../resources/Firebase.js";
 
 const enum Strings {
@@ -109,10 +109,11 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
         if (mode === 0)
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
+                auth.currentUser && await updateProfile(auth.currentUser, { displayName: name });
                 auth.currentUser && !auth.currentUser.emailVerified && await sendEmailVerification(auth.currentUser);
             } catch (error) {
                 if (error.code === 'auth/email-already-in-use')
-                    setError('Email Already in Use');
+                    setError('Email already in use.');
                 else
                     setError(error.code);
             }
@@ -121,7 +122,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
                 if (error.code === 'auth/invalid-credential')
-                    setError('Invalid Credentials');
+                    setError('Invalid credentials.');
                 else
                     setError(error.code);
             }

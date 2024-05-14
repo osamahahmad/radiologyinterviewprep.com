@@ -2,7 +2,7 @@ import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import "./QuestionBank.css";
 import { DOMParser } from "@xmldom/xmldom";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-import { Alert, Button, CircularProgress, Link, Typography } from "@mui/joy";
+import { Alert, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Link, Modal, ModalDialog, Typography } from "@mui/joy";
 import { onAuthStateChanged, sendEmailVerification, signOut } from "firebase/auth";
 import { auth } from "../resources/Firebase.js";
 import Paths from '../resources/Paths.ts';
@@ -72,7 +72,12 @@ const parseQuestionBank = async (questionBank: string) => {
     return paragraphs;
 };
 
-const QuestionBank: React.FC = () => {
+interface QuestionBankProps {
+    emailAddressJustVerified: boolean
+    setEmailAddressJustVerified: Function
+}
+
+const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressJustVerified, setEmailAddressJustVerified }) => {
     /* hooks */
     useDocumentTitle('My Answers');
     const navigate = useNavigate();
@@ -234,6 +239,15 @@ const QuestionBank: React.FC = () => {
                 </Button>
                 : <CircularProgress />
             }
+            <Modal open={emailAddressJustVerified} onClose={() => setEmailAddressJustVerified(false)}>
+                <ModalDialog>
+                    <DialogTitle>Email Address Verified</DialogTitle>
+                    <DialogContent>You've verified {auth.currentUser?.email}.</DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setEmailAddressJustVerified(false)}>Close</Button>
+                    </DialogActions>
+                </ModalDialog>
+            </Modal>
         </div>
     );
 };

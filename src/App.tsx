@@ -10,6 +10,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './resources/Firebase.js';
 import Strings from './resources/Strings.ts';
 import Stringify from './pages/Stringify.tsx';
+import AuthAction from './components/AuthAction.tsx';
 
 const theme = extendTheme({});
 
@@ -24,13 +25,15 @@ function App() {
     return () => unsubscribe();
   }, [setIsLoggedIn]);
 
+  const [emailAddressJustVerified, setEmailAddressJustVerified] = useState<boolean>(false);
+
   return <CssVarsProvider theme={theme}>
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Landing />} />
         <Route path={Paths.QuestionBank} element={
           isLoggedIn
-            ? <QuestionBank />
+            ? <QuestionBank emailAddressJustVerified={emailAddressJustVerified} setEmailAddressJustVerified={setEmailAddressJustVerified} />
             : <Navigate to={Paths.SignIn} replace />
         } />
         <Route
@@ -59,6 +62,7 @@ function App() {
             />
         } />
         <Route path='/stringify' element={<Stringify />} />
+        <Route path='/__/auth/action' element={<AuthAction setEmailAddressJustVerified={setEmailAddressJustVerified} />} />
       </Routes>
     </BrowserRouter>
   </CssVarsProvider>
