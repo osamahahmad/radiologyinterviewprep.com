@@ -3,7 +3,7 @@ import "./QuestionBank.css";
 import { DOMParser } from "@xmldom/xmldom";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import { Alert, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Link, Modal, ModalDialog, Typography } from "@mui/joy";
-import { onAuthStateChanged, sendEmailVerification, signOut } from "firebase/auth";
+import { sendEmailVerification, signOut } from "firebase/auth";
 import { auth } from "../resources/Firebase.js";
 import Paths from '../resources/Paths.ts';
 import { useNavigate } from "react-router-dom";
@@ -185,7 +185,7 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, email
                 signOut(auth);
                 navigate('/');
             }}>Sign Out</Button>
-            {!(emailAddressVerified || emailAddressJustVerified) && (
+            {!emailAddressVerified && (
                 <Alert color='warning'>
                     <Typography level="body-sm" sx={{ color: "inherit" }}                    >
                         Please verify your email address using the link we've sent you. {resendVerificationEmail}

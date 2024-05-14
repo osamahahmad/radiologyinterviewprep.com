@@ -5,10 +5,11 @@ import { applyActionCode } from "firebase/auth";
 import { auth } from "../resources/Firebase.js";
 
 interface AuthActionProps {
+    setEmailAddressVerified: Function
     setEmailAddressJustVerified: Function
 }
 
-const AuthAction: React.FC<AuthActionProps> = ({ setEmailAddressJustVerified }) => {
+const AuthAction: React.FC<AuthActionProps> = ({ setEmailAddressVerified, setEmailAddressJustVerified }) => {
     const [searchParams] = useSearchParams();
 
     const [navigate, setNavigate] = useState<ReactNode>();
@@ -20,10 +21,10 @@ const AuthAction: React.FC<AuthActionProps> = ({ setEmailAddressJustVerified }) 
 
         if (mode === 'verifyEmail' && oobCode) {
             try {
-                applyActionCode(auth, oobCode).then(() => {
-                    setEmailAddressJustVerified(true);
-                    setNavigate(<Navigate to={Paths.QuestionBank} replace={true} />);
-                });
+                await applyActionCode(auth, oobCode);
+                setEmailAddressVerified(true);
+                setEmailAddressJustVerified(true);
+                setNavigate(<Navigate to={Paths.QuestionBank} replace={true} />);
             } catch (error) {
                 console.error(error);
                 setNavigate(<Navigate to={Paths.Gone} replace={true} />);

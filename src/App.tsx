@@ -6,7 +6,7 @@ import Landing from './pages/Landing.tsx';
 import QuestionBank from './pages/QuestionBank.tsx';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Authentication from './pages/Authentication.tsx';
-import { User, onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './resources/Firebase.js';
 import Strings from './resources/Strings.ts';
 import Stringify from './pages/Stringify.tsx';
@@ -25,7 +25,7 @@ function App() {
     });
 
     return () => unsubscribe();
-  }, [setIsLoggedIn]);
+  }, [setIsLoggedIn, setEmailAddressVerified]);
 
   const [emailAddressJustVerified, setEmailAddressJustVerified] = useState<boolean>(false);
 
@@ -64,7 +64,7 @@ function App() {
             />
         } />
         <Route path='/stringify' element={<Stringify />} />
-        <Route path='/__/auth/action' element={<AuthAction setEmailAddressJustVerified={setEmailAddressJustVerified} />} />
+        <Route path='/__/auth/action' element={<AuthAction setEmailAddressVerified={setEmailAddressVerified} setEmailAddressJustVerified={setEmailAddressJustVerified} />} />
       </Routes>
     </BrowserRouter>
   </CssVarsProvider>
