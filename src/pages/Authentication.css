@@ -58,7 +58,7 @@
     z-index: 1;
 }
 
-.authentication-submit-wrapper>*:last-child {
+.authentication-submit-wrapper>*:nth-child(2) {
     position: absolute;
     left: 0;
     bottom: 0;
@@ -67,7 +67,7 @@
     pointer-events: none;
 }
 
-.authentication-submit-wrapper.error>*:last-child {
+.authentication-submit-wrapper.error>*:nth-child(2) {
     user-select: auto;
     pointer-events: auto;
 }

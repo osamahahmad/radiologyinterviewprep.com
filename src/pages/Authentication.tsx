@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import "./Authentication.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import { Alert, Button, Checkbox, Input, Link, Typography } from '@mui/joy';
@@ -6,11 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
 import { auth, googleProvider } from "../resources/Firebase.js";
 import useWindowSize from "../hooks/useWindowSize.ts";
+import { FirebaseError } from "firebase/app";
 
 const enum Strings {
     SignUp = 'Create Account',
     SignIn = 'Sign In',
-    TooShort = 'Too Short',
     TooLong = 'Too Long'
 }
 
@@ -23,7 +23,7 @@ const colorBasedOnValidity = (validity: number) => {
 }
 
 const errorTypographyBasedOnLength = (validity: number) => {
-    return validity > 1 ? <Typography level='body-sm' color='danger'>{validity === 2 ? Strings.TooShort : validity === 3 ? Strings.TooLong : ''}</Typography> : null;
+    return validity > 1 ? <Typography level='body-sm' color='danger'>{validity === 3 ? Strings.TooLong : ''}</Typography> : null;
 }
 
 interface AuthenticationProps {
@@ -80,7 +80,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
     const [isEmailValid, setIsEmailValid] = useState<0 | 1 | 2 | 3 | 4>(0); /* empty | valid | invalid */
 
     useEffect(() => {
-        setIsEmailValid(email.length === 0 ? 0 : (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 1 : 2));
+        setIsEmailValid(email.length === 0 ? 0 : (email.length > 5 ? ((/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 1 : 2)) : 2));
     }, [email, setIsEmailValid]);
 
     const [password, setPassword] = useState<string>('');
@@ -90,16 +90,27 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
         setIsPasswordValid(isValidBasedOnLength(password, 6, 4096));
     }, [password, setIsPasswordValid]);
 
-    const isValid: boolean = mode === 0 ? !!(isNameValid === 1 && isEmailValid === 1 && isPasswordValid === 1) : (isEmailValid === 1 && isPasswordValid === 1);
-
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>();
 
     /* functions */
+    const handleFirebaseError = useCallback((error: FirebaseError) => {
+        if (error.code === 'auth/missing-email')
+            setError('Missing email address.');
+        else if (error.code === 'auth/invalid-email')
+            setError('Invalid email address.');
+        else if (error.code === 'auth/missing-password')
+            setError('Missing password.');
+        else if (error.code === 'auth/weak-password')
+            setError('Weak password.');
+        else if (error.code === 'auth/invalid-credential')
+            setError('Invalid credentials.');
+        else
+            setError(error.code);
+    }, [setError]);
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        if (!isValid) return;
 
         setIsLoading(true);
 
@@ -109,19 +120,13 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
                 auth.currentUser && await updateProfile(auth.currentUser, { displayName: name });
                 auth.currentUser && !auth.currentUser.emailVerified && await sendEmailVerification(auth.currentUser);
             } catch (error) {
-                if (error.code === 'auth/email-already-in-use')
-                    setError('Email already in use.');
-                else
-                    setError(error.code);
+                handleFirebaseError(error);
             }
         else
             try {
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
-                if (error.code === 'auth/invalid-credential')
-                    setError('Invalid credentials.');
-                else
-                    setError(error.code);
+                handleFirebaseError(error);
             }
 
         setIsLoading(false);
@@ -202,11 +207,11 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
                     onChange={() => setIsPasswordHidden(!isPasswordHidden)}
                     aria-label="Show password as plain text. Warning: this will display your password on the screen.">
                 </Checkbox>
+                {mode === 1 && <Typography><Link onClick={() => { }}>Forgot Password?</Link></Typography>}
                 <div className={'authentication-submit-wrapper' + (error ? ' error' : '')}>
                     <Button
                         type="submit"
                         fullWidth
-                        disabled={!isValid}
                         loading={isLoading}>
                         {title}
                     </Button>
@@ -219,7 +224,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
                     By {creatingAnAccount}, you agree to {appName}'s <Link onClick={() => navigate(termsOfServicePath)}>{termsOfServiceTitle}</Link> and <Link onClick={() => navigate(privacyPolicyPath)}>{privacyPolicyTitle}</Link>. You may receive communications and, if so, can change your preferences in your account settings.
                 </Typography>}
             </form>
-        </div>
+        </div >
     </div >
 };
 
