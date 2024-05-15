@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CssVarsProvider, extendTheme } from '@mui/joy';
+import { Button, CssVarsProvider, Snackbar, extendTheme } from '@mui/joy';
 import './App.css';
 import Paths from './resources/Paths.ts';
 import Landing from './pages/Landing.tsx';
@@ -11,6 +11,7 @@ import { auth } from './resources/Firebase.js';
 import Strings from './resources/Strings.ts';
 import Stringify from './pages/Stringify.tsx';
 import AuthAction from './components/AuthAction.tsx';
+import { MdCheckCircle } from 'react-icons/md';
 
 const theme = extendTheme({});
 
@@ -35,7 +36,7 @@ function App() {
         <Route path='/' element={<Landing />} />
         <Route path={Paths.QuestionBank} element={
           isLoggedIn
-            ? <QuestionBank emailAddressVerified={emailAddressVerified} emailAddressJustVerified={emailAddressJustVerified} setEmailAddressJustVerified={setEmailAddressJustVerified} />
+            ? <QuestionBank emailAddressVerified={emailAddressVerified} />
             : <Navigate to={Paths.SignIn} replace />
         } />
         <Route
@@ -67,6 +68,25 @@ function App() {
         <Route path='/__/auth/action' element={<AuthAction setEmailAddressVerified={setEmailAddressVerified} setEmailAddressJustVerified={setEmailAddressJustVerified} />} />
       </Routes>
     </BrowserRouter>
+
+    <Snackbar
+      color='success'
+      open={emailAddressJustVerified}
+      onClose={() => setEmailAddressJustVerified(false)}
+      endDecorator={
+        <Button
+          onClick={() => setEmailAddressJustVerified(false)}
+          size="sm"
+          color="success"
+        >
+          Close
+        </Button>
+      }
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      startDecorator={<MdCheckCircle />}
+      autoHideDuration={10000}>
+      Email address verified.
+    </Snackbar>
   </CssVarsProvider>
 }
 
