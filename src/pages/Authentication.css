@@ -9,12 +9,11 @@
     box-sizing: border-box;
     display: flex;
     align-items: center;
-    background: linear-gradient(var(--authentication-background), transparent var(--authentication-padding));
+    background: linear-gradient(var(--authentication-background), var(--authentication-box-background) var(--authentication-padding));
 }
 
 @media screen and (min-width: 481px) {
     .authentication {
-        padding: var(--authentication-padding);
         background: var(--authentication-background);
     }
 }
