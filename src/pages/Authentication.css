@@ -1,26 +1,39 @@
 .authentication {
-    --authentication-background: white;
+    --authentication-background: var(--joy-palette-primary-100);
+    --authentication-box-background: white;
     --authentication-padding: var(--joy-fontSize-xl4);
     --authentication-gap: var(--joy-fontSize-xl);
     --authentication-animation: .3s ease;
     --authentication-divider: 1px solid rgba(0, 0, 0, .25);
     min-height: 100svh;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
-    box-sizing: border-box;
-    padding: var(--authentication-padding);
+    background: linear-gradient(var(--authentication-background), transparent var(--authentication-padding));
+}
+
+@media screen and (min-width: 481px) {
+    .authentication {
+        padding: var(--authentication-padding);
+        background: var(--authentication-background);
+    }
 }
 
 .authentication>div {
-    margin: auto;
-    border-radius: var(--joy-radius-md);
-    box-shadow: var(--joy-shadow-md);
-    background-color: var(--authentication-background);
-    transition: height var(--authentication-animation);
-    overflow: hidden;
     width: 'fit-content';
     width: 100%;
     max-width: 480px;
+    transition: height var(--authentication-animation);
+}
+
+@media screen and (min-width: 481px) {
+    .authentication>div {
+        margin: auto;
+        border-radius: var(--joy-radius-md);
+        box-shadow: var(--joy-shadow-md);
+        overflow: hidden;
+        background-color: var(--authentication-box-background);
+    }
 }
 
 .authentication>div>form {
@@ -81,7 +94,7 @@
 
 .authentication-divider>p {
     z-index: 1;
-    background-color: var(--authentication-background);
+    background-color: var(--authentication-box-background);
     padding: 0 1em;
 }
 

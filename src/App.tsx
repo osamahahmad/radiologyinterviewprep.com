@@ -46,7 +46,6 @@ function App() {
               ? <Navigate to={Paths.QuestionBank} replace />
               : <Authentication
                 mode={0}
-                background='var(--joy-palette-primary-100)'
                 title={Strings.SignUp}
                 tagline='Smash your interview.'
                 switchTitle={Strings.SignIn}
@@ -59,7 +58,6 @@ function App() {
             ? <Navigate to={Paths.QuestionBank} replace />
             : <Authentication
               mode={1}
-              background='var(--joy-palette-primary-100)'
               title={Strings.SignIn}
               switchTitle={Strings.SignUp}
             />

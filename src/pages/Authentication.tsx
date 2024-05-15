@@ -30,6 +30,7 @@ interface AuthenticationProps {
     mode?: 0 | 1
     logo?: ReactNode
     background?: string
+    boxBackground?: string
     padding?: string
     gap?: string
     animation?: string
@@ -46,7 +47,7 @@ interface AuthenticationProps {
     privacyPolicyPath?: string
 }
 
-const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background, padding, gap, animation, divider, title, tagline, switchTitle, switchPath, creatingAnAccount = 'creating an account', appName, termsOfServiceTitle = 'Terms of Service', termsOfServicePath, privacyPolicyTitle = 'Privacy Policy', privacyPolicyPath }) => {
+const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background, boxBackground, padding, gap, animation, divider, title, tagline, switchTitle, switchPath, creatingAnAccount = 'creating an account', appName, termsOfServiceTitle = 'Terms of Service', termsOfServicePath, privacyPolicyTitle = 'Privacy Policy', privacyPolicyPath }) => {
     /* set dynamic default values */
     !title && (title = mode === 0 ? Strings.SignUp : Strings.SignIn);
     !switchTitle && (switchTitle = mode === 0 ? Strings.SignIn : Strings.SignUp);
@@ -60,7 +61,8 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
     /* css vars */
     const style: React.CSSProperties = {};
 
-    background && (style['background'] = background);
+    background && (style['--authentication-background'] = background);
+    boxBackground && (style['--authentication-box-background'] = background);
     padding && (style['--authentication-padding'] = padding);
     gap && (style['--authentication-gap'] = gap);
     animation && (style['--authentication-animation'] = animation);
@@ -88,7 +90,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
         setIsPasswordValid(isValidBasedOnLength(password, 6, 4096));
     }, [password, setIsPasswordValid]);
 
-    const isValid: boolean = mode === 0 ? !!(isNameValid === 1 && isEmailValid === 1 && isPasswordValid === 1 && isConfirmPasswordValid === 1) : (isEmailValid === 1 && isPasswordValid === 1);
+    const isValid: boolean = mode === 0 ? !!(isNameValid === 1 && isEmailValid === 1 && isPasswordValid === 1) : (isEmailValid === 1 && isPasswordValid === 1);
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>();
