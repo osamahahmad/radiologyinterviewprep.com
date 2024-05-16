@@ -106,6 +106,8 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
             setDanger(null);
     }, [success, setDanger]);
 
+    const passwordResetEmailSent = useCallback(() => 'If ' + email + ' is associated with an account, it\'ll receive a password reset link. Check your inbox.', [email]);
+
     const handleFirebaseError = useCallback((error: FirebaseError) => {
         if (error.code === 'auth/missing-email')
             setDanger('Enter an email address.');
@@ -118,12 +120,12 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
         else if (error.code === 'auth/invalid-credential')
             setDanger('Wrong password. Try again.');
         else if (error.code === "auth/user-not-found")
-            setSuccess('Password reset email sent.');
+            setSuccess(passwordResetEmailSent);
         else if (error.code === 'auth/invalid-action-code')
             setDanger('Reset failed. Try again.')
         else
-            setDanger(error.code);
-    }, [setDanger, setSuccess]);
+            setDanger('Something went wrong.');
+    }, [setDanger, setSuccess, passwordResetEmailSent]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -162,7 +164,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
             } else
                 try {
                     await sendPasswordResetEmail(auth, email);
-                    setSuccess('Password reset email sent.');
+                    setSuccess(passwordResetEmailSent);
                 } catch (error) {
                     handleFirebaseError(error);
                 }
