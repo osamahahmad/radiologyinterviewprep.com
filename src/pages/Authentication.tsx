@@ -120,7 +120,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
         else if (error.code === "auth/user-not-found")
             setSuccess('Password reset email sent.');
         else if (error.code === 'auth/invalid-action-code')
-            setDanger('Password reset failed. Try again.')
+            setDanger('Password reset failed.')
         else
             setDanger(error.code);
     }, [setDanger, setSuccess]);
@@ -254,7 +254,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
                     {title}
                 </Button>
                 {(danger || success) && <Alert color={danger ? 'danger' : 'success'}>{danger || success}</Alert>}
-                {!resetPasswordOobCode && <Typography>{mode === 0 ? 'Have an account' : (mode === 1 ? 'New to us' : 'Remembered it')}? <Link onClick={() => { setDanger(null); setSuccess(null); navigate(switchPath); }}>{switchTitle}</Link></Typography>}
+                {!resetPasswordOobCode && <Typography>{mode === 0 ? 'Have an account?' : (mode === 1 ? 'New to us?' : '')} <Link onClick={() => { setDanger(null); setSuccess(null); navigate(switchPath); }}>{switchTitle}</Link></Typography>}
                 {mode < 2 && <>
                     <div className='authentication-divider'><Typography level='body-sm'>Or</Typography></div>
                     <Button variant='outlined' onClick={handleGoogleSignInOrSignUp}>{titleWithGoogle}</Button>
