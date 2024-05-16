@@ -2,7 +2,7 @@ import { Typography } from '@mui/joy';
 import React, { MouseEventHandler } from 'react';
 
 interface LogoProps {
-    onClick: MouseEventHandler
+    onClick?: MouseEventHandler
 }
 
 const Logo: React.FC<LogoProps> = ({ onClick }) => {
@@ -15,7 +15,7 @@ const Logo: React.FC<LogoProps> = ({ onClick }) => {
         fontSize='inherit'
         startDecorator={<img src={image} alt="Logo" style={{ width: '2em' }} />}
         onClick={onClick}
-        sx={{ cursor: 'pointer' }}
+        sx={{ cursor: onClick ? 'pointer' : 'auto', pointerEvents: onClick ? 'auto' : 'none', minHeight: '2em' }}
     >
         Radiology Interview Prep.
     </Typography>

@@ -5,10 +5,8 @@ import Paths from './resources/Paths.ts';
 import Landing from './pages/Landing.tsx';
 import QuestionBank from './pages/QuestionBank.tsx';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import Authentication from './pages/Authentication.tsx';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './resources/Firebase.js';
-import Strings from './resources/Strings.ts';
 import Stringify from './pages/Stringify.tsx';
 import AuthAction from './components/AuthAction.tsx';
 import { MdCheckCircle, MdError } from 'react-icons/md';
@@ -64,21 +62,16 @@ function App() {
             element={
               isLoggedIn
                 ? <Navigate to={Paths.QuestionBank} replace />
-                : <Authentication
-                  mode={0}
-                  tagline='Smash your interview.'
-                  appName={Strings.AppName} />
+                : <Landing authentication={0} />
             } />
           <Route path={Paths.SignIn} element={
             isLoggedIn
               ? <Navigate to={Paths.QuestionBank} replace />
-              : <Authentication
-                mode={1}
-              />
+              : <Landing authentication={1} />
           } />
           <Route path={Paths.ResetPassword} element={
-            <Authentication
-              mode={2}
+            <Landing
+              authentication={2}
               resetPasswordOobCode={resetPasswordOobCode}
               setResetPasswordOobCode={setResetPasswordOobCode}
             />

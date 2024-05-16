@@ -1,7 +1,7 @@
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import "./Authentication.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-import { Alert, Button, Checkbox, Input, Link, Typography } from '@mui/joy';
+import { Alert, Button, Checkbox, Input, Link, Modal, Typography } from '@mui/joy';
 import { useNavigate } from "react-router-dom";
 import { confirmPasswordReset, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
 import { auth, googleProvider } from "../resources/Firebase.js";
@@ -51,7 +51,7 @@ interface AuthenticationProps {
     setResetPasswordOobCode?: Function
 }
 
-const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, background, boxBackground, padding, gap, animation, divider, title, tagline, switchTitle, switchPath, resetPasswordPath = '/reset-password', creatingAnAccount = 'creating an account', appName, termsOfServiceTitle = 'Terms of Service', termsOfServicePath, privacyPolicyTitle = 'Privacy Policy', privacyPolicyPath, resetPasswordOobCode, setResetPasswordOobCode }) => {
+const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, background, boxBackground, padding, gap, animation, divider, title, tagline, switchTitle, switchPath, resetPasswordPath = '/reset-password', creatingAnAccount = 'creating an account', appName, termsOfServiceTitle = 'Terms of Service', termsOfServicePath = 'terms-of-service', privacyPolicyTitle = 'Privacy Policy', privacyPolicyPath = 'privacy-policy', resetPasswordOobCode, setResetPasswordOobCode }) => {
     /* set dynamic default values */
     !title && (title = mode === 0 ? Strings.SignUp : mode === 1 ? Strings.SignIn : Strings.ResetPassword);
     !switchTitle && (switchTitle = (mode === 0 || mode === 2) ? Strings.SignIn : Strings.SignUp);
@@ -197,19 +197,22 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
     const titleWithGoogle = title + ' with Google';
 
     useEffect(() => {
-        const authentication = document.getElementsByClassName('authentication')[0];
-        const wrapper = authentication.getElementsByTagName('div')[0];
-        const form = wrapper.getElementsByTagName('form')[0];
-        wrapper.style.height = form.getBoundingClientRect().height + 'px';
+        try {
+            const wrapper = document.getElementsByClassName('authentication-wrapper')[0];
+            const form = wrapper.getElementsByTagName('form')[0];
+            wrapper.style.height = form.getBoundingClientRect().height + 'px';
+        } catch (error) {
+
+        }
     }, [mode, danger, success, windowSize]);
 
-    return <div className='authentication' style={style}>
-        <div>
+    return <Modal open onClose={() => navigate('/')} style={style}>
+        <div className='authentication-wrapper'>
             <form onSubmit={handleSubmit}>
-                {logo && <Typography level='h1'>{logo}</Typography>}
+                {logo && <Typography level='body-md' sx={{ backgroundColor: 'var(--authentication-background)', margin: 'calc(-1 * var(--authentication-padding))', marginBottom: 0, padding: 'var(--authentication-gap)' }}>{logo}</Typography>}
                 <Typography>
                     <Typography level='h1'>{title}</Typography>
-                    {tagline && <>
+                    {mode === 0 && tagline && <>
                         <br />
                         <Typography level='body-lg'>{tagline}</Typography>
                     </>}
@@ -267,12 +270,12 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
                     <div className='authentication-divider'><Typography level='body-sm'>Or</Typography></div>
                     <Button variant='outlined' onClick={handleGoogleSignInOrSignUp}>{titleWithGoogle}</Button>
                     {mode === 0 && appName && termsOfServicePath && privacyPolicyPath && <Typography className='authentication-compliance' level='body-sm'>
-                        By {creatingAnAccount}, you agree to {appName}'s <Link onClick={() => navigate(termsOfServicePath)}>{termsOfServiceTitle}</Link> and <Link onClick={() => navigate(privacyPolicyPath)}>{privacyPolicyTitle}</Link>. You may receive communications and, if so, can change your preferences in your account settings.
+                        By {creatingAnAccount}, you agree to {appName}'s <Link onClick={() => navigate(termsOfServicePath)}>{termsOfServiceTitle}</Link> and <Typography sx={{ whiteSpace: 'pre' }}><Link onClick={() => navigate(privacyPolicyPath)}>{privacyPolicyTitle}</Link>.</Typography>
                     </Typography>}
                 </>}
             </form>
-        </div >
-    </div >
+        </div>
+    </Modal>
 };
 
 export default Authentication;

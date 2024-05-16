@@ -2,10 +2,9 @@ header {
     font-size: var(--joy-fontSize-xl);
     display: flex;
     align-items: center;
-    padding: 0 var(--padding);
+    padding: var(--padding-xs) var(--padding);
     background-color: var(--joy-palette-primary-softBg);
     z-index: 100;
-    min-height: calc(var(--padding) * 3);
 }
 
 header>.logo {
