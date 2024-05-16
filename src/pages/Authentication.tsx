@@ -187,6 +187,8 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
 
     const passwordType = isPasswordHidden ? 'password' : 'text';
 
+    const showPasswordError = mode === 0 || resetPasswordOobCode;
+
     const titleWithGoogle = title + ' with Google';
 
     useEffect(() => {
@@ -223,20 +225,21 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
                     onChange={e => setEmail(e.currentTarget.value)}
                     color={mode === 0 ? colorBasedOnValidity(isEmailValid) : 'neutral'}
                     value={email}
-                    autoFocus={mode === 1}
+                    autoFocus={mode > 0}
                 />}
                 {(mode < 2 || resetPasswordOobCode) && <>
                     <Input
                         type={passwordType}
                         id={passwordId}
                         name={passwordId}
-                        placeholder={(resetPasswordOobCode && 'New ') + 'Password'}
+                        placeholder={(resetPasswordOobCode ? 'New ' : '') + 'Password'}
                         onChange={e => setPassword(e.currentTarget.value)}
-                        color={mode === 0 ? colorBasedOnValidity(isPasswordValid) : 'neutral'}
-                        endDecorator={mode === 0 && errorTypographyBasedOnLength(isPasswordValid)}
+                        color={showPasswordError ? colorBasedOnValidity(isPasswordValid) : 'neutral'}
+                        endDecorator={showPasswordError && errorTypographyBasedOnLength(isPasswordValid)}
                         value={password}
-                        autoComplete={passwordId}
+                        autoComplete={danger ? 'off' : passwordId}
                         aria-describedby="authentication-password-constraints"
+                        autoFocus={resetPasswordOobCode}
                     />
                     <div id="authentication-password-constraints">Six or more characters.</div>
                     <Checkbox
