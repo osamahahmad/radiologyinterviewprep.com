@@ -1,7 +1,8 @@
 enum Strings {
     AppName = 'Radiology Interview Prep.',
     TermsOfService = 'Terms of Service',
-    PrivacyPolicy = 'Privacy Policy'
+    PrivacyPolicy = 'Privacy Policy',
+    SignIn = 'Sign In'
 }
 
 export default Strings;

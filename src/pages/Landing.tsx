@@ -1,12 +1,12 @@
 import React from "react";
-import { Button, ButtonGroup, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Dropdown, MenuButton, Menu, IconButton, MenuItem, Link, List } from '@mui/joy';
+import { Button, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Link, List } from '@mui/joy';
 import './Landing.css';
-import { MdMoreVert } from 'react-icons/md';
 import { useNavigate } from "react-router-dom";
 import Paths from "../resources/Paths.ts";
 import { auth } from "../resources/Firebase.js";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import Strings from "../resources/Strings.ts";
+import Header from "../components/Header.tsx";
 
 interface LandingProps {
 }
@@ -16,126 +16,12 @@ const Landing: React.FC<LandingProps> = () => {
 
     useDocumentTitle();
 
-    const Logo = require('../resources/radiology-interview-prep-logo.png');
+    const sections: string[] = React.useMemo(() => { return ['welcome', 'structure', 'questions', 'method', 'question-bank'] }, []);
 
-    const sections = React.useMemo(() => { return ['welcome', 'structure', 'questions', 'method', 'question-bank'] }, []);
-    const sectionTitles = { [sections[0]]: 'Welcome', [sections[1]]: 'Interview Structure', [sections[2]]: 'Example Questions', [sections[3]]: 'My Method', [sections[4]]: '£ Question Bank' }
+    const sectionTitles: { [x: string]: string } = { [sections[0]]: 'Welcome', [sections[1]]: 'Interview Structure', [sections[2]]: 'Example Questions', [sections[3]]: 'My Method', [sections[4]]: 'Question Bank' }
 
-    // state to track active section
-    const [activeSection, setActiveSection] = React.useState(sections[0]);
-
-    // set active section when clicked + scroll to bring it into view
-    const handleSectionClick = (section) => {
-        setActiveSection(section);
-        const element = document.getElementsByClassName(section)[0];
-        if (section === sections[0])
-            document.getElementsByClassName('content')[0].scrollTo({ top: 0, behavior: 'smooth' });
-        else if (element)
-            element.scrollIntoView({ behavior: 'smooth' });
-    };
-
-    // set active section on scroll
-    React.useEffect(() => {
-        const scrollable = document.getElementsByClassName('content')[0];
-
-        const handleScroll = () => {
-            const scrollPosition = scrollable.scrollTop;
-
-            for (let i = sections.length - 1; i >= 0; i--) {
-                const section = sections[i];
-                const elements: HTMLCollection = document.getElementsByClassName(section);
-                const element: HTMLElement = elements[0] as HTMLElement;
-
-                if (element && scrollPosition >= element.offsetTop - 100) {
-                    setActiveSection(section);
-                    break;
-                }
-            }
-        };
-
-        scrollable.addEventListener('scroll', handleScroll);
-        return () => {
-            scrollable.removeEventListener('scroll', handleScroll);
-        };
-    }, [sections]);
-
-    // Joy UI sx for active nav buttons & menu items
-    const activeMenuItemSx = {
-        backgroundColor: 'var(--joy-palette-neutral-outlinedActiveBg)'
-    };
-
-    const activeSuccessMenuItemSx = {
-        backgroundColor: 'var(--joy-palette-success-outlinedActiveBg)'
-    };
-
-    const activeButtonSx = {
-        backgroundColor: 'var(--joy-palette-neutral-outlinedHoverBg)',
-        '&:hover': {
-            backgroundColor: 'var(--joy-palette-neutral-outlinedHoverBg)'
-        }
-    };
-
-    const activeSuccessButtonSx = {
-        backgroundColor: 'var(--joy-palette-success-outlinedHoverBg)',
-        '&:hover': {
-            backgroundColor: 'var(--joy-palette-success-outlinedHoverBg)'
-        }
-    };
-
-    return <div className='App'>
-        <header>
-            <Typography
-                level='h1'
-                fontSize='inherit'
-                startDecorator={<img src={Logo} alt="Logo" style={{ width: '2em' }} />}
-                onClick={() => handleSectionClick(sections[0])}
-                sx={{ cursor: 'pointer' }}
-            >
-                Radiology Interview Prep.
-            </Typography>
-            <Dropdown>
-                <MenuButton
-                    slots={{ root: IconButton }}
-                    slotProps={{ root: { variant: 'outlined' } }}
-                >
-                    <MdMoreVert />
-                </MenuButton>
-                <Menu>
-                    {sections.map(section => {
-                        return <MenuItem
-                            color={section === 'question-bank' ? 'success' : 'neutral'}
-                            onClick={() => handleSectionClick(section)}
-                            sx={activeSection === section ? (section === 'question-bank' ? activeSuccessMenuItemSx : activeMenuItemSx) : {}}
-                        >
-                            {sectionTitles[section]}
-                        </MenuItem>
-                    })}
-                </Menu>
-            </Dropdown>
-            <nav>
-                <ButtonGroup variant='outlined' color='primary'>
-                    {sections.map(section => {
-                        return <Button
-                            color='neutral'
-                            onClick={() => handleSectionClick(section)}
-                            sx={[
-                                section === 'question-bank' ? {
-                                    '&:hover': {
-                                        backgroundColor: 'var(--joy-palette-success-outlinedHoverBg)'
-                                    },
-                                    '&:active': {
-                                        backgroundColor: 'var(--joy-palette-success-outlinedActiveBg)'
-                                    }
-                                } : {},
-                                activeSection === section ? (section === 'question-bank' ? activeSuccessButtonSx : activeButtonSx) : {}
-                            ]}
-                        >
-                            {section === 'question-bank' ? <Typography level='body-sm' color='success'>{sectionTitles[section]}</Typography> : sectionTitles[section]}
-                        </Button>
-                    })}
-                </ButtonGroup>
-            </nav>
-        </header>
+    return <>
+        <Header sections={sections} sectionTitles={sectionTitles} />
         <div className='content'>
             <div className={sections[0]}>
                 <Typography
@@ -537,7 +423,7 @@ const Landing: React.FC<LandingProps> = () => {
                 <Typography><Link onClick={() => navigate(Paths.TermsOfService)}>{Strings.TermsOfService}</Link> · <Link onClick={() => navigate(Paths.PrivacyPolicy)}>{Strings.PrivacyPolicy}</Link> · Cookies</Typography>
             </footer>
         </div>
-    </div>
+    </>
 }
 
 export default Landing;

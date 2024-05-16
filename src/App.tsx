@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CssVarsProvider, Snackbar, extendTheme } from '@mui/joy';
+import { CssVarsProvider, Snackbar } from '@mui/joy';
 import './App.css';
 import Paths from './resources/Paths.ts';
 import Landing from './pages/Landing.tsx';
@@ -12,8 +12,6 @@ import Strings from './resources/Strings.ts';
 import Stringify from './pages/Stringify.tsx';
 import AuthAction from './components/AuthAction.tsx';
 import { MdCheckCircle, MdError } from 'react-icons/md';
-
-const theme = extendTheme({});
 
 function App() {
   /* authentication */
@@ -51,49 +49,51 @@ function App() {
     }, 300);
   };
 
-  return <CssVarsProvider theme={theme}>
+  return <CssVarsProvider>
     <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<Landing />} />
-        <Route path={Paths.QuestionBank} element={
-          isLoggedIn
-            ? <QuestionBank emailAddressVerified={emailAddressVerified} />
-            : <Navigate to={Paths.SignIn} replace />
-        } />
-        <Route
-          path={Paths.SignUp}
-          element={
+      <div className='App'>
+        <Routes>
+          <Route path='/' element={<Landing />} />
+          <Route path={Paths.QuestionBank} element={
+            isLoggedIn
+              ? <QuestionBank emailAddressVerified={emailAddressVerified} setEmailAddressVerified={setEmailAddressVerified} setEmailAddressJustVerified={setEmailAddressJustVerified} setEmailAddressVerificationFailed={setEmailAddressVerificationFailed} />
+              : <Navigate to={Paths.SignIn} replace />
+          } />
+          <Route
+            path={Paths.SignUp}
+            element={
+              isLoggedIn
+                ? <Navigate to={Paths.QuestionBank} replace />
+                : <Authentication
+                  mode={0}
+                  tagline='Smash your interview.'
+                  appName={Strings.AppName} />
+            } />
+          <Route path={Paths.SignIn} element={
             isLoggedIn
               ? <Navigate to={Paths.QuestionBank} replace />
               : <Authentication
-                mode={0}
-                tagline='Smash your interview.'
-                appName={Strings.AppName} />
+                mode={1}
+              />
           } />
-        <Route path={Paths.SignIn} element={
-          isLoggedIn
-            ? <Navigate to={Paths.QuestionBank} replace />
-            : <Authentication
-              mode={1}
+          <Route path={Paths.ResetPassword} element={
+            <Authentication
+              mode={2}
+              resetPasswordOobCode={resetPasswordOobCode}
+              setResetPasswordOobCode={setResetPasswordOobCode}
             />
-        } />
-        <Route path={Paths.ResetPassword} element={
-          <Authentication
-            mode={2}
-            resetPasswordOobCode={resetPasswordOobCode}
-            setResetPasswordOobCode={setResetPasswordOobCode}
-          />
-        } />
-        <Route path='/stringify' element={<Stringify />} />
-        <Route path='/__/auth/action' element={
-          <AuthAction
-            setEmailAddressVerified={setEmailAddressVerified}
-            setEmailAddressJustVerified={setEmailAddressJustVerified}
-            setEmailAddressVerificationFailed={setEmailAddressVerificationFailed}
-            setResetPasswordOobCode={setResetPasswordOobCode}
-          />
-        } />
-      </Routes>
+          } />
+          <Route path='/stringify' element={<Stringify />} />
+          <Route path='/__/auth/action' element={
+            <AuthAction
+              setEmailAddressVerified={setEmailAddressVerified}
+              setEmailAddressJustVerified={setEmailAddressJustVerified}
+              setEmailAddressVerificationFailed={setEmailAddressVerificationFailed}
+              setResetPasswordOobCode={setResetPasswordOobCode}
+            />
+          } />
+        </Routes>
+      </div>
     </BrowserRouter>
     <Snackbar
       color={snackbarColor}

@@ -1,4 +1,11 @@
-/* root */
-body>div {
-    --transition: .3s ease;
+.App {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100svh;
+  --transition: .3s ease;
+  --padding: var(--joy-fontSize-xl);
+  --padding-sm: var(--joy-fontSize-md);
+  --padding-xs: var(--joy-fontSize-xs);
 }

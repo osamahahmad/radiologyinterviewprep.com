@@ -133,13 +133,16 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
         setIsLoading(true);
 
         if (mode === 0)
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-                auth.currentUser && await updateProfile(auth.currentUser, { displayName: name });
-                auth.currentUser && !auth.currentUser.emailVerified && await sendEmailVerification(auth.currentUser);
-            } catch (error) {
-                handleFirebaseError(error);
-            }
+            if (isNameValid !== 1)
+                setDanger('Enter a' + (name.length > 0 ? ' valid' : '') + ' name.');
+            else
+                try {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    auth.currentUser && await updateProfile(auth.currentUser, { displayName: name });
+                    auth.currentUser && !auth.currentUser.emailVerified && await sendEmailVerification(auth.currentUser);
+                } catch (error) {
+                    handleFirebaseError(error);
+                }
         else if (mode === 1)
             try {
                 await signInWithEmailAndPassword(auth, email, password);
@@ -239,9 +242,9 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
                         color={showPasswordError ? colorBasedOnValidity(isPasswordValid) : 'neutral'}
                         endDecorator={showPasswordError && errorTypographyBasedOnLength(isPasswordValid)}
                         value={password}
+                        autoFocus={resetPasswordOobCode as any}
                         autoComplete={danger ? 'off' : passwordId}
                         aria-describedby="authentication-password-constraints"
-                        autoFocus={resetPasswordOobCode}
                     />
                     <div id="authentication-password-constraints">Six or more characters.</div>
                     <Checkbox

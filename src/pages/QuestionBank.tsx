@@ -1,12 +1,16 @@
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import React, { MouseEventHandler, ReactNode, useCallback, useEffect, useState } from "react";
 import "./QuestionBank.css";
 import { DOMParser } from "@xmldom/xmldom";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-import { Alert, Button, CircularProgress, Link, Typography } from "@mui/joy";
+import { Alert, Button, CircularProgress, Dropdown, IconButton, Link, Menu, MenuItem, Tooltip, Typography } from "@mui/joy";
 import { sendEmailVerification, signOut } from "firebase/auth";
 import { auth } from "../resources/Firebase.js";
 import Paths from '../resources/Paths.ts';
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header.tsx";
+import MenuButton from "@mui/joy/MenuButton/MenuButton";
+import { MdMoreVert } from "react-icons/md";
+import { SxProps } from "@mui/joy/styles/types/theme";
 
 const parseQuestionBank = async (questionBank: string) => {
     if (questionBank.charCodeAt(0) === 65279)
@@ -74,9 +78,12 @@ const parseQuestionBank = async (questionBank: string) => {
 
 interface QuestionBankProps {
     emailAddressVerified: boolean
+    setEmailAddressVerified: Function
+    setEmailAddressJustVerified: Function
+    setEmailAddressVerificationFailed: Function
 }
 
-const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified }) => {
+const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, setEmailAddressVerified, setEmailAddressJustVerified, setEmailAddressVerificationFailed }) => {
     /* hooks */
     useDocumentTitle('My Answers');
     const navigate = useNavigate();
@@ -90,7 +97,13 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified }) => 
     const sendVerificationEmail = async () => {
         const user = auth.currentUser;
 
-        if (user && resendCount < 3) {
+        await user?.reload();
+
+        if (user?.emailVerified) {
+            setEmailAddressVerified(true);
+            setEmailAddressJustVerified(true);
+            setEmailAddressVerificationFailed(false);
+        } else if (user && resendCount < 3) {
             setIsSendingVerificationEmail(true);
 
             try {
@@ -177,12 +190,49 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified }) => 
     const hasSubscriptionExpired = subscriptionExpiryDate && (subscriptionExpiryDate < new Date(Date.now()));
     const willSubscriptionExpireThisWeek = !subscriptionCancelAtPeriodEnd && subscriptionExpiryDate && (subscriptionExpiryDate < new Date(Date.now() + (7 * 86400000)));
 
-    return (
-        <div>
-            <Button onClick={() => {
-                signOut(auth);
-                navigate('/');
-            }}>Sign Out</Button>
+    /* header children */
+    const headerChildren: [string, 'neutral' | 'danger' | 'primary', MouseEventHandler, SxProps | undefined, string | null | undefined][] = [
+        [auth.currentUser?.displayName || 'No Name', 'neutral', () => { }, { background: 'var(--joy-palette-neutral-outlinedBg) !important', cursor: 'auto !important' }, auth.currentUser?.email],
+        ['Sign Out', 'primary', () => { signOut(auth); navigate('/'); }, undefined, undefined],
+        ['Delete Account', 'danger', () => { }, undefined, undefined],
+    ];
+
+    const headerChildrenNodes = <>
+        <Dropdown>
+            <MenuButton
+                slots={{ root: IconButton }}
+                slotProps={{ root: { variant: 'outlined' } }}>
+                <MdMoreVert />
+            </MenuButton>
+            <Menu>
+                {headerChildren.map(headerChild => <MenuItem
+                    color={headerChild[1]}
+                    onClick={headerChild[2]}
+                    sx={headerChild[3]}>
+                    {headerChild[0]}
+                </MenuItem>)}
+            </Menu>
+        </Dropdown>
+        <nav>
+            {headerChildren.map(headerChild => {
+                const tooltipText = headerChild[4];
+
+                const button = <Button
+                    variant={'outlined'}
+                    color={headerChild[1]}
+                    onClick={headerChild[2]}
+                    sx={headerChild[3]}>
+                    {headerChild[0]}
+                </Button>;
+
+                return tooltipText ? <Tooltip arrow title={tooltipText} variant={'outlined'}>{button}</Tooltip> : button;
+            })}
+        </nav>
+    </>;
+
+    return <>
+        <Header children={headerChildrenNodes} />
+        <div className="question-bank">
             {!emailAddressVerified && (
                 <Alert color='warning'>
                     <Typography level="body-sm" sx={{ color: "inherit" }}                    >
@@ -226,7 +276,7 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified }) => 
                 : <CircularProgress />
             }
         </div>
-    );
+    </>
 };
 
 export default QuestionBank;
