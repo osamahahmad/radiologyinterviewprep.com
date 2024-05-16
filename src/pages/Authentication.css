@@ -24,6 +24,7 @@
     transition: height var(--authentication-animation);
     background-color: var(--authentication-box-background);
     min-height: 100%;
+    outline: none !important;
 }
 
 @media screen and (min-width: 481px) {
@@ -32,6 +33,7 @@
         border-radius: var(--joy-radius-md);
         box-shadow: var(--joy-shadow-md);
         overflow: hidden;
+        min-height: auto;
         max-height: 100%;
         overflow: auto;
     }

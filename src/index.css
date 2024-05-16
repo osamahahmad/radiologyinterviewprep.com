@@ -3,5 +3,25 @@ body,
 #root {
   margin: 0;
   padding: 0;
-  --joy-palette-primary-outlinedHoverBg: var(--joy-palette-primary-100);
+}
+
+body {
+  --transition: .3s ease;
+  --padding: var(--joy-fontSize-xl);
+  --padding-sm: var(--joy-fontSize-md);
+  --padding-xs: var(--joy-fontSize-xs);
+}
+
+.MuiModal-backdrop {
+    animation: fade-in var(--transition);
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }

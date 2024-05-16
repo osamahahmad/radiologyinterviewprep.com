@@ -198,11 +198,11 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
 
     useEffect(() => {
         try {
-            const wrapper = document.getElementsByClassName('authentication-wrapper')[0];
+            const wrapper: any = document.getElementsByClassName('authentication-wrapper')[0];
             const form = wrapper.getElementsByTagName('form')[0];
             wrapper.style.height = form.getBoundingClientRect().height + 'px';
         } catch (error) {
-
+            // doesn't matter
         }
     }, [mode, danger, success, windowSize]);
 
