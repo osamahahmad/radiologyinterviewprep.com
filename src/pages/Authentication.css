@@ -46,42 +46,8 @@
     text-align: center;
 }
 
-.authentication-submit-wrapper {
-    overflow: hidden;
-    --input-height: 36px;
-    height: var(--input-height);
-    transition: height var(--authentication-animation);
-    position: relative;
-}
-
-.authentication-submit-wrapper>:first-child {
-    z-index: 1;
-}
-
-.authentication-submit-wrapper>*:nth-child(2) {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    user-select: none;
-    pointer-events: none;
-}
-
-.authentication-submit-wrapper.error>*:nth-child(2) {
-    user-select: auto;
-    pointer-events: auto;
-}
-
 #authentication-password-constraints {
     display: none;
-}
-
-.authentication-submit-wrapper {
-    --alert-height: 45px;
-}
-
-.authentication-submit-wrapper.error {
-    height: calc(var(--input-height) + var(--alert-height) + var(--authentication-gap));
 }
 
 .authentication-divider {

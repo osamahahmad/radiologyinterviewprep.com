@@ -3,7 +3,7 @@ import "./Authentication.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import { Alert, Button, Checkbox, Input, Link, Typography } from '@mui/joy';
 import { useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import { confirmPasswordReset, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
 import { auth, googleProvider } from "../resources/Firebase.js";
 import useWindowSize from "../hooks/useWindowSize.ts";
 import { FirebaseError } from "firebase/app";
@@ -11,6 +11,7 @@ import { FirebaseError } from "firebase/app";
 const enum Strings {
     SignUp = 'Create Account',
     SignIn = 'Sign In',
+    ResetPassword = 'Reset Password',
     TooLong = 'Too Long'
 }
 
@@ -27,7 +28,7 @@ const errorTypographyBasedOnLength = (validity: number) => {
 }
 
 interface AuthenticationProps {
-    mode?: 0 | 1
+    mode: 0 | 1 | 2
     logo?: ReactNode
     background?: string
     boxBackground?: string
@@ -39,19 +40,22 @@ interface AuthenticationProps {
     tagline?: string
     switchTitle?: string
     switchPath?: string
+    resetPasswordPath?: string
     creatingAnAccount?: string
     appName?: string
     termsOfServiceTitle?: string
     termsOfServicePath?: string
     privacyPolicyTitle?: string
     privacyPolicyPath?: string
+    resetPasswordOobCode?: string
+    setResetPasswordOobCode?: Function
 }
 
-const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background, boxBackground, padding, gap, animation, divider, title, tagline, switchTitle, switchPath, creatingAnAccount = 'creating an account', appName, termsOfServiceTitle = 'Terms of Service', termsOfServicePath, privacyPolicyTitle = 'Privacy Policy', privacyPolicyPath }) => {
+const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, background, boxBackground, padding, gap, animation, divider, title, tagline, switchTitle, switchPath, resetPasswordPath = '/reset-password', creatingAnAccount = 'creating an account', appName, termsOfServiceTitle = 'Terms of Service', termsOfServicePath, privacyPolicyTitle = 'Privacy Policy', privacyPolicyPath, resetPasswordOobCode, setResetPasswordOobCode }) => {
     /* set dynamic default values */
-    !title && (title = mode === 0 ? Strings.SignUp : Strings.SignIn);
-    !switchTitle && (switchTitle = mode === 0 ? Strings.SignIn : Strings.SignUp);
-    !switchPath && (switchPath = mode === 0 ? '/sign-in' : '/create-account');
+    !title && (title = mode === 0 ? Strings.SignUp : mode === 1 ? Strings.SignIn : Strings.ResetPassword);
+    !switchTitle && (switchTitle = (mode === 0 || mode === 2) ? Strings.SignIn : Strings.SignUp);
+    !switchPath && (switchPath = (mode === 0 || mode === 2) ? '/sign-in' : '/create-account');
 
     /* hooks */
     useDocumentTitle(title);
@@ -90,24 +94,36 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
         setIsPasswordValid(isValidBasedOnLength(password, 6, 4096));
     }, [password, setIsPasswordValid]);
 
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>();
-
     /* functions */
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const [danger, setDanger] = useState<string | null>();
+
+    const [success, setSuccess] = useState<string | null>();
+
+    useEffect(() => {
+        if (success)
+            setDanger(null);
+    }, [success, setDanger]);
+
     const handleFirebaseError = useCallback((error: FirebaseError) => {
         if (error.code === 'auth/missing-email')
-            setError('Missing email address.');
+            setDanger('Missing email address.');
         else if (error.code === 'auth/invalid-email')
-            setError('Invalid email address.');
+            setDanger('Invalid email address.');
         else if (error.code === 'auth/missing-password')
-            setError('Missing password.');
+            setDanger('Missing password.');
         else if (error.code === 'auth/weak-password')
-            setError('Weak password.');
+            setDanger('Weak password.');
         else if (error.code === 'auth/invalid-credential')
-            setError('Invalid credentials.');
+            setDanger('Invalid credentials.');
+        else if (error.code === "auth/user-not-found")
+            setSuccess('Password reset email sent.');
+        else if (error.code === 'auth/invalid-action-code')
+            setDanger('Password reset failed. Try again.')
         else
-            setError(error.code);
-    }, [setError]);
+            setDanger(error.code);
+    }, [setDanger, setSuccess]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -122,12 +138,34 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
             } catch (error) {
                 handleFirebaseError(error);
             }
-        else
+        else if (mode === 1)
             try {
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
                 handleFirebaseError(error);
             }
+        else if (mode === 2)
+            if (resetPasswordOobCode) {
+                const postReset = () => {
+                    setResetPasswordOobCode && setResetPasswordOobCode(null);
+                }
+
+                try {
+                    await confirmPasswordReset(auth, resetPasswordOobCode, password);
+                    setSuccess('Password reset.');
+                    postReset();
+                    navigate(switchPath);
+                } catch (error) {
+                    handleFirebaseError(error);
+                    postReset();
+                }
+            } else
+                try {
+                    await sendPasswordResetEmail(auth, email);
+                    setSuccess('Password reset email sent.');
+                } catch (error) {
+                    handleFirebaseError(error);
+                }
 
         setIsLoading(false);
     };
@@ -138,26 +176,25 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
         } catch (error) {
             if (error.code !== 'auth/popup-closed-by-user'
                 && error.code !== 'auth/cancelled-popup-request')
-                setError(error.code);
+                setDanger(error.code);
         }
     };
 
     /* other */
     const [isPasswordHidden, setIsPasswordHidden] = useState<boolean>(true);
 
-    const passwordId = mode === 0 ? 'new-password' : 'current-password';
+    const passwordId = (mode === 0 || resetPasswordOobCode) ? 'new-password' : 'current-password';
 
     const passwordType = isPasswordHidden ? 'password' : 'text';
 
     const titleWithGoogle = title + ' with Google';
 
     useEffect(() => {
-        console.log('hello')
         const authentication = document.getElementsByClassName('authentication')[0];
         const wrapper = authentication.getElementsByTagName('div')[0];
         const form = wrapper.getElementsByTagName('form')[0];
         wrapper.style.height = form.getBoundingClientRect().height + 'px';
-    }, [mode, windowSize]);
+    }, [mode, danger, success, windowSize]);
 
     return <div className='authentication' style={style}>
         <div>
@@ -179,7 +216,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
                     value={name}
                     autoFocus
                 />}
-                <Input
+                {!resetPasswordOobCode && <Input
                     type="email"
                     name="email"
                     placeholder="Email Address"
@@ -187,42 +224,44 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode, logo, background,
                     color={mode === 0 ? colorBasedOnValidity(isEmailValid) : 'neutral'}
                     value={email}
                     autoFocus={mode === 1}
-                />
-                <Input
-                    type={passwordType}
-                    id={passwordId}
-                    name={passwordId}
-                    placeholder="Password"
-                    onChange={e => setPassword(e.currentTarget.value)}
-                    color={mode === 0 ? colorBasedOnValidity(isPasswordValid) : 'neutral'}
-                    endDecorator={mode === 0 && errorTypographyBasedOnLength(isPasswordValid)}
-                    value={password}
-                    autoComplete={passwordId}
-                    aria-describedby="authentication-password-constraints"
-                />
-                <div id="authentication-password-constraints">Six or more characters.</div>
-                <Checkbox
-                    label={'Show Password'}
-                    defaultChecked={!isPasswordHidden}
-                    onChange={() => setIsPasswordHidden(!isPasswordHidden)}
-                    aria-label="Show password as plain text. Warning: this will display your password on the screen.">
-                </Checkbox>
-                {mode === 1 && <Typography><Link onClick={() => { }}>Forgot Password?</Link></Typography>}
-                <div className={'authentication-submit-wrapper' + (error ? ' error' : '')}>
-                    <Button
-                        type="submit"
-                        fullWidth
-                        loading={isLoading}>
-                        {title}
-                    </Button>
-                    {error && <Alert color='danger'>{error}</Alert>}
-                </div>
-                <Typography>{mode === 0 ? 'Have an account' : 'New to us'}? <Link onClick={() => { setError(null); navigate(switchPath); }}>{switchTitle}</Link></Typography>
-                <div className='authentication-divider'><Typography level='body-sm'>Or</Typography></div>
-                <Button variant='outlined' onClick={handleGoogleSignInOrSignUp}>{titleWithGoogle}</Button>
-                {mode === 0 && appName && termsOfServicePath && privacyPolicyPath && <Typography className='authentication-compliance' level='body-sm'>
-                    By {creatingAnAccount}, you agree to {appName}'s <Link onClick={() => navigate(termsOfServicePath)}>{termsOfServiceTitle}</Link> and <Link onClick={() => navigate(privacyPolicyPath)}>{privacyPolicyTitle}</Link>. You may receive communications and, if so, can change your preferences in your account settings.
-                </Typography>}
+                />}
+                {(mode < 2 || resetPasswordOobCode) && <>
+                    <Input
+                        type={passwordType}
+                        id={passwordId}
+                        name={passwordId}
+                        placeholder={(resetPasswordOobCode && 'New ') + 'Password'}
+                        onChange={e => setPassword(e.currentTarget.value)}
+                        color={mode === 0 ? colorBasedOnValidity(isPasswordValid) : 'neutral'}
+                        endDecorator={mode === 0 && errorTypographyBasedOnLength(isPasswordValid)}
+                        value={password}
+                        autoComplete={passwordId}
+                        aria-describedby="authentication-password-constraints"
+                    />
+                    <div id="authentication-password-constraints">Six or more characters.</div>
+                    <Checkbox
+                        label={'Show Password'}
+                        defaultChecked={!isPasswordHidden}
+                        onChange={() => setIsPasswordHidden(!isPasswordHidden)}
+                        aria-label="Show password as plain text. Warning: this will display your password on the screen.">
+                    </Checkbox>
+                </>}
+                {mode === 1 && <Typography><Link onClick={() => { setDanger(null); setSuccess(null); navigate(resetPasswordPath); }}>Forgot Password?</Link></Typography>}
+                <Button
+                    type="submit"
+                    fullWidth
+                    loading={isLoading}>
+                    {title}
+                </Button>
+                {(danger || success) && <Alert color={danger ? 'danger' : 'success'}>{danger || success}</Alert>}
+                {!resetPasswordOobCode && <Typography>{mode === 0 ? 'Have an account' : (mode === 1 ? 'New to us' : 'Remembered it')}? <Link onClick={() => { setDanger(null); setSuccess(null); navigate(switchPath); }}>{switchTitle}</Link></Typography>}
+                {mode < 2 && <>
+                    <div className='authentication-divider'><Typography level='body-sm'>Or</Typography></div>
+                    <Button variant='outlined' onClick={handleGoogleSignInOrSignUp}>{titleWithGoogle}</Button>
+                    {mode === 0 && appName && termsOfServicePath && privacyPolicyPath && <Typography className='authentication-compliance' level='body-sm'>
+                        By {creatingAnAccount}, you agree to {appName}'s <Link onClick={() => navigate(termsOfServicePath)}>{termsOfServiceTitle}</Link> and <Link onClick={() => navigate(privacyPolicyPath)}>{privacyPolicyTitle}</Link>. You may receive communications and, if so, can change your preferences in your account settings.
+                    </Typography>}
+                </>}
             </form>
         </div >
     </div >
