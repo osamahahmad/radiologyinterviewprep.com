@@ -108,19 +108,19 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
 
     const handleFirebaseError = useCallback((error: FirebaseError) => {
         if (error.code === 'auth/missing-email')
-            setDanger('Missing email address.');
+            setDanger('Enter an email address.');
         else if (error.code === 'auth/invalid-email')
-            setDanger('Invalid email address.');
+            setDanger('Enter a valid email address.');
         else if (error.code === 'auth/missing-password')
-            setDanger('Missing password.');
+            setDanger('Enter a password.');
         else if (error.code === 'auth/weak-password')
-            setDanger('Weak password.');
+            setDanger('Enter a longer password.');
         else if (error.code === 'auth/invalid-credential')
-            setDanger('Invalid credentials.');
+            setDanger('Wrong password. Try again.');
         else if (error.code === "auth/user-not-found")
             setSuccess('Password reset email sent.');
         else if (error.code === 'auth/invalid-action-code')
-            setDanger('Password reset failed.')
+            setDanger('Reset failed. Try again.')
         else
             setDanger(error.code);
     }, [setDanger, setSuccess]);
