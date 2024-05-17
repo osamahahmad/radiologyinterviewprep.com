@@ -2,7 +2,7 @@ import React, { MouseEventHandler, ReactNode, useCallback, useEffect, useState }
 import "./QuestionBank.css";
 import { DOMParser } from "@xmldom/xmldom";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-import { Alert, Button, CircularProgress, Dropdown, IconButton, Link, Menu, MenuItem, Tooltip, Typography } from "@mui/joy";
+import { Alert, Button, Checkbox, CircularProgress, DialogActions, DialogContent, DialogTitle, Dropdown, IconButton, Link, Menu, MenuItem, Modal, ModalDialog, Tooltip, Typography } from "@mui/joy";
 import { sendEmailVerification, signOut } from "firebase/auth";
 import { auth } from "../resources/Firebase.js";
 import Paths from '../resources/Paths.ts';
@@ -81,9 +81,11 @@ interface QuestionBankProps {
     setEmailAddressVerified: Function
     setEmailAddressJustVerified: Function
     setEmailAddressVerificationFailed: Function
+    setAccountJustDeleted: Function
+    setAccountDeletionFailed: Function
 }
 
-const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, setEmailAddressVerified, setEmailAddressJustVerified, setEmailAddressVerificationFailed }) => {
+const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, setEmailAddressVerified, setEmailAddressJustVerified, setEmailAddressVerificationFailed, setAccountJustDeleted, setAccountDeletionFailed }) => {
     /* hooks */
     useDocumentTitle('My Answers');
     const navigate = useNavigate();
@@ -194,7 +196,7 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, setEm
     const headerChildren: [string, 'neutral' | 'danger' | 'primary', MouseEventHandler, SxProps | undefined, string | null | undefined][] = [
         [auth.currentUser?.displayName || 'No Name', 'neutral', () => { }, { background: 'var(--joy-palette-neutral-outlinedBg) !important', cursor: 'auto !important' }, auth.currentUser?.email],
         ['Sign Out', 'primary', () => { signOut(auth); navigate('/'); }, undefined, undefined],
-        ['Delete Account', 'danger', () => { }, undefined, undefined],
+        ['Delete Account', 'danger', () => { setDeleteAccountModalOpen(true) }, undefined, undefined],
     ];
 
     const headerChildrenNodes = <>
@@ -205,12 +207,18 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, setEm
                 <MdMoreVert />
             </MenuButton>
             <Menu>
-                {headerChildren.map(headerChild => <MenuItem
-                    color={headerChild[1]}
-                    onClick={headerChild[2]}
-                    sx={headerChild[3]}>
-                    {headerChild[0]}
-                </MenuItem>)}
+                {headerChildren.map(headerChild => {
+                    const tooltipText = headerChild[4];
+
+                    const menuItem = <MenuItem
+                        color={headerChild[1]}
+                        onClick={headerChild[2]}
+                        sx={headerChild[3]}>
+                        {headerChild[0]}
+                    </MenuItem>;
+
+                    return tooltipText ? <MenuItem disabled><Typography><Typography level='title-lg'>{headerChild[0]}</Typography><br /><Typography level='body-md'>{tooltipText}</Typography></Typography></MenuItem> : menuItem
+                })}
             </Menu>
         </Dropdown>
         <nav>
@@ -229,6 +237,27 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, setEm
             })}
         </nav>
     </>;
+
+    /* Delete Account */
+    const [deleteAccountModalOpen, setDeleteAccountModalOpen] = useState(false);
+    const [isDeleteAccountBoxTicked, setIsDeleteAccountBoxTicked] = useState(false);
+    const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+
+    const handleDeleteAccount = async () => {
+        setIsDeletingAccount(true);
+
+        if (isDeleteAccountBoxTicked)
+            try {
+                await auth.currentUser?.delete();
+                await auth.signOut();
+                navigate('/');
+                setAccountJustDeleted(true);
+            } catch (error) {
+                setAccountDeletionFailed(true);
+            }
+
+        setIsDeletingAccount(false);
+    }
 
     return <>
         <Header children={headerChildrenNodes} />
@@ -275,6 +304,19 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, setEm
                 </Button>
                 : <CircularProgress />
             }
+            <Modal open={deleteAccountModalOpen} onClose={() => setDeleteAccountModalOpen(false)}>
+                <ModalDialog color='danger' variant="outlined">
+                    <DialogTitle>Delete Account?</DialogTitle>
+                    <DialogContent>
+                        This action is irreversible.
+                    </DialogContent>
+                    <Checkbox color='danger' sx={{ color: 'inherit' }} label='I understand that deleting my account will not cancel any current subscriptions.' onChange={() => setIsDeleteAccountBoxTicked(!isDeleteAccountBoxTicked)} />
+                    <DialogActions>
+                        <Button color='danger' disabled={!isDeleteAccountBoxTicked} loading={isDeletingAccount} onClick={() => handleDeleteAccount()}>Delete Account</Button>
+                        <Button color='neutral' variant='outlined' onClick={() => setDeleteAccountModalOpen(false)}>Close</Button>
+                    </DialogActions>
+                </ModalDialog>
+            </Modal>
         </div>
     </>
 };

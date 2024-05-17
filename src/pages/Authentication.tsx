@@ -51,7 +51,29 @@ interface AuthenticationProps {
     setResetPasswordOobCode?: Function
 }
 
-const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, background, boxBackground, padding, gap, animation, divider, title, tagline, switchTitle, switchPath, resetPasswordPath = '/reset-password', creatingAnAccount = 'creating an account', appName, termsOfServiceTitle = 'Terms of Service', termsOfServicePath = 'terms-of-service', privacyPolicyTitle = 'Privacy Policy', privacyPolicyPath = 'privacy-policy', resetPasswordOobCode, setResetPasswordOobCode }) => {
+const Authentication: React.FC<AuthenticationProps> = ({
+    mode = 0,
+    logo,
+    background,
+    boxBackground,
+    padding,
+    gap,
+    animation,
+    divider,
+    title,
+    tagline,
+    switchTitle,
+    switchPath,
+    resetPasswordPath = '/reset-password',
+    creatingAnAccount = 'creating an account',
+    appName,
+    termsOfServiceTitle = 'Terms of Service',
+    termsOfServicePath = 'terms-of-service',
+    privacyPolicyTitle = 'Privacy Policy',
+    privacyPolicyPath = 'privacy-policy',
+    resetPasswordOobCode,
+    setResetPasswordOobCode
+}) => {
     /* set dynamic default values */
     !title && (title = mode === 0 ? Strings.SignUp : mode === 1 ? Strings.SignIn : Strings.ResetPassword);
     !switchTitle && (switchTitle = (mode === 0 || mode === 2) ? Strings.SignIn : Strings.SignUp);
@@ -139,7 +161,8 @@ const Authentication: React.FC<AuthenticationProps> = ({ mode = 0, logo, backgro
                 try {
                     await createUserWithEmailAndPassword(auth, email, password);
                     auth.currentUser && await updateProfile(auth.currentUser, { displayName: name });
-                    auth.currentUser && !auth.currentUser.emailVerified && await sendEmailVerification(auth.currentUser);
+                    auth.currentUser && await sendEmailVerification(auth.currentUser);
+                    auth.currentUser && await auth.currentUser.reload();
                 } catch (error) {
                     handleFirebaseError(error);
                 }

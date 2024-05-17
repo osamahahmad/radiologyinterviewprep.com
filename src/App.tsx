@@ -17,6 +17,8 @@ function App() {
   const [emailAddressVerified, setEmailAddressVerified] = useState<boolean>(false);
   const [emailAddressJustVerified, setEmailAddressJustVerified] = useState<boolean>(false);
   const [emailAddressVerificationFailed, setEmailAddressVerificationFailed] = useState<boolean>(false);
+  const [accountJustDeleted, setAccountJustDeleted] = useState<boolean>(false);
+  const [accountDeletionFailed, setAccountDeletionFailed] = useState<boolean>(false);
 
   const [resetPasswordOobCode, setResetPasswordOobCode] = useState<string>();
 
@@ -35,15 +37,28 @@ function App() {
   /* snackbar */
   const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(true);
 
-  const snackbarColor = emailAddressJustVerified ? 'success' : 'danger';
+  const snackbarColor = (emailAddressJustVerified || accountJustDeleted) ? 'success' : 'danger';
+
+  const snackbarStartDecorator = (emailAddressJustVerified || accountJustDeleted) ? <MdCheckCircle /> : <MdError />;
+
+  const snackbarText = emailAddressJustVerified
+    ? 'Email address verified.'
+    : emailAddressVerificationFailed
+      ? 'Couldn\'t verify email address.'
+      : accountJustDeleted
+        ? 'Account deleted.'
+        : 'Couldn\'t delete account.';
 
   const closeSnackbar = () => {
     setIsSnackbarOpen(false);
 
-    // timeout ensures snackbar doesn't flash to danger if in success mode
+    // timeout ensures snackbar doesn't flash to danger if success
     setTimeout(() => {
-      emailAddressJustVerified && setEmailAddressJustVerified(false);
-      emailAddressVerificationFailed && setEmailAddressVerificationFailed(false);
+      setEmailAddressJustVerified(false);
+      setEmailAddressVerificationFailed(false);
+      setAccountJustDeleted(false);
+      setAccountDeletionFailed(false);
+      setIsSnackbarOpen(true);
     }, 300);
   };
 
@@ -54,7 +69,13 @@ function App() {
           <Route path='/' element={<Landing />} />
           <Route path={Paths.QuestionBank} element={
             isLoggedIn
-              ? <QuestionBank emailAddressVerified={emailAddressVerified} setEmailAddressVerified={setEmailAddressVerified} setEmailAddressJustVerified={setEmailAddressJustVerified} setEmailAddressVerificationFailed={setEmailAddressVerificationFailed} />
+              ? <QuestionBank
+                emailAddressVerified={emailAddressVerified}
+                setEmailAddressVerified={setEmailAddressVerified}
+                setEmailAddressJustVerified={setEmailAddressJustVerified}
+                setEmailAddressVerificationFailed={setEmailAddressVerificationFailed}
+                setAccountJustDeleted={setAccountJustDeleted}
+                setAccountDeletionFailed={setAccountDeletionFailed} />
               : <Navigate to={Paths.SignIn} replace />
           } />
           <Route
@@ -90,12 +111,12 @@ function App() {
     </BrowserRouter>
     <Snackbar
       color={snackbarColor}
-      open={isSnackbarOpen && (emailAddressJustVerified || emailAddressVerificationFailed)}
+      open={isSnackbarOpen && (emailAddressJustVerified || emailAddressVerificationFailed || accountJustDeleted || accountDeletionFailed)}
       onClose={closeSnackbar}
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      startDecorator={emailAddressJustVerified ? <MdCheckCircle /> : <MdError />}
+      startDecorator={snackbarStartDecorator}
       autoHideDuration={10000}>
-      {emailAddressJustVerified ? 'Email address verified.' : 'Couldn\'t verify email address.'}
+      {snackbarText}
     </Snackbar>
   </CssVarsProvider>
 }

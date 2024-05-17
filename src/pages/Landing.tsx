@@ -27,7 +27,7 @@ const Landing: React.FC<LandingProps> = ({ authentication, resetPasswordOobCode,
 
     return <>
         <Header sections={sections} sectionTitles={sectionTitles} />
-        <div className='content'>
+        <div className='landing'>
             <div className={sections[0]}>
                 <Typography
                     level='h1'>
@@ -430,7 +430,7 @@ const Landing: React.FC<LandingProps> = ({ authentication, resetPasswordOobCode,
             {authentication !== undefined &&
                 <Authentication
                     mode={authentication}
-                    logo={<Logo />}
+                    logo={<Logo onClick={() => navigate('/')} />}
                     tagline='Smash your interview.'
                     appName={Strings.AppName}
                     resetPasswordOobCode={resetPasswordOobCode}

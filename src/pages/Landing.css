@@ -1,94 +1,98 @@
-.content {
-    padding: 1em;
+.landing {
+    padding: var(--padding-sm);
     display: flex;
     flex-direction: column;
-    gap: 2em;
+    gap: var(--padding);
     overflow-y: auto;
     position: relative;
 }
 
-.content>.welcome {
+.landing>.welcome {
     display: flex;
     flex-direction: column;
-    gap: 1em;
-    padding: .5em;
-    padding-bottom: 0;
-}
-
-.content>.welcome>h1,
-.content>.welcome>p {
-    flex: 1;
-}
-
-.content>.welcome>h1 {
-    font-size: 2em;
+    gap: var(--padding-sm);
 }
 
 @media screen and (min-width: 868px) {
-    .content>.welcome {
+    .landing>.welcome {
         flex-direction: row;
-        gap: 2em;
+        gap: var(--joy-fontSize-xl4);
         align-items: center;
-        padding: 2em;
+        padding: var(--padding);
     }
+}
 
-    .content>.welcome>h1 {
-        font-size: 3em;
+.landing>.welcome>h1,
+.landing>.welcome>p {
+    flex: 1;
+}
+
+.landing>.welcome>h1 {
+    font-size: var(--joy-fontSize-xl3);
+}
+
+@media screen and (min-width: 868px) {
+    .landing>.welcome>h1 {
+        font-size: var(--joy-fontSize-xl4);
         text-align: right;
     }
 }
 
 @media screen and (min-width: 1024px) {
-    .content {
-        padding: 2em;
+    .landing {
+        padding: var(--padding);
     }
 }
 
-.content p>ul>li {
+/* main points */
+.landing>.structure>p>ul,
+.landing>.method>p>ul {
+    gap: var(--padding);
+}
+
+.landing p>ul>li {
     font-weight: bold;
 }
 
-.content p>ul>li:first-of-type {
+.landing p>ul>li:first-of-type {
     font-weight: normal;
 }
 
-.content p>ul>li>ul {
+/* bullet points */
+.landing p>ul>li>ul {
     font-weight: normal;
     list-style-type: disc;
     padding-left: 1.25em;
-    margin-top: .25em;
 }
 
-.content>.structure>p>ul, .content>.method>p>ul {
-    gap: 1em;
+/* accordians */
+.landing .MuiAccordionDetails-content {
+    padding: var(--padding);
 }
 
-.content div>div>div>p>ol {
-    padding-left: 1.5em;
-}
-
-.content div>div>div>p>ol {
-    padding-left: 1.5em;
-}
-
-.content div>div>div>div>div>div>ol {
-    margin-top: 1em;
-    padding-left: 1.5em;
+.landing .MuiAccordionDetails-content,
+.landing div>div>div>p>ol,
+.landing div>div>div>div>div>div>ol {
     display: flex;
     flex-direction: column;
-    gap: 1em;
+    gap: var(--padding);
 }
 
-.content .MuiAccordionDetails-content {
-    padding: 0 1em;
-    gap: 1em;
-}
-
-.content .MuiAccordionDetails-content>p {
+.landing div>div>div>p>ol,
+.landing div>div>div>div>div>div>ol {
     margin: 0;
+
 }
-.content .MuiAccordionDetails-content>p:first-of-type {
-    margin-top: 1em;
+
+.landing div>div>div>p>ol,
+.landing div>div>div>div>div>div>ol {
+    padding-left: 1.5em;
+}
+
+.landing .MuiAccordionDetails-content>p,
+.landing div>div>div>p>ol>li,
+.landing div>div>div>div>div>div>ol>li {
+    margin: 0;
 }
 
 footer {
