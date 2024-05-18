@@ -1,16 +1,15 @@
-import React, { MouseEventHandler, ReactNode, useCallback, useEffect, useState } from "react";
+import React, { FC, MouseEventHandler, useCallback, useEffect, useState } from "react";
 import "./QuestionBank.css";
 import { DOMParser } from "@xmldom/xmldom";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-import { Alert, Button, Checkbox, CircularProgress, DialogActions, DialogContent, DialogTitle, Dropdown, IconButton, Link, Menu, MenuItem, Modal, ModalDialog, Tooltip, Typography } from "@mui/joy";
-import { sendEmailVerification, signOut } from "firebase/auth";
-import { auth } from "../resources/Firebase.js";
+import { Alert, Button, CircularProgress, Dropdown, IconButton, Link, Menu, MenuItem, Skeleton, Tooltip, Typography } from "@mui/joy";
 import Paths from '../resources/Paths.ts';
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import Header from "../components/Header.tsx";
 import MenuButton from "@mui/joy/MenuButton/MenuButton";
 import { MdMoreVert } from "react-icons/md";
 import { SxProps } from "@mui/joy/styles/types/theme";
+import { DeleteAccountModal, VerificationAlert, useAuthentication } from "../components/Authentication.tsx";
 
 const parseQuestionBank = async (questionBank: string) => {
     if (questionBank.charCodeAt(0) === 65279)
@@ -76,84 +75,11 @@ const parseQuestionBank = async (questionBank: string) => {
     return paragraphs;
 };
 
-interface QuestionBankProps {
-    emailAddressVerified: boolean
-    setEmailAddressVerified: Function
-    setEmailAddressJustVerified: Function
-    setEmailAddressVerificationFailed: Function
-    setAccountJustDeleted: Function
-    setAccountDeletionFailed: Function
-}
-
-const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, setEmailAddressVerified, setEmailAddressJustVerified, setEmailAddressVerificationFailed, setAccountJustDeleted, setAccountDeletionFailed }) => {
+const QuestionBank: FC = () => {
     /* hooks */
+    const authentication = useAuthentication();
     useDocumentTitle('My Answers');
     const navigate = useNavigate();
-
-    /* verification */
-    const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState<boolean>(false);
-    const [sentVerificationEmail, setSentVerificationEmail] = useState<boolean>(false);
-    const [errorSendingVerificationEmail, setErrorSendingVerificationEmail] = useState<boolean>(false);
-    const [resendCount, setResendCount] = useState<number>(0);
-
-    const sendVerificationEmail = async () => {
-        const user = auth.currentUser;
-
-        await user?.reload();
-
-        if (user?.emailVerified) {
-            setEmailAddressVerified(true);
-            setEmailAddressJustVerified(true);
-            setEmailAddressVerificationFailed(false);
-        } else if (user && resendCount < 3) {
-            setIsSendingVerificationEmail(true);
-
-            try {
-                await sendEmailVerification(user);
-                setSentVerificationEmail(true);
-                setResendCount((prevCount) => prevCount + 1);
-            } catch (error) {
-                setErrorSendingVerificationEmail(true);
-            }
-
-            setIsSendingVerificationEmail(false);
-        }
-    };
-
-    const resendVerificationEmail: ReactNode = (
-        <>
-            {sentVerificationEmail ? (
-                <Typography color="success">Sent.</Typography>
-            ) : isSendingVerificationEmail ? (
-                errorSendingVerificationEmail ? (
-                    <Typography color="danger">Something went wrong.</Typography>
-                ) : (
-                    <CircularProgress
-                        color="warning"
-                        sx={{
-                            left: ".125em",
-                            top: ".125em",
-                            "--CircularProgress-size": "1em",
-                            "--CircularProgress-trackThickness": ".15em",
-                            "--CircularProgress-progressThickness": ".15em",
-                        }}
-                    />
-                )
-            ) : resendCount < 3 ? (
-                <Typography>
-                    Didn't receive it?{" "}
-                    <Link level="body-sm" onClick={sendVerificationEmail}>
-                        Resend Verification Email
-                    </Link>
-                    .
-                </Typography>
-            ) : (
-                <Typography color="warning">
-                    Resend limit exceeded. Please try again later.
-                </Typography>
-            )}
-        </>
-    );
 
     /* subscription & question bank */
     const [subscriptionPortalUrl, setSubscriptionPortalUrl] = useState<string | null>(null);
@@ -164,7 +90,7 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, setEm
 
     const checkSubscription = useCallback(async () => {
         try {
-            const response = await fetch(Paths.Serverless + '?user-uid=' + auth.currentUser?.uid);
+            const response = await fetch('https://radiology-interview-prep-serverless.osamah-ahmad.workers.dev?user-uid=' + authentication.currentUser?.uid);
             if (response.status === 200) {
                 const data = JSON.parse(await response.text());
 
@@ -183,31 +109,57 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, setEm
         }
 
         setSubscriptionWasChecked(true);
-    }, [setSubscriptionPortalUrl, setSubscriptionCancelAtPeriodEnd, setSubscriptionExpiryDate, setQuestionBank, setSubscriptionWasChecked]);
+    }, [authentication.currentUser?.uid, setSubscriptionPortalUrl, setSubscriptionCancelAtPeriodEnd, setSubscriptionExpiryDate, setQuestionBank, setSubscriptionWasChecked]);
 
     useEffect(() => {
         checkSubscription();
     }, [checkSubscription]);
 
-    const hasSubscriptionExpired = subscriptionExpiryDate && (subscriptionExpiryDate < new Date(Date.now()));
-    const willSubscriptionExpireThisWeek = !subscriptionCancelAtPeriodEnd && subscriptionExpiryDate && (subscriptionExpiryDate < new Date(Date.now() + (7 * 86400000)));
+    const hasSubscriptionExpired: boolean = subscriptionExpiryDate ? subscriptionExpiryDate < new Date(Date.now()) : false;
+    const hasActiveSubscription: boolean = subscriptionExpiryDate ? !hasSubscriptionExpired : false;
+    const willSubscriptionExpireThisWeek: boolean = (subscriptionExpiryDate && !subscriptionCancelAtPeriodEnd) ? subscriptionExpiryDate < new Date(Date.now() + (7 * 86400000)) : false;
 
     /* header children */
-    const headerChildren: [string, 'neutral' | 'danger' | 'primary', MouseEventHandler, SxProps | undefined, string | null | undefined][] = [
-        [auth.currentUser?.displayName || 'No Name', 'neutral', () => { }, { background: 'var(--joy-palette-neutral-outlinedBg) !important', cursor: 'auto !important' }, auth.currentUser?.email],
-        ['Sign Out', 'primary', () => { signOut(auth); navigate('/'); }, undefined, undefined],
-        ['Delete Account', 'danger', () => { setDeleteAccountModalOpen(true) }, undefined, undefined],
+    const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState<boolean>(false);
+
+    const headerChildrenDefinitions: [string, 'neutral' | 'danger' | 'primary', MouseEventHandler, SxProps | undefined, string | null | undefined][] = [
+        [
+            authentication.currentUser?.displayName || 'No Name',
+            'neutral', () => { },
+            { background: 'var(--joy-palette-neutral-outlinedBg) !important', cursor: 'auto !important' },
+            authentication.currentUser?.email
+        ],
+        [
+            'Sign Out',
+            'primary',
+            () => { authentication.signOut(); navigate('/'); },
+            undefined,
+            undefined
+        ],
+        [
+            'Delete Account',
+            'danger',
+            () => { setIsDeleteAccountModalOpen(true) },
+            undefined,
+            undefined
+        ]
     ];
 
-    const headerChildrenNodes = <>
+    const headerSkeletonSx = { position: 'relative', width: 'auto', height: 'fit-content' };
+
+    const headerMenuButton = <MenuButton
+        slots={{ root: IconButton }}
+        slotProps={{ root: { variant: 'outlined' } }}>
+        <MdMoreVert />
+    </MenuButton>;
+
+    const headerChildren = <>
         <Dropdown>
-            <MenuButton
-                slots={{ root: IconButton }}
-                slotProps={{ root: { variant: 'outlined' } }}>
-                <MdMoreVert />
-            </MenuButton>
+            {authentication.isLoading
+                ? <Skeleton sx={headerSkeletonSx}>{headerMenuButton}</Skeleton>
+                : headerMenuButton}
             <Menu>
-                {headerChildren.map(headerChild => {
+                {headerChildrenDefinitions.map(headerChild => {
                     const tooltipText = headerChild[4];
 
                     const menuItem = <MenuItem
@@ -222,7 +174,7 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, setEm
             </Menu>
         </Dropdown>
         <nav>
-            {headerChildren.map(headerChild => {
+            {headerChildrenDefinitions.map(headerChild => {
                 const tooltipText = headerChild[4];
 
                 const button = <Button
@@ -233,91 +185,65 @@ const QuestionBank: React.FC<QuestionBankProps> = ({ emailAddressVerified, setEm
                     {headerChild[0]}
                 </Button>;
 
-                return tooltipText ? <Tooltip arrow title={tooltipText} variant={'outlined'}>{button}</Tooltip> : button;
+                return authentication.isLoading
+                    ? <Skeleton sx={headerSkeletonSx}>{button}</Skeleton>
+                    : tooltipText ? <Tooltip arrow title={tooltipText} variant={'outlined'}>{button}</Tooltip> : button;
             })}
         </nav>
-    </>;
-
-    /* Delete Account */
-    const [deleteAccountModalOpen, setDeleteAccountModalOpen] = useState(false);
-    const [isDeleteAccountBoxTicked, setIsDeleteAccountBoxTicked] = useState(false);
-    const [isDeletingAccount, setIsDeletingAccount] = useState(false);
-
-    const handleDeleteAccount = async () => {
-        setIsDeletingAccount(true);
-
-        if (isDeleteAccountBoxTicked)
-            try {
-                await auth.currentUser?.delete();
-                await auth.signOut();
-                navigate('/');
-                setAccountJustDeleted(true);
-            } catch (error) {
-                setAccountDeletionFailed(true);
-            }
-
-        setIsDeletingAccount(false);
-    }
+    </>
 
     return <>
-        <Header children={headerChildrenNodes} />
-        <div className="question-bank">
-            {!emailAddressVerified && (
-                <Alert color='warning'>
-                    <Typography level="body-sm" sx={{ color: "inherit" }}                    >
-                        Please verify your email address using the link we've sent you. {resendVerificationEmail}
-                    </Typography>
-                </Alert>
-            )}
-            {subscriptionExpiryDate && (
-                <>
-                    <Alert color={hasSubscriptionExpired ? 'danger' : (willSubscriptionExpireThisWeek ? 'warning' : 'success')}>
-                        <Typography level="body-sm" sx={{ color: "inherit" }}>
-                            Your subscription {hasSubscriptionExpired ? 'expired' : (subscriptionCancelAtPeriodEnd ? 'will expire' : 'will renew')} at {
-                                subscriptionExpiryDate && (
-                                    subscriptionExpiryDate.toLocaleString('en-GB', {
-                                        hour: 'numeric',
-                                        minute: 'numeric',
-                                        hour12: true
-                                    }) +
-                                    ' on ' +
-                                    subscriptionExpiryDate.toLocaleString('en-GB', {
-                                        weekday: 'long',
-                                        day: 'numeric',
-                                        month: 'long',
-                                        year: 'numeric'
-                                    }))
-                            }. {subscriptionPortalUrl && <><Link onClick={() => { window.location.href = subscriptionPortalUrl }}>{subscriptionCancelAtPeriodEnd ? 'Renew' : 'Cancel Renewal'}</Link>.</>}
-                        </Typography>
-                    </Alert>
-                    {questionBank.map((paragraph, index) => (
-                        <div key={index}>{paragraph}</div>
-                    ))}
+        <Header children={headerChildren} />
+        {!authentication.isLoading &&
+            (authentication.isLoggedIn
+                ? <>
+                    <div className="question-bank">
+                        <VerificationAlert />
+                        {subscriptionExpiryDate && (
+                            <>
+                                <Alert color={hasSubscriptionExpired ? 'danger' : (willSubscriptionExpireThisWeek ? 'warning' : 'success')}>
+                                    <Typography level="body-sm" sx={{ color: "inherit" }}>
+                                        Your subscription {hasSubscriptionExpired ? 'expired' : (subscriptionCancelAtPeriodEnd ? 'will expire' : 'will renew')} at {
+                                            subscriptionExpiryDate && (
+                                                subscriptionExpiryDate.toLocaleString('en-GB', {
+                                                    hour: 'numeric',
+                                                    minute: 'numeric',
+                                                    hour12: true
+                                                }) +
+                                                ' on ' +
+                                                subscriptionExpiryDate.toLocaleString('en-GB', {
+                                                    weekday: 'long',
+                                                    day: 'numeric',
+                                                    month: 'long',
+                                                    year: 'numeric'
+                                                }))
+                                        }. {subscriptionPortalUrl && <><Link onClick={() => { window.location.href = subscriptionPortalUrl }}>{subscriptionCancelAtPeriodEnd ? 'Renew' : 'Cancel Renewal'}</Link>.</>}
+                                    </Typography>
+                                </Alert>
+                                {questionBank.map((paragraph, index) => (
+                                    <div key={index}>{paragraph}</div>
+                                ))}
+                            </>
+                        )}
+                        {subscriptionWasChecked
+                            ? (!subscriptionExpiryDate || hasSubscriptionExpired) &&
+                            <Button onClick={() => {
+                                authentication.currentUser && (window.location.href = Paths.Subscribe + authentication.currentUser.uid)
+                            }}>
+                                Purchase
+                            </Button>
+                            : <CircularProgress />
+                        }
+                    </div>
+                    {subscriptionWasChecked && <DeleteAccountModal
+                        nextPath="/"
+                        checkboxText={hasActiveSubscription ? "I understand that deleting my account won't cancel my current subscription." : undefined}
+                        open={isDeleteAccountModalOpen}
+                        onClose={() => setIsDeleteAccountModalOpen(false)}
+                    />}
                 </>
+                : <Navigate to={Paths.SignIn} replace />
             )}
-            {subscriptionWasChecked
-                ? (!subscriptionExpiryDate || hasSubscriptionExpired) &&
-                <Button onClick={() => {
-                    auth.currentUser && (window.location.href = Paths.Subscribe + auth.currentUser.uid)
-                }}>
-                    Purchase
-                </Button>
-                : <CircularProgress />
-            }
-            <Modal open={deleteAccountModalOpen} onClose={() => setDeleteAccountModalOpen(false)}>
-                <ModalDialog color='danger' variant="outlined">
-                    <DialogTitle>Delete Account?</DialogTitle>
-                    <DialogContent>
-                        This action is irreversible.
-                    </DialogContent>
-                    <Checkbox color='danger' sx={{ color: 'inherit' }} label='I understand that deleting my account will not cancel any current subscriptions.' onChange={() => setIsDeleteAccountBoxTicked(!isDeleteAccountBoxTicked)} />
-                    <DialogActions>
-                        <Button color='danger' disabled={!isDeleteAccountBoxTicked} loading={isDeletingAccount} onClick={() => handleDeleteAccount()}>Delete Account</Button>
-                        <Button color='neutral' variant='outlined' onClick={() => setDeleteAccountModalOpen(false)}>Close</Button>
-                    </DialogActions>
-                </ModalDialog>
-            </Modal>
-        </div>
     </>
 };
 

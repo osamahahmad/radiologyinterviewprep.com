@@ -50,9 +50,19 @@
     text-align: center;
 }
 
+.authentication-logo {
+    display: flex;
+    justify-content: center;
+    font-size: var(--joy-fontSize-md);
+    background-color: var(--authentication-theme-color);
+    margin: calc(-1 * var(--authentication-padding));
+    margin-bottom: 0;
+    padding: var(--authentication-gap);
+}
+
 @media screen and (min-width: 481px) {
-    .authentication-wrapper .logo {
-        pointer-events: none;
+    .authentication-logo * {
+        pointer-events: none !important;
     }
 }
 

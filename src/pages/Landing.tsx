@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import { Button, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Link, List } from '@mui/joy';
 import './Landing.css';
 import { useNavigate } from "react-router-dom";
@@ -8,13 +8,13 @@ import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import Strings from "../resources/Strings.ts";
 import Header from "../components/Header.tsx";
 import Logo from "../components/Logo.tsx";
-import { AuthenticationUI, AuthenticationUIMode } from "./NewAuthentication.tsx";
+import { AuthenticationUI, AuthenticationUIMode } from "../components/Authentication.tsx";
 
 interface LandingProps {
     authenticationUIMode?: AuthenticationUIMode;
 }
 
-const Landing: React.FC<LandingProps> = ({ authenticationUIMode }) => {
+const Landing: FC<LandingProps> = ({ authenticationUIMode }) => {
     /* hooks */
     const navigate = useNavigate();
 

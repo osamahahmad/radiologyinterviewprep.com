@@ -11,16 +11,16 @@ header>.logo {
     flex: 1;
 }
 
-header>nav {
+header nav {
     display: none;
 }
 
 @media screen and (min-width: 1024px) {
-    header>.MuiIconButton-root {
+    header .MuiIconButton-root {
         display: none;
     }
 
-    header>nav {
+    header nav {
         display: flex;
         align-items: center;
         justify-content: right;
