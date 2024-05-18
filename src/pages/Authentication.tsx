@@ -128,7 +128,7 @@ const Authentication: React.FC<AuthenticationProps> = ({
             setDanger(null);
     }, [success, setDanger]);
 
-    const passwordResetEmailSent = useCallback(() => 'If ' + email + ' is associated with an account, it\'ll receive a password reset link. Check your inbox.', [email]);
+    const passwordResetEmailSent = useCallback(() => 'If ' + email + ' is associated with an account, you\'ll receive a password reset link. Check your inbox.', [email]);
 
     const handleFirebaseError = useCallback((error: FirebaseError) => {
         if (error.code === 'auth/missing-email')

@@ -1,6 +1,6 @@
 .MuiModal-root {
-    --authentication-background: var(--joy-palette-primary-100);
-    --authentication-box-background: white;
+    --authentication-theme-color: var(--joy-palette-primary-100);
+    --authentication-background-color: white;
     --authentication-padding: var(--joy-fontSize-xl4);
     --authentication-gap: var(--joy-fontSize-xl);
     --authentication-animation: .3s ease;
@@ -22,7 +22,7 @@
     width: 100%;
     max-width: 480px;
     transition: height var(--authentication-animation);
-    background-color: var(--authentication-box-background);
+    background-color: var(--authentication-background-color);
     min-height: 100%;
     outline: none !important;
 }
@@ -69,7 +69,7 @@
 
 .authentication-divider>p {
     z-index: 1;
-    background-color: var(--authentication-box-background);
+    background-color: var(--authentication-background-color);
     padding: 0 1em;
 }
 

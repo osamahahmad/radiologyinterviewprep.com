@@ -7,16 +7,15 @@ import { auth } from "../resources/Firebase.js";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import Strings from "../resources/Strings.ts";
 import Header from "../components/Header.tsx";
-import Authentication from "./Authentication.tsx";
 import Logo from "../components/Logo.tsx";
+import { AuthenticationUI, AuthenticationUIMode } from "./NewAuthentication.tsx";
 
 interface LandingProps {
-    authentication?: 0 | 1 | 2
-    resetPasswordOobCode?: string
-    setResetPasswordOobCode?: Function
+    authenticationUIMode?: AuthenticationUIMode;
 }
 
-const Landing: React.FC<LandingProps> = ({ authentication, resetPasswordOobCode, setResetPasswordOobCode }) => {
+const Landing: React.FC<LandingProps> = ({ authenticationUIMode }) => {
+    /* hooks */
     const navigate = useNavigate();
 
     useDocumentTitle();
@@ -427,14 +426,12 @@ const Landing: React.FC<LandingProps> = ({ authentication, resetPasswordOobCode,
                 </Typography>
                 <Typography><Link onClick={() => navigate(Paths.TermsOfService)}>{Strings.TermsOfService}</Link> · <Link onClick={() => navigate(Paths.PrivacyPolicy)}>{Strings.PrivacyPolicy}</Link> · Cookies</Typography>
             </footer>
-            {authentication !== undefined &&
-                <Authentication
-                    mode={authentication}
+            {authenticationUIMode !== undefined &&
+                <AuthenticationUI
+                    authenticationUIMode={authenticationUIMode}
                     logo={<Logo onClick={() => navigate('/')} />}
                     tagline='Smash your interview.'
                     appName={Strings.AppName}
-                    resetPasswordOobCode={resetPasswordOobCode}
-                    setResetPasswordOobCode={setResetPasswordOobCode}
                 />}
         </div>
     </>
