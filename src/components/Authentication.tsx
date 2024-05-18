@@ -404,13 +404,19 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
                     />
                     <div id="authentication-password-constraints">Six or more characters.</div>
                     <Checkbox
+                        sx={{ width: 'fit-content' }}
                         label={'Show Password'}
                         defaultChecked={!isPasswordHidden}
                         onChange={() => setIsPasswordHidden(!isPasswordHidden)}
                         aria-label="Show password as plain text. Warning: this will display your password on the screen.">
                     </Checkbox>
                 </>}
-                {authenticationUIMode === 'sign-in' && <Typography><Link onClick={() => { setDanger(null); setSuccess(null); navigate(resetPasswordPath); }}>Forgot Password?</Link></Typography>}
+                {authenticationUIMode === 'sign-in' && <Typography><Link onClick={() => {
+                    setDanger(null);
+                    setSuccess(null);
+                    navigate(resetPasswordPath);
+                    document.getElementsByName('email')[0].focus();
+                }}>Forgot Password?</Link></Typography>}
                 <Button
                     type="submit"
                     fullWidth
@@ -418,7 +424,12 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
                     {title}
                 </Button>
                 {(danger || success) && <Alert color={danger ? 'danger' : 'success'}>{danger || success}</Alert>}
-                {!authentication.resetPasswordOobCode && <Typography>{authenticationUIMode === 'sign-up' ? 'Have an account?' : (authenticationUIMode === 'sign-in' ? 'New to us?' : '')} <Link onClick={() => { setDanger(null); setSuccess(null); navigate(switchPath); }}>{switchTitle}</Link></Typography>}
+                {!authentication.resetPasswordOobCode && <Typography>{authenticationUIMode === 'sign-up' ? 'Have an account?' : (authenticationUIMode === 'sign-in' ? 'New to us?' : '')} <Link onClick={() => {
+                    setDanger(null);
+                    setSuccess(null);
+                    navigate(switchPath);
+                    document.getElementsByName(isEmailValid ? passwordId : 'email')[0].focus();
+                }}>{switchTitle}</Link></Typography>}
                 {authenticationUIMode !== 'reset-password' && <>
                     <div className='authentication-divider'><Typography level='body-sm'>Or</Typography></div>
                     <Button variant='outlined' onClick={handleSignInOrSignUpWithGoogle}>{title + ' with Google'}</Button>
