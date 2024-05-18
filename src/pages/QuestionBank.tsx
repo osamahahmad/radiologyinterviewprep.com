@@ -1,13 +1,13 @@
-import React, { FC, MouseEventHandler, useCallback, useEffect, useState } from "react";
+import React, { FC, MouseEventHandler, ReactNode, useCallback, useEffect, useState } from "react";
 import "./QuestionBank.css";
 import { DOMParser } from "@xmldom/xmldom";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-import { Alert, Button, CircularProgress, Dropdown, IconButton, Link, Menu, MenuItem, Skeleton, Tooltip, Typography } from "@mui/joy";
+import { Alert, Button, CircularProgress, Dropdown, IconButton, Link, Menu, MenuItem, Skeleton, Typography } from "@mui/joy";
 import Paths from '../resources/Paths.ts';
 import { Navigate, useNavigate } from "react-router-dom";
 import Header from "../components/Header.tsx";
 import MenuButton from "@mui/joy/MenuButton/MenuButton";
-import { MdMoreVert } from "react-icons/md";
+import { MdPerson } from "react-icons/md";
 import { SxProps } from "@mui/joy/styles/types/theme";
 import { DeleteAccountModal, VerificationAlert, useAuthentication } from "../components/Authentication.tsx";
 
@@ -122,12 +122,13 @@ const QuestionBank: FC = () => {
     /* header children */
     const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState<boolean>(false);
 
-    const headerChildrenDefinitions: [string, 'neutral' | 'danger' | 'primary', MouseEventHandler, SxProps | undefined, string | null | undefined][] = [
+    const headerNavDefinitions: [string, 'neutral' | 'danger' | 'primary', MouseEventHandler, SxProps | undefined, ReactNode][] = [
         [
             authentication.currentUser?.displayName || 'No Name',
-            'neutral', () => { },
-            { background: 'var(--joy-palette-neutral-outlinedBg) !important', cursor: 'auto !important' },
-            authentication.currentUser?.email
+            'neutral',
+            () => { },
+            { background: 'var(--joy-palette-neutral-outlinedBg) !important', cursor: 'auto !important', border: 'none' },
+            <MdPerson />
         ],
         [
             'Sign Out',
@@ -150,16 +151,16 @@ const QuestionBank: FC = () => {
     const headerMenuButton = <MenuButton
         slots={{ root: IconButton }}
         slotProps={{ root: { variant: 'outlined' } }}>
-        <MdMoreVert />
+        <MdPerson />
     </MenuButton>;
 
-    const headerChildren = <>
+    const headerNav = <>
         <Dropdown>
             {authentication.isLoading
                 ? <Skeleton sx={headerSkeletonSx}>{headerMenuButton}</Skeleton>
                 : headerMenuButton}
             <Menu>
-                {headerChildrenDefinitions.map(headerChild => {
+                {headerNavDefinitions.map(headerChild => {
                     const tooltipText = headerChild[4];
 
                     const menuItem = <MenuItem
@@ -174,26 +175,25 @@ const QuestionBank: FC = () => {
             </Menu>
         </Dropdown>
         <nav>
-            {headerChildrenDefinitions.map(headerChild => {
-                const tooltipText = headerChild[4];
-
+            {headerNavDefinitions.map(headerChild => {
                 const button = <Button
                     variant={'outlined'}
                     color={headerChild[1]}
                     onClick={headerChild[2]}
-                    sx={headerChild[3]}>
+                    sx={headerChild[3]}
+                    startDecorator={headerChild[4]}>
                     {headerChild[0]}
                 </Button>;
 
                 return authentication.isLoading
                     ? <Skeleton sx={headerSkeletonSx}>{button}</Skeleton>
-                    : tooltipText ? <Tooltip arrow title={tooltipText} variant={'outlined'}>{button}</Tooltip> : button;
+                    : button
             })}
         </nav>
     </>
 
     return <>
-        <Header children={headerChildren} />
+        <Header nav={headerNav} />
         {!authentication.isLoading &&
             (authentication.isLoggedIn
                 ? <>

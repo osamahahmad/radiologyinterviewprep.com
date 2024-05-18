@@ -13,15 +13,25 @@ body {
 }
 
 .MuiModal-backdrop {
-    animation: fade-in var(--transition);
+  animation: fade-in var(--transition);
 }
 
 @keyframes fade-in {
-    0% {
-        opacity: 0;
-    }
+  0% {
+    opacity: 0;
+  }
 
-    100% {
-        opacity: 1;
-    }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes zoom-in {
+  0% {
+    transform: scale(.5, .5);
+  }
+
+  100% {
+    transform: scale(1, 1);
+  }
 }

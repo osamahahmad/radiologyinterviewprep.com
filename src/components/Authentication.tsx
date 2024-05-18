@@ -82,7 +82,7 @@ const AuthenticationProvider: FC<AuthenticationProviderProps> = ({ children }) =
     const signOut: Function = async () => { await auth.signOut() };
 
     return <AuthenticationContext.Provider value={{
-        isLoading,
+        isLoading, setIsLoading,
         isLoggedIn,
         resetPasswordOobCode, setResetPasswordOobCode,
         isEmailAddressVerified,
@@ -128,10 +128,10 @@ export const AuthenticationActions: React.FC<AuthenticationActionsProps> = ({ ne
             try {
                 await applyActionCode(auth, oobCode);
                 authentication.setEmailAddressJustVerified(true);
-                setNavigate(<Navigate to={nextPath} replace={true} />);
             } catch (error) {
                 authentication.setEmailAddressVerificationFailed(true);
             }
+            setNavigate(<Navigate to={nextPath} replace={true} />);
         } else if (mode === 'resetPassword' && oobCode) {
             authentication.setResetPasswordOobCode(oobCode);
             setNavigate(<Navigate to={resetPasswordPath} replace={true} />);
@@ -300,9 +300,14 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
             else
                 try {
                     await createUserWithEmailAndPassword(auth, email, password);
+
+                    authentication.setIsLoading(true);
+
                     auth.currentUser && await updateProfile(auth.currentUser, { displayName: name });
                     auth.currentUser && await sendEmailVerification(auth.currentUser);
                     auth.currentUser && await auth.currentUser.reload();
+
+                    authentication.setIsLoading(false);
                 } catch (error) {
                     setError(error);
                 }

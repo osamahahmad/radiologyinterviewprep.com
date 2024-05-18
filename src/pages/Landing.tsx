@@ -1,5 +1,5 @@
-import React, { FC } from "react";
-import { Button, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Link, List } from '@mui/joy';
+import React, { FC, useEffect } from "react";
+import { Button, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Link, List, Dropdown, MenuButton, IconButton, Menu, MenuItem } from '@mui/joy';
 import './Landing.css';
 import { useNavigate } from "react-router-dom";
 import Paths from "../resources/Paths.ts";
@@ -9,6 +9,119 @@ import Strings from "../resources/Strings.ts";
 import Header from "../components/Header.tsx";
 import Logo from "../components/Logo.tsx";
 import { AuthenticationUI, AuthenticationUIMode } from "../components/Authentication.tsx";
+import { getScrollable, scrollToTop } from "../App.tsx";
+import { MdMoreVert } from "react-icons/md";
+
+interface HeaderNavProps {
+    sections: string[]
+    sectionTitles: { [x: string]: string }
+}
+
+const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
+    const [activeSection, setActiveSection] = React.useState<string | null>(sections ? sections[0] : null);
+
+    const handleSectionClick = (section: string) => {
+        setActiveSection(section);
+
+        const element = document.getElementsByClassName(section)[0];
+
+        if (sections && sections[0] === section)
+            scrollToTop();
+        else if (element)
+            element.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    useEffect(() => {
+        const scrollable = getScrollable();
+
+        const handleScroll = () => {
+            const scrollPosition = scrollable.scrollTop;
+
+            if (sections)
+                for (let i = sections.length - 1; i >= 0; i--) {
+                    const section = sections[i];
+                    const elements: HTMLCollection = document.getElementsByClassName(section);
+                    const element: HTMLElement = elements[0] as HTMLElement;
+
+                    if (element && scrollPosition >= element.offsetTop - 100) {
+                        setActiveSection(section);
+                        break;
+                    }
+                }
+        };
+
+        scrollable.addEventListener('scroll', handleScroll);
+        return () => {
+            scrollable.removeEventListener('scroll', handleScroll);
+        };
+    }, [sections]);
+
+    /* style */
+    const activeMenuItemSx = {
+        backgroundColor: 'var(--joy-palette-neutral-outlinedActiveBg)'
+    };
+
+    const activeSuccessMenuItemSx = {
+        backgroundColor: 'var(--joy-palette-success-outlinedActiveBg)'
+    };
+
+    const activeButtonSx = {
+        backgroundColor: 'var(--joy-palette-neutral-outlinedHoverBg)',
+        '&:hover': {
+            backgroundColor: 'var(--joy-palette-neutral-outlinedHoverBg)'
+        }
+    };
+
+    const activeSuccessButtonSx = {
+        backgroundColor: 'var(--joy-palette-success-outlinedHoverBg)',
+        '&:hover': {
+            backgroundColor: 'var(--joy-palette-success-outlinedHoverBg)'
+        }
+    };
+
+    return <>
+        <Dropdown>
+            <MenuButton
+                slots={{ root: IconButton }}
+                slotProps={{ root: { variant: 'outlined' } }}>
+                <MdMoreVert />
+            </MenuButton>
+            <Menu>
+                {sections.map(section => {
+                    return <MenuItem
+                        color={section === 'question-bank' ? 'success' : 'neutral'}
+                        onClick={() => handleSectionClick(section)}
+                        sx={activeSection === section ? (section === 'question-bank' ? activeSuccessMenuItemSx : activeMenuItemSx) : {}}
+                    >
+                        {sectionTitles[section]}
+                    </MenuItem>
+                })}
+            </Menu>
+        </Dropdown>
+        <nav>
+            {sections.map(section => {
+                return <Button
+                    variant='outlined'
+                    color='neutral'
+                    onClick={() => handleSectionClick(section)}
+                    sx={[
+                        section === 'question-bank' ? {
+                            '&:hover': {
+                                backgroundColor: 'var(--joy-palette-success-outlinedHoverBg)'
+                            },
+                            '&:active': {
+                                backgroundColor: 'var(--joy-palette-success-outlinedActiveBg)'
+                            }
+                        } : {},
+                        activeSection === section ? (section === 'question-bank' ? activeSuccessButtonSx : activeButtonSx) : {}
+                    ]}
+                >
+                    {section === 'question-bank' ? <Typography level='body-sm' color='success'>{sectionTitles[section]}</Typography> : sectionTitles[section]}
+                </Button>
+            })}
+        </nav>
+    </>
+}
 
 interface LandingProps {
     authenticationUIMode?: AuthenticationUIMode;
@@ -21,11 +134,10 @@ const Landing: FC<LandingProps> = ({ authenticationUIMode }) => {
     useDocumentTitle();
 
     const sections: string[] = React.useMemo(() => { return ['welcome', 'structure', 'questions', 'method', 'question-bank'] }, []);
-
     const sectionTitles: { [x: string]: string } = { [sections[0]]: 'Welcome', [sections[1]]: 'Interview Structure', [sections[2]]: 'Example Questions', [sections[3]]: 'My Method', [sections[4]]: 'Question Bank' }
 
     return <>
-        <Header sections={sections} sectionTitles={sectionTitles} />
+        <Header nav={<HeaderNav sections={sections} sectionTitles={sectionTitles} />} />
         <div className='landing'>
             <div className={sections[0]}>
                 <Typography
