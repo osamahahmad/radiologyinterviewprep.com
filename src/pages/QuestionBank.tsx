@@ -9,6 +9,7 @@ import MenuButton from "@mui/joy/MenuButton/MenuButton";
 import { MdPerson } from "react-icons/md";
 import { SxProps } from "@mui/joy/styles/types/theme";
 import { DeleteAccountModal, VerificationAlert, useAuthentication } from "../components/Authentication.tsx";
+import Footer from "../components/Footer.tsx";
 
 const parseQuestionBank = async (questionBank: string) => {
     if (questionBank.charCodeAt(0) === 65279)
@@ -218,52 +219,51 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
     return <>
         {!authentication.isLoading &&
             (authentication.isLoggedIn
-                ? <>
-                    <div className="question-bank">
-                        <VerificationAlert />
-                        {subscriptionExpiryDate && (
-                            <>
-                                <Alert color={hasSubscriptionExpired ? 'danger' : (willSubscriptionExpireThisWeek ? 'warning' : 'success')}>
-                                    <Typography level="body-sm" sx={{ color: "inherit" }}>
-                                        Your subscription {hasSubscriptionExpired ? 'expired' : (subscriptionCancelAtPeriodEnd ? 'will expire' : 'will renew')} at {
-                                            subscriptionExpiryDate && (
-                                                subscriptionExpiryDate.toLocaleString('en-GB', {
-                                                    hour: 'numeric',
-                                                    minute: 'numeric',
-                                                    hour12: true
-                                                }) +
-                                                ' on ' +
-                                                subscriptionExpiryDate.toLocaleString('en-GB', {
-                                                    weekday: 'long',
-                                                    day: 'numeric',
-                                                    month: 'long',
-                                                    year: 'numeric'
-                                                }))
-                                        }. {subscriptionPortalUrlLink && <>{subscriptionPortalUrlLink}.</>}
-                                    </Typography>
-                                </Alert>
-                                {questionBank.map((paragraph, index) => (
-                                    <div key={index}>{paragraph}</div>
-                                ))}
-                            </>
-                        )}
-                        {subscriptionWasChecked
-                            ? (!subscriptionExpiryDate || hasSubscriptionExpired) &&
-                            <Button onClick={() => {
-                                authentication.currentUser && (window.location.href = Paths.Subscribe + authentication.currentUser.uid)
-                            }}>
-                                Purchase
-                            </Button>
-                            : <CircularProgress />
-                        }
-                    </div>
+                ? <div className="question-bank">
+                    <VerificationAlert />
+                    {subscriptionExpiryDate && (
+                        <>
+                            <Alert color={hasSubscriptionExpired ? 'danger' : (willSubscriptionExpireThisWeek ? 'warning' : 'success')}>
+                                <Typography level="body-sm" sx={{ color: "inherit" }}>
+                                    Your subscription {hasSubscriptionExpired ? 'expired' : (subscriptionCancelAtPeriodEnd ? 'will expire' : 'will renew')} at {
+                                        subscriptionExpiryDate && (
+                                            subscriptionExpiryDate.toLocaleString('en-GB', {
+                                                hour: 'numeric',
+                                                minute: 'numeric',
+                                                hour12: true
+                                            }) +
+                                            ' on ' +
+                                            subscriptionExpiryDate.toLocaleString('en-GB', {
+                                                weekday: 'long',
+                                                day: 'numeric',
+                                                month: 'long',
+                                                year: 'numeric'
+                                            }))
+                                    }. {subscriptionPortalUrlLink && <>{subscriptionPortalUrlLink}.</>}
+                                </Typography>
+                            </Alert>
+                            {questionBank.map((paragraph, index) => (
+                                <div key={index}>{paragraph}</div>
+                            ))}
+                        </>
+                    )}
+                    {subscriptionWasChecked
+                        ? (!subscriptionExpiryDate || hasSubscriptionExpired) &&
+                        <Button onClick={() => {
+                            authentication.currentUser && (window.location.href = Paths.Subscribe + authentication.currentUser.uid)
+                        }}>
+                            Purchase
+                        </Button>
+                        : <CircularProgress />
+                    }
+                    <Footer />
                     {subscriptionWasChecked && <DeleteAccountModal
                         nextPath="/"
                         dangers={(subscriptionWasChecked && subscriptionExpiryDate && !subscriptionCancelAtPeriodEnd) ? [<Typography sx={{ color: 'inherit', fontSize: 'inherit' }}>{subscriptionPortalUrlLink} of your subscription first.</Typography>] : undefined}
                         open={isDeleteAccountModalOpen}
                         onClose={() => setIsDeleteAccountModalOpen(false)}
                     />}
-                </>
+                </div>
                 : <Navigate to={Paths.SignIn} replace />
             )}
     </>

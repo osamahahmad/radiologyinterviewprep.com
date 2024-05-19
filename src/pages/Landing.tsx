@@ -9,6 +9,7 @@ import Strings from "../resources/Strings.ts";
 import Logo from "../components/Logo.tsx";
 import { AuthenticationUI, AuthenticationUIMode } from "../components/Authentication.tsx";
 import { MdMoreVert } from "react-icons/md";
+import Footer from "../components/Footer.tsx";
 
 interface HeaderNavProps {
     sections: string[]
@@ -535,12 +536,7 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
             <Button color='success' sx={{ width: 'fit-content' }} onClick={() => navigate(Paths.SignUp)}>{auth.currentUser ? 'Access' : 'Sign Up for'} the Question Bank</Button>
             {!auth.currentUser && <Typography>Or <Link onClick={() => navigate(Paths.SignIn)}>{Strings.SignIn}</Link></Typography>}
         </Card>
-        <footer>
-            <Typography>
-                &copy; Osamah Ahmad 2024
-            </Typography>
-            <Typography><Link onClick={() => navigate(Paths.TermsOfService)}>{Strings.TermsOfService}</Link> · <Link onClick={() => navigate(Paths.PrivacyPolicy)}>{Strings.PrivacyPolicy}</Link> · Cookies</Typography>
-        </footer>
+        <Footer />
         {authenticationUIMode !== undefined &&
             <AuthenticationUI
                 authenticationUIMode={authenticationUIMode}
