@@ -1,7 +1,7 @@
 import React, { FC, FormEvent, MouseEventHandler, ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { User, applyActionCode, onAuthStateChanged } from 'firebase/auth';
-import { MdCheckCircle, MdError } from 'react-icons/md';
-import { Snackbar, Alert, Button, Checkbox, Input, Link, Modal, Typography, CircularProgress, ModalDialog, DialogTitle, DialogContent, DialogActions } from '@mui/joy';
+import { MdCheckCircle, MdError, MdWarning } from 'react-icons/md';
+import { Snackbar, Alert, Button, Checkbox, Input, Link, Modal, Typography, CircularProgress, ModalDialog, DialogTitle, DialogActions } from '@mui/joy';
 import "./Authentication.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
@@ -502,17 +502,20 @@ export const VerificationAlert: FC = () => {
 }
 
 interface DeleteAccountModalProps {
-    checkboxText?: string;
+    warnings?: (string | ReactNode)[];
+    dangers?: (string | ReactNode)[];
     nextPath?: string;
     open?: boolean;
     onClose?: MouseEventHandler;
 }
 
-export const DeleteAccountModal: FC<DeleteAccountModalProps> = ({ checkboxText, nextPath, open = true, onClose }) => {
+export const DeleteAccountModal: FC<DeleteAccountModalProps> = ({ warnings, dangers, nextPath, open = true, onClose }) => {
     const authentication = useAuthentication();
     const navigate = useNavigate();
 
-    const [isCheckboxTicked, setIsCheckboxTicked] = useState<boolean>(false);
+    const _warnings: typeof warnings = ['This action is irreversible.'];
+    warnings && warnings.forEach(warning => _warnings.push(warning));
+
     const [isDeletingAccount, setIsDeletingAccount] = useState<boolean>(false);
 
     const handleDeleteAccount = useCallback(async () => {
@@ -530,24 +533,15 @@ export const DeleteAccountModal: FC<DeleteAccountModalProps> = ({ checkboxText, 
         setIsDeletingAccount(false);
     }, [setIsDeletingAccount, authentication, navigate, nextPath]);
 
-    const isButtonDisabled = checkboxText ? !isCheckboxTicked : false;
-
     return <Modal open={open} onClose={onClose}>
         <ModalDialog>
-            <DialogTitle>Delete Account?</DialogTitle>
-            <DialogContent>
-                This action is irreversible.
-            </DialogContent>
-            {checkboxText &&
-                <Checkbox
-                    color='danger'
-                    sx={{ padding: 'var(--authentication-gap)' }}
-                    label={<Typography color='danger' level='body-md'>{checkboxText}</Typography>}
-                    onChange={() => setIsCheckboxTicked(!isCheckboxTicked)} />}
-            <DialogActions>
-                <Button color='danger' disabled={isButtonDisabled} loading={isDeletingAccount} onClick={() => handleDeleteAccount()}>Delete Account</Button>
-                <Button color='neutral' variant='outlined' onClick={onClose}>Close</Button>
-            </DialogActions>
-        </ModalDialog>
-    </Modal>
+            <DialogTitle>Delete Account</DialogTitle>
+            {!dangers && _warnings.map(warning => <Alert color='warning' startDecorator={<MdWarning />}>{warning}</Alert>)}
+            {dangers && dangers.map(danger => <Alert color='danger'>{danger}</Alert>)}
+        <DialogActions>
+            <Button color='danger' disabled={!!dangers} loading={isDeletingAccount} onClick={() => handleDeleteAccount()}>Delete Account</Button>
+            <Button color='neutral' variant='outlined' onClick={onClose}>Close</Button>
+        </DialogActions>
+    </ModalDialog>
+    </Modal >
 }

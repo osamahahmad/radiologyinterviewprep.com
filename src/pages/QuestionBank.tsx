@@ -84,6 +84,96 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
     useDocumentTitle('My Answers');
     const navigate = useNavigate();
 
+    /* header */
+    const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState<boolean>(false);
+    useEffect(() => {
+        const headerNavDefinitions: [
+            string,
+            'neutral' | 'danger' | 'primary',
+            MouseEventHandler,
+            SxProps | undefined,
+            ReactNode | undefined,
+            string | undefined
+        ][] = [
+                [
+                    authentication.currentUser?.displayName || 'No Name',
+                    'neutral',
+                    () => { },
+                    { background: 'var(--joy-palette-neutral-outlinedBg) !important', cursor: 'auto !important', border: 'none' },
+                    <MdPerson />,
+                    authentication.currentUser?.email || 'No Email Address'
+                ],
+                [
+                    'Sign Out',
+                    'primary',
+                    () => { authentication.signOut(); navigate('/'); },
+                    undefined,
+                    undefined,
+                    undefined
+                ],
+                [
+                    'Delete Account',
+                    'danger',
+                    () => { setIsDeleteAccountModalOpen(true) },
+                    undefined,
+                    undefined,
+                    undefined
+                ]
+            ];
+
+        const headerSkeletonSx = { position: 'relative', width: 'auto', height: 'fit-content' };
+
+        const headerMenuButton = <MenuButton
+            slots={{ root: IconButton }}
+            slotProps={{ root: { variant: 'outlined' } }}>
+            <MdPerson />
+        </MenuButton>;
+
+        setNav(<>
+            <Dropdown>
+                {authentication.isLoading
+                    ? <Skeleton sx={headerSkeletonSx}>{headerMenuButton}</Skeleton>
+                    : headerMenuButton}
+                <Menu>
+                    {headerNavDefinitions.map(headerChild => {
+                        const email = headerChild[5];
+
+                        return <MenuItem
+                            color={headerChild[1]}
+                            onClick={headerChild[2]}
+                            sx={headerChild[3]}
+                            tabIndex={email ? -1 : 1}>
+                            {email
+                                ? <Typography><Typography level='title-lg'>{headerChild[0]}</Typography><br /><Typography level='body-md'>{email}</Typography></Typography>
+                                : headerChild[0]}
+                        </MenuItem>;
+                    })}
+                </Menu>
+            </Dropdown>
+            <nav>
+                {headerNavDefinitions.map(headerChild => {
+                    const email = headerChild[5];
+
+                    const button = <Button
+                        variant={'outlined'}
+                        color={headerChild[1]}
+                        onClick={headerChild[2]}
+                        sx={headerChild[3]}
+                        startDecorator={headerChild[4]}
+                        tabIndex={email ? -1 : 1}>
+                        {email
+                            ? headerChild[0] + ' (' + email + ')'
+                            : headerChild[0]}
+                    </Button>;
+
+                    return authentication.isLoading
+                        ? <Skeleton sx={headerSkeletonSx}>{button}</Skeleton>
+                        : button
+                })}
+            </nav>
+        </>);
+    }, [authentication, navigate, setNav]);
+
     /* subscription & question bank */
     const [subscriptionPortalUrl, setSubscriptionPortalUrl] = useState<string | null>(null);
     const [subscriptionCancelAtPeriodEnd, setSubscriptionCancelAtPeriodEnd] = useState<boolean>();
@@ -92,6 +182,8 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
     const [subscriptionWasChecked, setSubscriptionWasChecked] = useState<boolean>(false);
 
     const checkSubscription = useCallback(async () => {
+        setSubscriptionWasChecked(false);
+
         try {
             const response = await fetch('https://radiology-interview-prep-serverless.osamah-ahmad.workers.dev?user-uid=' + authentication.currentUser?.uid);
             if (response.status === 200) {
@@ -119,88 +211,9 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
     }, [checkSubscription]);
 
     const hasSubscriptionExpired: boolean = subscriptionExpiryDate ? subscriptionExpiryDate < new Date(Date.now()) : false;
-    const hasActiveSubscription: boolean = subscriptionExpiryDate ? !hasSubscriptionExpired : false;
     const willSubscriptionExpireThisWeek: boolean = (subscriptionExpiryDate && !subscriptionCancelAtPeriodEnd) ? subscriptionExpiryDate < new Date(Date.now() + (7 * 86400000)) : false;
 
-    /* header children */
-    const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState<boolean>(false);
-    useEffect(() => {
-        const headerNavDefinitions: [string, 'neutral' | 'danger' | 'primary', MouseEventHandler, SxProps | undefined, ReactNode][] = [
-            [
-                authentication.currentUser?.displayName || 'No Name',
-                'neutral',
-                () => { },
-                { background: 'var(--joy-palette-neutral-outlinedBg) !important', cursor: 'auto !important', border: 'none' },
-                <MdPerson />
-            ],
-            [
-                'Sign Out',
-                'primary',
-                () => { authentication.signOut(); navigate('/'); },
-                undefined,
-                undefined
-            ],
-            [
-                'Delete Account',
-                'danger',
-                () => { setIsDeleteAccountModalOpen(true) },
-                undefined,
-                undefined
-            ]
-        ];
-
-        const headerSkeletonSx = { position: 'relative', width: 'auto', height: 'fit-content' };
-
-        const headerMenuButton = <MenuButton
-            slots={{ root: IconButton }}
-            slotProps={{ root: { variant: 'outlined' } }}>
-            <MdPerson />
-        </MenuButton>;
-
-        setNav(<>
-            <Dropdown>
-                {authentication.isLoading
-                    ? <Skeleton sx={headerSkeletonSx}>{headerMenuButton}</Skeleton>
-                    : headerMenuButton}
-                <Menu>
-                    {headerNavDefinitions.map(headerChild => {
-                        const user = headerChild[4];
-
-                        return <MenuItem
-                            color={headerChild[1]}
-                            onClick={headerChild[2]}
-                            sx={headerChild[3]}
-                            tabIndex={user ? -1 : 1}>
-                            {user
-                                ? <Typography><Typography level='title-lg'>{headerChild[0]}</Typography><br /><Typography level='body-md'>{authentication.currentUser?.email}</Typography></Typography>
-                                : headerChild[0]}
-                        </MenuItem>;
-                    })}
-                </Menu>
-            </Dropdown>
-            <nav>
-                {headerNavDefinitions.map(headerChild => {
-                    const user = headerChild[4];
-
-                    const button = <Button
-                        variant={'outlined'}
-                        color={headerChild[1]}
-                        onClick={headerChild[2]}
-                        sx={headerChild[3]}
-                        startDecorator={headerChild[4]}
-                        tabIndex={user ? -1 : 1}>
-                        {user
-                            ? headerChild[0] + ' (' + authentication.currentUser?.email + ')'
-                            : headerChild[0]}
-                    </Button>;
-
-                    return authentication.isLoading
-                        ? <Skeleton sx={headerSkeletonSx}>{button}</Skeleton>
-                        : button
-                })}
-            </nav>
-        </>);
-    }, [authentication, navigate, setNav]);
+    const subscriptionPortalUrlLink = subscriptionPortalUrl ? <Link onClick={() => { window.location.href = subscriptionPortalUrl }}>{subscriptionCancelAtPeriodEnd ? 'Renew' : 'Cancel Renewal'}</Link> : null;
 
     return <>
         {!authentication.isLoading &&
@@ -226,7 +239,7 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                                                     month: 'long',
                                                     year: 'numeric'
                                                 }))
-                                        }. {subscriptionPortalUrl && <><Link onClick={() => { window.location.href = subscriptionPortalUrl }}>{subscriptionCancelAtPeriodEnd ? 'Renew' : 'Cancel Renewal'}</Link>.</>}
+                                        }. {subscriptionPortalUrlLink && <>{subscriptionPortalUrlLink}.</>}
                                     </Typography>
                                 </Alert>
                                 {questionBank.map((paragraph, index) => (
@@ -246,7 +259,7 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                     </div>
                     {subscriptionWasChecked && <DeleteAccountModal
                         nextPath="/"
-                        checkboxText={hasActiveSubscription ? "I understand that deleting my account won't cancel my current subscription." : undefined}
+                        dangers={(subscriptionWasChecked && subscriptionExpiryDate && !subscriptionCancelAtPeriodEnd) ? [<Typography sx={{ color: 'inherit', fontSize: 'inherit' }}>{subscriptionPortalUrlLink} of your subscription first.</Typography>] : undefined}
                         open={isDeleteAccountModalOpen}
                         onClose={() => setIsDeleteAccountModalOpen(false)}
                     />}
