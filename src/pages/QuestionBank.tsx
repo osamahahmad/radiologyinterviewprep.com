@@ -5,7 +5,6 @@ import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import { Alert, Button, CircularProgress, Dropdown, IconButton, Link, Menu, MenuItem, Skeleton, Typography } from "@mui/joy";
 import Paths from '../resources/Paths.ts';
 import { Navigate, useNavigate } from "react-router-dom";
-import Header from "../components/Header.tsx";
 import MenuButton from "@mui/joy/MenuButton/MenuButton";
 import { MdPerson } from "react-icons/md";
 import { SxProps } from "@mui/joy/styles/types/theme";
@@ -75,7 +74,11 @@ const parseQuestionBank = async (questionBank: string) => {
     return paragraphs;
 };
 
-const QuestionBank: FC = () => {
+interface QuestionBankProps {
+    setNav: Function;
+}
+
+const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
     /* hooks */
     const authentication = useAuthentication();
     useDocumentTitle('My Answers');
@@ -121,79 +124,85 @@ const QuestionBank: FC = () => {
 
     /* header children */
     const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState<boolean>(false);
+    useEffect(() => {
+        const headerNavDefinitions: [string, 'neutral' | 'danger' | 'primary', MouseEventHandler, SxProps | undefined, ReactNode][] = [
+            [
+                authentication.currentUser?.displayName || 'No Name',
+                'neutral',
+                () => { },
+                { background: 'var(--joy-palette-neutral-outlinedBg) !important', cursor: 'auto !important', border: 'none' },
+                <MdPerson />
+            ],
+            [
+                'Sign Out',
+                'primary',
+                () => { authentication.signOut(); navigate('/'); },
+                undefined,
+                undefined
+            ],
+            [
+                'Delete Account',
+                'danger',
+                () => { setIsDeleteAccountModalOpen(true) },
+                undefined,
+                undefined
+            ]
+        ];
 
-    const headerNavDefinitions: [string, 'neutral' | 'danger' | 'primary', MouseEventHandler, SxProps | undefined, ReactNode][] = [
-        [
-            authentication.currentUser?.displayName || 'No Name',
-            'neutral',
-            () => { },
-            { background: 'var(--joy-palette-neutral-outlinedBg) !important', cursor: 'auto !important', border: 'none' },
+        const headerSkeletonSx = { position: 'relative', width: 'auto', height: 'fit-content' };
+
+        const headerMenuButton = <MenuButton
+            slots={{ root: IconButton }}
+            slotProps={{ root: { variant: 'outlined' } }}>
             <MdPerson />
-        ],
-        [
-            'Sign Out',
-            'primary',
-            () => { authentication.signOut(); navigate('/'); },
-            undefined,
-            undefined
-        ],
-        [
-            'Delete Account',
-            'danger',
-            () => { setIsDeleteAccountModalOpen(true) },
-            undefined,
-            undefined
-        ]
-    ];
+        </MenuButton>;
 
-    const headerSkeletonSx = { position: 'relative', width: 'auto', height: 'fit-content' };
+        setNav(<>
+            <Dropdown>
+                {authentication.isLoading
+                    ? <Skeleton sx={headerSkeletonSx}>{headerMenuButton}</Skeleton>
+                    : headerMenuButton}
+                <Menu>
+                    {headerNavDefinitions.map(headerChild => {
+                        const user = headerChild[4];
 
-    const headerMenuButton = <MenuButton
-        slots={{ root: IconButton }}
-        slotProps={{ root: { variant: 'outlined' } }}>
-        <MdPerson />
-    </MenuButton>;
-
-    const headerNav = <>
-        <Dropdown>
-            {authentication.isLoading
-                ? <Skeleton sx={headerSkeletonSx}>{headerMenuButton}</Skeleton>
-                : headerMenuButton}
-            <Menu>
+                        return <MenuItem
+                            color={headerChild[1]}
+                            onClick={headerChild[2]}
+                            sx={headerChild[3]}
+                            tabIndex={user ? -1 : 1}>
+                            {user
+                                ? <Typography><Typography level='title-lg'>{headerChild[0]}</Typography><br /><Typography level='body-md'>{authentication.currentUser?.email}</Typography></Typography>
+                                : headerChild[0]}
+                        </MenuItem>;
+                    })}
+                </Menu>
+            </Dropdown>
+            <nav>
                 {headerNavDefinitions.map(headerChild => {
-                    const tooltipText = headerChild[4];
+                    const user = headerChild[4];
 
-                    const menuItem = <MenuItem
+                    const button = <Button
+                        variant={'outlined'}
                         color={headerChild[1]}
                         onClick={headerChild[2]}
-                        sx={headerChild[3]}>
-                        {headerChild[0]}
-                    </MenuItem>;
+                        sx={headerChild[3]}
+                        startDecorator={headerChild[4]}
+                        tabIndex={user ? -1 : 1}>
+                        {user
+                            ? headerChild[0] + ' (' + authentication.currentUser?.email + ')'
+                            : headerChild[0]}
+                    </Button>;
 
-                    return tooltipText ? <MenuItem disabled><Typography><Typography level='title-lg'>{headerChild[0]}</Typography><br /><Typography level='body-md'>{tooltipText}</Typography></Typography></MenuItem> : menuItem
+                    return authentication.isLoading
+                        ? <Skeleton sx={headerSkeletonSx}>{button}</Skeleton>
+                        : button
                 })}
-            </Menu>
-        </Dropdown>
-        <nav>
-            {headerNavDefinitions.map(headerChild => {
-                const button = <Button
-                    variant={'outlined'}
-                    color={headerChild[1]}
-                    onClick={headerChild[2]}
-                    sx={headerChild[3]}
-                    startDecorator={headerChild[4]}>
-                    {headerChild[0]}
-                </Button>;
-
-                return authentication.isLoading
-                    ? <Skeleton sx={headerSkeletonSx}>{button}</Skeleton>
-                    : button
-            })}
-        </nav>
-    </>
+            </nav>
+        </>);
+    }, [authentication, navigate, setNav]);
 
     return <>
-        <Header nav={headerNav} />
         {!authentication.isLoading &&
             (authentication.isLoggedIn
                 ? <>

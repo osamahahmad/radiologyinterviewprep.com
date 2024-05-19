@@ -2,7 +2,6 @@ import React, { FC, ReactNode } from 'react';
 import './Header.css';
 import Logo from './Logo.tsx';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { scrollToTop } from '../App.tsx';
 
 interface HeaderProps {
     nav?: ReactNode;
@@ -15,7 +14,7 @@ const Header: FC<HeaderProps> = ({ nav }) => {
     return <header>
         <Logo onClick={() => {
             location.pathname === '/'
-                ? scrollToTop()
+                ? window.scrollTo({ top: 0, behavior: 'smooth' })
                 : navigate('/');
         }} />
         {nav && nav}

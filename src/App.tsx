@@ -16,14 +16,3 @@ const App: FC = () => {
 }
 
 export default App;
-
-export const getScrollable: () => Element = () => {
-    const header: Element = document.getElementsByTagName('Header')[0];
-    const parent: ParentNode | null = header?.parentNode;
-    const siblings: NodeListOf<ChildNode> | undefined = parent?.childNodes;
-    return siblings ? siblings[1] as Element : document.body;
-}
-
-export const scrollToTop = () => {
-    getScrollable().scrollTo({ top: 0, behavior: 'smooth' });
-}

@@ -12,12 +12,12 @@ import { FirebaseError } from "firebase/app";
 
 const AuthenticationContext = createContext({});
 
-interface AuthenticationProviderProps {
-    children: ReactNode;
-}
-
 export const useAuthentication: Function = () => {
     return useContext(AuthenticationContext);
+}
+
+interface AuthenticationProviderProps {
+    children: ReactNode;
 }
 
 const AuthenticationProvider: FC<AuthenticationProviderProps> = ({ children }) => {
