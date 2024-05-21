@@ -286,6 +286,12 @@ export const parseQuestionBank: (questionBank: QuestionBank) => Promise<ParsedQu
             if (nextTag === 'li')
                 nextLevel += 1;
 
+            // if format changed on the same level
+            if (nextFormat !== currentFormat && nextLevel === stack.length) {
+                decreaseCurrentLevel();
+                increaseCurrentLevel();
+            }
+
             while (nextLevel > stack.length)
                 increaseCurrentLevel();
 
@@ -298,8 +304,8 @@ export const parseQuestionBank: (questionBank: QuestionBank) => Promise<ParsedQu
 
             currentContent.push(
                 currentTag === 'li'
-                    ? <li>{currentTag + ' ' + currentFormat + ' ' + stack.length + ' ' + fullText}</li>
-                    : <p>{currentTag + ' ' + currentFormat + ' ' + stack.length + ' ' + fullText}</p>
+                    ? <li>{fullText}</li>
+                    : <p>{fullText}</p>
             );
         }
 
