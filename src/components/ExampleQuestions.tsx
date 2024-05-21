@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, useCallback, useEffect, useState } from 'react';
 import QuestionBankItem from './QuestionBankItem.tsx';
-import { blobToQuestionBank, parseQuestionBank, QuestionBank } from '../resources/QuestionBankParser.tsx';
+import { blobToQuestionBank, parseQuestionBank, RawQuestionBank } from './QuestionBankParser.tsx';
 
 interface ExampleQuestionsProps {
     Wrapper?: FC<{ children: ReactNode } & Record<string, unknown>>;
@@ -8,7 +8,7 @@ interface ExampleQuestionsProps {
 }
 
 const ExampleQuestions: FC<ExampleQuestionsProps> = ({ Wrapper, wrapperProps }) => {
-    const [questionBank, setQuestionBank] = useState<QuestionBank>();
+    const [questionBank, setQuestionBank] = useState<RawQuestionBank>();
 
     const fetchRawData = useCallback(async () => {
         const docx = await fetch("/example-question-bank.docx");
@@ -23,7 +23,7 @@ const ExampleQuestions: FC<ExampleQuestionsProps> = ({ Wrapper, wrapperProps }) 
 
     const [parsedData, setParsedData] = useState<{}>();
 
-    const parseData = useCallback(async (questionBank: QuestionBank) => {
+    const parseData = useCallback(async (questionBank: RawQuestionBank) => {
         const parsedData = await parseQuestionBank(questionBank);
         setParsedData(parsedData);
     }, [setParsedData]);
@@ -35,15 +35,15 @@ const ExampleQuestions: FC<ExampleQuestionsProps> = ({ Wrapper, wrapperProps }) 
     return (parsedData && parsedData.hasOwnProperty('Questions'))
         ? <>
             {Object.keys(parsedData['Questions']).map(key => {
-                const questionData = parsedData['Questions'][key];
+                const questionBankItemData = parsedData['Questions'][key];
 
-                const question = <QuestionBankItem data={questionData} />
+                const questionBankItem = <QuestionBankItem data={questionBankItemData} />
 
                 return Wrapper
                     ? <Wrapper {...wrapperProps}>
-                        {question}
+                        {questionBankItem}
                     </Wrapper>
-                    : question
+                    : questionBankItem
             })}
         </>
         : <></>

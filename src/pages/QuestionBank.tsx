@@ -9,6 +9,9 @@ import { MdPerson } from "react-icons/md";
 import { SxProps } from "@mui/joy/styles/types/theme";
 import { DeleteAccountModal, VerificationAlert, useAuthentication } from "../components/Authentication.tsx";
 import Footer from "../components/Footer.tsx";
+import { ParsedQuestionBank, RawQuestionBank, parseQuestionBank } from "../components/QuestionBankParser.tsx";
+import QuestionBankItem from '../components/QuestionBankItem.tsx';
+import ExampleQuestions from '../components/ExampleQuestions.tsx';
 
 const skeletonSx = { position: 'relative', width: 'auto', height: 'fit-content' };
 
@@ -114,7 +117,7 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
     const [subscriptionPortalUrl, setSubscriptionPortalUrl] = useState<string | null>(null);
     const [subscriptionCancelAtPeriodEnd, setSubscriptionCancelAtPeriodEnd] = useState<boolean>();
     const [subscriptionExpiryDate, setSubscriptionExpiryDate] = useState<Date>();
-    const [questionBank, setQuestionBank] = useState<string[]>([]);
+    const [questionBank, setQuestionBank] = useState<ParsedQuestionBank>({});
     const [subscriptionWasChecked, setSubscriptionWasChecked] = useState<boolean>(false);
 
     const checkSubscription = useCallback(async () => {
@@ -133,7 +136,9 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                 const timestampInt = parseInt(timestamp, 10);
                 setSubscriptionExpiryDate(new Date(timestampInt * 1000));
 
-                setQuestionBank(await parseQuestionBank(data['question-bank']));
+                const questionBank: RawQuestionBank = JSON.parse(data['question-bank']);
+
+                setQuestionBank(await parseQuestionBank(questionBank));
             }
         } catch (error) {
             console.error(error);
@@ -177,21 +182,22 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                 ? <div className="question-bank">
                     <VerificationAlert />
                     {subscriptionExpiryDate ? subscriptionAlert : <Skeleton sx={skeletonSx}>{subscriptionAlert}</Skeleton>}
-                    {subscriptionExpiryDate && questionBank.map((paragraph, index) => (
-                        <div key={index}>{paragraph}</div>
-                    ))}
+                    {subscriptionExpiryDate && Object.keys(questionBank).map(key => {
+                        const section = questionBank[key];
+
+                        const nodes: ReactNode[] = [];
+
+                        Object.keys(section).forEach(key => {
+                            const questionBankItemData = section[key];
+
+                            nodes.push(<QuestionBankItem data={questionBankItemData} />);
+                        })
+
+                        return <>{nodes}</>
+                    })}
                     {subscriptionWasChecked
                         ? (!subscriptionExpiryDate || hasSubscriptionExpired) && <Button onClick={() => { authentication.currentUser && (window.location.href = Paths.Subscribe + authentication.currentUser.uid) }}>Purchase</Button>
-                        : <>
-                            <Skeleton sx={skeletonSx}>
-                            </Skeleton>
-                            <Skeleton sx={skeletonSx}>
-                            </Skeleton>
-                            <Skeleton sx={skeletonSx}>
-                            </Skeleton>
-                            <Skeleton sx={skeletonSx}>
-                            </Skeleton>
-                        </>
+                        : <ExampleQuestions Wrapper={Skeleton} wrapperProps={{sx: skeletonSx}} />
                     }
                     <Footer />
                     {subscriptionWasChecked && <DeleteAccountModal

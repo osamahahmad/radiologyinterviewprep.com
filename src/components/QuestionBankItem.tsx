@@ -3,7 +3,7 @@ import React, { FC, ReactNode, useEffect, useState } from 'react';
 import './QuestionBankItem.css';
 import { MdCircle } from 'react-icons/md';
 import { useAuthentication } from './Authentication.tsx';
-import { ParsedQuestionBank } from '../resources/QuestionBankParser.tsx';
+import { ParsedQuestionBank } from '../components/QuestionBankParser.tsx';
 
 interface QuestionBankItemProps {
     data?: ParsedQuestionBank;
@@ -60,20 +60,20 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
             <Typography level='h4' color={progress !== 'neutral' ? progress : undefined}>{title}</Typography>
             {content}
         </Typography>
-        <AccordionGroup variant='outlined'>
-            <Accordion>
+        {answer || rationale && <AccordionGroup variant='outlined'>
+            {answer && <Accordion>
                 <AccordionSummary>Answer</AccordionSummary>
                 <AccordionDetails>
                     {answer}
                 </AccordionDetails>
-            </Accordion>
+            </Accordion>}
             {rationale && <Accordion>
                 <AccordionSummary>Rationale</AccordionSummary>
                 <AccordionDetails>
                     {rationale}
                 </AccordionDetails>
             </Accordion>}
-        </AccordionGroup>
+        </AccordionGroup>}
     </Card >
 };
 
