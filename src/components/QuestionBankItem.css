@@ -30,6 +30,10 @@
     background-color: var(--joy-palette-neutral-plainActiveBg);
 }
 
+.question-bank-item .MuiList-root {
+    margin-top: -.5em;
+}
+
 .question-bank-item .MuiAccordionDetails-content {
-    padding: .5em 1.5em 1em 1.5em;
+    padding: 1em 1.5em;
 }
