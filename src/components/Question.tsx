@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionGroup, AccordionSummary, Card, Dropdown, IconButton, Menu, MenuButton, MenuItem, Typography } from '@mui/joy';
-import React, { FC, ReactNode, useState } from 'react';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
 import './Question.css';
 import { MdCircle } from 'react-icons/md';
 import { useAuthentication } from './Authentication.tsx';
@@ -24,7 +24,12 @@ const Question: FC<QuestionProps> = ({ data, chips, title, content, answer, rati
 
     const authentication = useAuthentication();
 
-    const [showProgress, setShowProgress] = useState<boolean>(authentication.isLoggedIn);
+    const [showProgress, setShowProgress] = useState<boolean>(false);
+
+    useEffect(() => {
+        setShowProgress(authentication.isLoggedIn);
+    }, [setShowProgress, authentication]);
+
     const [progress, setProgress] = useState<'neutral' | 'danger' | 'warning' | 'success'>('neutral');
 
     return <Card className='question' variant='outlined' color={progress}>

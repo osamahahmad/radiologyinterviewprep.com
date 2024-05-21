@@ -2,8 +2,6 @@ import React, { FC, ReactNode, useCallback, useEffect, useState } from 'react';
 import { docxBlobToArray } from '../pages/Stringify.tsx';
 import { parseQuestionBank } from '../pages/QuestionBank.tsx';
 import Question from './Question.tsx';
-import { Chip } from '@mui/joy';
-import ColouredChip from './ColouredChip.tsx';
 
 interface ExampleQuestionsProps {
     Wrapper?: FC<{ children: ReactNode } & Record<string, unknown>>;
@@ -41,7 +39,7 @@ const ExampleQuestions: FC<ExampleQuestionsProps> = ({ Wrapper, wrapperProps }) 
         ? <>
             {Object.keys(parsedData['Questions']).map(key => {
                 const questionData = parsedData['Questions'][key];
-
+                
                 const question = <Question data={questionData} />
 
                 return Wrapper

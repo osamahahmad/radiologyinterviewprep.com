@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from "react";
-import { Button, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Link, List, Dropdown, MenuButton, IconButton, Menu, MenuItem, Chip } from '@mui/joy';
+import { Button, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Link, List, Dropdown, MenuButton, IconButton, Menu, MenuItem } from '@mui/joy';
 import './Landing.css';
 import { useNavigate } from "react-router-dom";
 import Paths from "../resources/Paths.ts";
@@ -9,7 +9,6 @@ import Logo from "../components/Logo.tsx";
 import { AuthenticationUI, AuthenticationUIMode, useAuthentication } from "../components/Authentication.tsx";
 import { MdMoreVert } from "react-icons/md";
 import Footer from "../components/Footer.tsx";
-import Question from "../components/Question.tsx";
 import ExampleQuestions from "../components/ExampleQuestions.tsx";
 
 interface HeaderNavProps {
@@ -253,55 +252,6 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
             <Typography level='h2'>Example Questions</Typography>
             <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                 <ExampleQuestions Wrapper={Grid} wrapperProps={{ xs: 12, md: 6 }} />
-                <Grid xs={12} md={6}>
-                    <Question
-                        showProgress={authentication.isLoggedIn}
-                        chips={[
-                            <Chip color='warning'>Prioritisation of Clinical Situations</Chip>,
-                            <Chip color='neutral'>6 Minutes</Chip>]
-                        }
-                        title='Prioritisation of Clinical Situations 1'
-                        content={<>
-                            <p>You are the on-call radiology registrar covering a night shift. Please prioritise the following scan requests:</p>
-                            <ol type="A">
-                                <li>CT head for a 72-year-old male with acute onset aphasia and right-sided weakness, last seen well 1 hour ago. Referred by A&E.</li>
-                                <li>MRI lumbar spine for a 42-year-old female with severe low back pain, saddle anaesthesia, and urinary incontinence for the past 6 hours. Referred by neurosurgery.</li>
-                                <li>CT pulmonary angiogram for a 28-year-old female who is 32 weeks pregnant with pleuritic chest pain and shortness of breath. Haemodynamically stable. Referred by obstetrics.</li>
-                                <li>CT abdomen/pelvis for a 9-year-old boy with right lower quadrant pain and suspected appendicitis. Referred by paediatric surgery.</li>
-                            </ol>
-                        </>}
-                        answer={<ol style={{ marginLeft: '-1em' }}>
-                            <li>A (CT head) - This patient is likely having an acute stroke and is within the thrombolysis window of 4.5 hours. As per NICE guidelines, a CT head should be performed immediately to assess eligibility for thrombolysis or thrombectomy. Delaying this scan could lead to worse outcomes, so I should communicate with the clinical team directly to coordinate.</li>
-                            <li>B (MRI lumbar spine) - This patient likely has cauda equina syndrome (CES) based on the classic triad of severe back pain, saddle anaesthesia, and urinary dysfunction. The RCR recommends scanning within 4 hours to prevent permanent neurological deficits. Timely imaging is important but the 4-hour window allows for the acute stroke to go first.</li>
-                            <li>D (CT abdomen/pelvis) - While appendicitis requires urgent diagnosis and treatment, ultrasound is the preferred first-line imaging modality in children to avoid ionising radiation per the ALARA principle. I would communicate with the clinical team to ensure they are aware of this, and if there are any valid reasons for a CT here. It may also be reasonable to take the patient directly to theatre depending on the presentation.</li>
-                            <li>C (CTPA) - Although pulmonary embolism is dangerous, especially in pregnancy, the patient is currently stable. The RCR states that risks of delayed scanning usually outweigh contrast risks even with pregnancy. However, given the other unstable cases, a slight delay is acceptable. I would explain my reasoning to the clinical team and recommend close monitoring. I would also explore the possibility of starting definitive treatment early and delaying the scan to the next day, where there is more capacity and the mother can be given time to make an informed decision. There may also be a possibility of a V/Q scan during the day, which delivers a lower radiation dose to the mother in exchange for a higher radiation dose to the baby.</li>
-                        </ol>} />
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <Card variant='plain' color='warning'>
-                        <Typography level='h4'>Question 2</Typography>
-                        <Typography>
-                            You are covering an overnight radiology shift at a trauma centre. Please prioritise the following cases:
-                            <ol type="A">
-                                <li>CT head for a 25-year-old male in a high-speed MVA, intubated in the trauma bay. Haemodynamically unstable.</li>
-                                <li>CT abdomen/pelvis for an 82-year-old female with abdominal pain and distension. Lactate 4.5. Referred by general surgery.</li>
-                                <li>MRI brain for a 37-year-old female with new seizures and a right temporal lobe mass on recent outpatient CT. Neurology referral.</li>
-                                <li>CT face for a 19-year-old male with isolated facial trauma after an alleged assault. Stable vitals. Plastic surgery referral.</li>
-                            </ol>
-                        </Typography>
-                        <Accordion>
-                            <AccordionSummary>Reveal Answer</AccordionSummary>
-                            <AccordionDetails color='warning'>
-                                <ol>
-                                    <li>A (CT head/trauma scan) - This patient requires an emergent trauma scan based on the mechanism and haemodynamic instability. The primary survey should be completed within 15 minutes per RCR guidelines, followed by a full report within 1 hour. I should communicate with the clinical team directly to coordinate.</li>
-                                    <li>B (CT abdomen/pelvis) - The patient likely has ischaemic bowel or another intra-abdominal catastrophe based on the abdominal exam and elevated lactate. Emergent CT is indicated after the trauma patient. This scan will likely be delayed because of the trauma patient, so It would be important to explain this to the clinical team in case they need to modify their management plan.</li>
-                                    <li>D (CT face) - While this patient requires timely imaging, his isolated facial trauma and haemodynamic stability allow him to be imaged after the unstable polytrauma and acute abdomen. Most other fractures would benefit initially from plain film imaging in two views, but CT is appropriate for facial trauma. If the scan is for operative planning, the clinical team may be amenable to delay it till the morning. It's worth discussing with the clinical team whether any further imaging is required for occult injury to he head or neck.</li>
-                                    <li>C (MRI brain) - Although a new brain mass is concerning, this patient is currently stable and was referred from an outpatient setting. The RCR recommends MRI within 2 weeks for suspected brain tumours in stable patients.</li>
-                                </ol>
-                            </AccordionDetails>
-                        </Accordion>
-                    </Card>
-                </Grid>
                 <Grid xs={12} md={6}>
                     <Card variant='plain' color='warning'>
                         <Typography level='h4'>Question 3</Typography>
