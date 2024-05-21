@@ -1,19 +1,6 @@
 import React, { useState } from "react";
-import JSZip from "jszip";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-
-export const docxBlobToArray: (blob: Blob) => Promise<string[] | undefined> = async (blob: Blob) => {
-    try {
-        const zip = new JSZip();
-        const content = await zip.loadAsync(blob);
-        return [
-            await content.file("word/document.xml")?.async("text") as string,
-            await content.file("word/numbering.xml")?.async("text") as string
-        ];
-    } catch (error) {
-        console.error(error);
-    }
-}
+import { blobToQuestionBank } from "../resources/QuestionBankParser.tsx";
 
 const Stringify: React.FC = () => {
     useDocumentTitle('Stringify');
@@ -21,9 +8,9 @@ const Stringify: React.FC = () => {
     const [string, setString] = useState<string>();
 
     const onFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        const rawData = file && await docxBlobToArray(file);
-        setString(JSON.stringify(rawData));
+        const blob = event.target.files?.[0];
+        const questionBank = blob && await blobToQuestionBank(blob);
+        setString(JSON.stringify(questionBank));
     };
 
     return (

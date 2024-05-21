@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from "react";
-import { Button, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Link, List, Dropdown, MenuButton, IconButton, Menu, MenuItem } from '@mui/joy';
+import { Button, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Link, List, Dropdown, MenuButton, IconButton, Menu, MenuItem, ListItem } from '@mui/joy';
 import './Landing.css';
 import { useNavigate } from "react-router-dom";
 import Paths from "../resources/Paths.ts";
@@ -91,6 +91,7 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
             <Menu>
                 {sections.map(section => {
                     return <MenuItem
+                        key={section}
                         color={section === 'question-bank' ? 'success' : 'neutral'}
                         onClick={() => handleSectionClick(section)}
                         sx={activeSection === section ? (section === 'question-bank' ? activeSuccessMenuItemSx : activeMenuItemSx) : {}}
@@ -103,6 +104,7 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
         <nav>
             {sections.map(section => {
                 return <Button
+                    key={section}
                     variant='outlined'
                     color='neutral'
                     onClick={() => handleSectionClick(section)}
@@ -164,315 +166,143 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
         </div>
         <Card className={sections[1]}>
             <Typography className='landing-card-title' level='h2'>Interview Structure</Typography>
-            <Typography>
-                <List>
-                    <li>
-                        In 2024, the radiology interview format underwent an unexpected change, shifting from the familiar <strong>Commitment to Specialty</strong> and <strong>Personal Skills</strong> stations to the newly introduced <Typography color='warning'><strong>Prioritisation of Clinical Situations</strong></Typography> and <Typography color='danger'><strong>Specialty Skills</strong></Typography> stations.
-                    </li>
-                    <li>
-                        <Typography color='warning'><strong>Prioritisation of Clinical Situations:</strong></Typography>
-                        <ul>
-                            <li>
-                                Personally advised by senior trainees to prepare by reasoning through a list of scan requests and ordering them by priority
-                            </li>
-                            <li>
-                                Additional questions were anticipated, but no extra preparation recommended
-                            </li>
-                            <li>
-                                Demonstrate your ability to cope with pressure and manage uncertainty, ensuring patient safety
-                            </li>
-                            <li>
-                                I felt this would be a good place for questions on stress, burnout, discussing strategies for managing stress etc.
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <Typography color='danger'><strong>Specialty Skills:</strong></Typography>
-                        <ul>
-                            <li>
-                                Trainees suggested I review basic plain film, CT head, and CTPA interpretation
-                            </li>
-                            <li>
-                                Focus remained on delivering polished, well-thought-out answers, similar to the previous format
-                            </li>
-                            <li>
-                                Showcase your communication skills, performance under pressure, and provide examples of relevant clinical scenarios
-                            </li>
-                            <li>
-                                Discuss transferable skills, additional qualifications, and research experience
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        Possible reasons for the change:
-                        <ul>
-                            <li>
-                                Differentiate between genuine radiology enthusiasts and those applying to chance it
-                            </li>
-                            <li>
-                                Difficult for those without a true interest in radiology to quickly prepare for more speciality-focused stations
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        Expectations for the new format:
-                        <ul>
-                            <li>
-                                More specific questions related to the radiology department, wider organisational bodies, and legislation (e.g., IRMER)
-                            </li>
-                            <li>
-                                Ethical scenario likely integrated into the personal skills assessment, rather than being a standalone question
-                            </li>
-                            <li>
-                                Well-prepared candidates still need to demonstrate strong commitment to the speciality and personal skills
-                            </li>
-                            <li>
-                                Emphasise your understanding of teamwork, participation in MDT meetings, and conflict resolution
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        Adapting to the new radiology interviews:
-                        <ul>
-                            <li>
-                                Don't be afraid to showcase your skills!
-                            </li>
-                            <li>
-                                Demonstrate genuine interest and a deep understanding of the speciality
-                            </li>
-                            <li>
-                                Be prepared to tackle integrated ethical scenarios in any station
-                            </li>
-                        </ul>
-                    </li>
-                </List>
-            </Typography>
+            <Typography>In 2024, the radiology interview format underwent an unexpected change, shifting from the familiar <strong>Commitment to Specialty</strong> and <strong>Personal Skills</strong> stations to the newly introduced <Typography color='warning'><strong>Prioritisation of Clinical Situations</strong></Typography> and <Typography color='danger'><strong>Specialty Skills</strong></Typography> stations.</Typography>
+            <Typography color='warning'><strong>Prioritisation of Clinical Situations:</strong></Typography>
+            <List marker="disc">
+                <ListItem>
+                    Personally advised by senior trainees to prepare by reasoning through a list of scan requests and ordering them by priority
+                </ListItem>
+                <ListItem>
+                    Additional questions were anticipated, but no extra preparation recommended
+                </ListItem>
+                <ListItem>
+                    Demonstrate your ability to cope with pressure and manage uncertainty, ensuring patient safety
+                </ListItem>
+                <ListItem>
+                    I felt this would be a good place for questions on stress, burnout, discussing strategies for managing stress etc.
+                </ListItem>
+            </List>
+            <Typography color='danger'><strong>Specialty Skills:</strong></Typography>
+            <List marker="disc">
+                <ListItem>
+                    Trainees suggested I review basic plain film, CT head, and CTPA interpretation
+                </ListItem>
+                <ListItem>
+                    Focus remained on delivering polished, well-thought-out answers, similar to the previous format
+                </ListItem>
+                <ListItem>
+                    Showcase your communication skills, performance under pressure, and provide examples of relevant clinical scenarios
+                </ListItem>
+                <ListItem>
+                    Discuss transferable skills, additional qualifications, and research experience
+                </ListItem>
+            </List>
+            <Typography>Possible reasons for the change:</Typography>
+            <List marker="disc">
+                <ListItem>
+                    Differentiate between genuine radiology enthusiasts and those applying to chance it
+                </ListItem>
+                <ListItem>
+                    Difficult for those without a true interest in radiology to quickly prepare for more speciality-focused stations
+                </ListItem>
+            </List>
+            <Typography>Expectations for the new format:</Typography>
+            <List marker="disc">
+                <ListItem>
+                    More specific questions related to the radiology department, wider organisational bodies, and legislation (e.g., IRMER)
+                </ListItem>
+                <ListItem>
+                    Ethical scenario likely integrated into the personal skills assessment, rather than being a standalone question
+                </ListItem>
+                <ListItem>
+                    Well-prepared candidates still need to demonstrate strong commitment to the speciality and personal skills
+                </ListItem>
+                <ListItem>
+                    Emphasise your understanding of teamwork, participation in MDT meetings, and conflict resolution
+                </ListItem>
+            </List>
+            <Typography>Adapting to the new radiology interviews:</Typography>
+            <List marker="disc">
+                <ListItem>
+                    Don't be afraid to showcase your skills!
+                </ListItem>
+                <ListItem>
+                    Demonstrate genuine interest and a deep understanding of the speciality
+                </ListItem>
+                <ListItem>
+                    Be prepared to tackle integrated ethical scenarios in any station
+                </ListItem>
+            </List>
         </Card>
         <Card className={sections[2]}>
             <Typography level='h2'>Example Questions</Typography>
             <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                 <ExampleQuestions Wrapper={Grid} wrapperProps={{ xs: 12, md: 6 }} />
-                <Grid xs={12} md={6}>
-                    <Card variant='plain' color='warning'>
-                        <Typography level='h4'>Question 3</Typography>
-                        <Typography>
-                            You are the daytime radiology registrar. Please prioritise the following cases:
-                            <ol type="A">
-                                <li>MRI Internal Auditory Meati (IAMs) for a 52-year-old male with acute right-sided sensorineural hearing loss. ENT referral.</li>
-                                <li>CT head for a 67-year-old female on warfarin, now with acute headache and vomiting. INR 3.5. A&E referral.</li>
-                                <li>US Doppler scrotum for a 14-year-old male with acute testicular pain and swelling for 2 hours. Urology referral.</li>
-                                <li>CT coronary angiogram for a 58-year-old male with atypical chest pain. RACPC referral.</li>
-                            </ol>
-                        </Typography>
-                        <Accordion>
-                            <AccordionSummary>Reveal Answer</AccordionSummary>
-                            <AccordionDetails color='warning'>
-                                <ol>
-                                    <li>C (US Doppler scrotum) - This patient likely has testicular torsion given his age and acute presentation. Ultrasound within 4 hours is crucial to assess salvageability of the testis, and I would coordinate with the sonographers to make sure this happens. This is so that the definitive management of bilateral fixation can be performed as soon as possible.</li>
-                                    <li>B (CT head) - This patient likely has an acute intracranial haemorrhage given the clinical scenario and supratherapeutic INR. Delaying CT could lead to herniation and death. A non-contrast CT head is indicated, and I would ask the clinical team to monitor for deterioration while pending scan.</li>
-                                    <li>A (MRI IAMs) - While hearing loss can be idiopathic, an inner ear mass or labyrinthitis needs to be excluded. However, this can safely be done within 1-2 weeks per ENT UK guidelines in absence of other cranial nerve palsies.</li>
-                                    <li>D (CT coronary angiogram) - This is an outpatient with atypical chest pain, meaning their pretest probability of coronary artery disease is low. The RACPC should work the patient up with a stress test first per NICE guidelines. Radiation dose is also a concern. It is worth noting that inappropriate scans can lead to unnecessary downstream testing and patient anxiety, and it would be important to communicate this to the clinical team.</li>
-                                </ol>
-                            </AccordionDetails>
-                        </Accordion>
-                    </Card>
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <Card variant='plain' color='warning'>
-                        <Typography level='h4'>Question 1</Typography>
-                        <Typography>
-                            Have you ever been in a situation where you felt out of your depth clinically and how did you handle it?
-                        </Typography>
-                        <Accordion>
-                            <AccordionSummary>Reveal Answer</AccordionSummary>
-                            <AccordionDetails color='danger'>
-                                <p>
-                                    As a foundation doctor, there have been many instances where I felt I was working at the edge of my clinical competence. One specific example was when I was the sole FY1 covering the urology ward on a busy weekend. My registrar was called to theatre, leaving me to manage the entire ward independently.
-                                </p>
-                                <p>
-                                    I remember feeling quite overwhelmed. I was receiving frequent calls from nurses regarding unwell patients, and there was one particularly complex patient who deteriorated and perforated while in SAU. I had to break bad news to the family, which added to the pressure.
-                                </p>
-                                <p>
-                                    I took a step back, made a list of all the jobs prioritising them by urgency, and systematically worked through them. I openly communicated with the nursing staff about the situation. I also made sure to keep my registrar informed about the workload.
-                                </p>
-                                <p>
-                                    Recognising the need for senior input, I deemed it appropriate to call the consultant in from home for support and decision-making. Eventually, the consultant came in, freeing up the registrar to assist me with the ward jobs.
-                                </p>
-                                <p>
-                                    Through simple measures like prioritising, communicating effectively, and escalating appropriately, I was able to manage a highly pressurised situation to the best of my ability and ensure optimal patient care.
-                                </p>
-                                <p>
-                                    During my radiology taster week, I observed how such skills are crucial for radiologists, especially during busy on-calls where they have to juggle urgent reporting, vetting scans, and troubleshooting issues with radiographers. The attributes I demonstrated would enable me to cope effectively with the pressures inherent to radiology.
-                                </p>
-                            </AccordionDetails>
-                        </Accordion>
-                        <Accordion>
-                            <AccordionSummary>Reveal Rationale</AccordionSummary>
-                            <AccordionDetails color='danger'>
-                                <p>
-                                    This answer demonstrates key qualities necessary for managing pressure and uncertainty in radiology: recognising when feeling out of depth, taking a systematic approach, communicating effectively, seeking senior support appropriately, and reflecting on how skills transfer to radiology. The answer uses a relevant clinical example, maintains patient focus, and links back to radiology.
-                                </p>
-                            </AccordionDetails>
-                        </Accordion>
-                    </Card>
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <Card variant='plain' color='warning'>
-                        <Typography level='h4'>Question 2</Typography>
-                        <Typography>
-                            Can you give an example of when you worked effectively in a multidisciplinary team to improve patient care?
-                        </Typography>
-                        <Accordion>
-                            <AccordionSummary>Reveal Answer</AccordionSummary>
-                            <AccordionDetails color='danger'>
-                                <p>
-                                    Effective multidisciplinary teamwork is fundamental to quality patient care. A great example of this was during my time as an FY1 in haematology.
-                                    We had a chemotherapy patient who contacted the clinical nurse specialist (CNS) suspecting febrile neutropenia. The CNS promptly arranged for the patient to attend the day unit and asked me to review them.
-                                </p>
-                                <p>
-                                    By the time I arrived, the CNS had already taken bloods and administered the first dose of antibiotics, expediting the patient's care. I clerked the patient, confirming the diagnosis of febrile neutropenia, and discussed the case with my registrar to finalise the management plan. I provided a thorough handover to the ward nurses to ensure continuity of care.
-                                </p>
-                                <p>
-                                    I also liaised with the on-call radiographer to arrange an urgent chest x-ray in light of the patient's neutropenic sepsis and need for isolation. All of this came together within an hour of the patient arriving - a real testament to efficient multidisciplinary collaboration.
-                                </p>
-                                <p>
-                                    This experience highlighted to me the importance of valuing and respecting the contributions of all members of the healthcare team. Clear communication, a shared understanding of roles, and a united focus on the patient enables swift, coordinated action.
-                                </p>
-                                <p>
-                                    On my radiology taster week, I observed a similar ethos of multidisciplinary cooperation. Whether it was radiologists working with radiographers to protocol scans, or contributing their expertise in MDT meetings, the principles of effective teamwork were evident throughout.
-                                </p>
-                                <p>
-                                    I believe my experiences and skills in collaborative working would allow me to integrate well into the radiology team and interface effectively with other specialties to optimise patient care.
-                                </p>
-                            </AccordionDetails>
-                        </Accordion>
-                        <Accordion>
-                            <AccordionSummary>Reveal Rationale</AccordionSummary>
-                            <AccordionDetails color='danger'>
-                                <p>
-                                    This answer provides a clear example demonstrating effective MDT work, with specific actions taken by the candidate and others to improve patient care. Key teamwork skills are highlighted and the importance of respecting all team members is emphasised. The answer maintains a strong patient focus throughout and links the experience to what was observed in radiology.
-                                </p>
-                            </AccordionDetails>
-                        </Accordion>
-                    </Card>
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <Card variant='plain' color='warning'>
-                        <Typography level='h4'>Question 3</Typography>
-                        <Typography>
-                            What particular skills do you have that will help you to become a good radiologist?
-                        </Typography>
-                        <Accordion>
-                            <AccordionSummary>Reveal Answer</AccordionSummary>
-                            <AccordionDetails color='danger'>
-                                <p>
-                                    I believe I possess several skills that would enable me to become an effective radiologist. Firstly, I have strong problem-solving abilities. As an avid coder since my school days, I've developed a systematic approach to tackling complex issues. Recently, I taught myself the React framework and was the lead developer on a software package for medical handover - all done in my spare time. The logical thinking and tenacity required for coding are skills I believe will serve me well in radiology, especially when faced with challenging diagnostic conundrums.
-                                </p>
-                                <p>
-                                    I'm also passionate about research and innovation. I'm currently involved in a qualitative study exploring clinicians' opinions on AI in healthcare. Through this, I'm gaining an appreciation of the nuances and complexities around introducing AI into clinical practice. With radiology being at the forefront of AI application, I feel my research experience and understanding of the associated challenges will be valuable.
-                                </p>
-                                <p>
-                                    Additionally, I have a strong academic foundation and self-directed learning skills. I've consistently performed well in exams and have developed effective strategies for assimilating large volumes of information. These attributes will aid me in tackling the rigorous radiology curriculum and passing the FRCR exams.
-                                </p>
-                                <p>
-                                    Importantly, I'm a strong communicator and team player. I've received excellent feedback on my ability to communicate with patients and colleagues. For example, when I was working in ED, I was commended for my sensitive breaking of bad news to a patient's family after an unexpected CT finding of malignancy. I believe my interpersonal skills will enable me to discuss imaging findings clearly, both with patients and in MDT settings.
-                                </p>
-                                <p>
-                                    Finally, I'm highly motivated and committed to a career in radiology. I've gone out of my way to gain experience in the field, including a special study module, a taster week, and two audits. I've also undertaken relevant extracurricular activities, such as the NHS Clinical Entrepreneur programme. I believe my drive and dedication will see me through the challenges of radiology training.
-                                </p>
-                            </AccordionDetails>
-                        </Accordion>
-                        <Accordion>
-                            <AccordionSummary>Reveal Rationale</AccordionSummary>
-                            <AccordionDetails color='danger'>
-                                <p>
-                                    This answer highlights a range of skills relevant to radiology, including problem-solving, research and innovation, academic ability, communication, teamwork and commitment to the specialty. Specific examples are provided to illustrate these skills. The answer touches on key aspects of a radiologist's role (diagnostic challenges, AI, FRCR exams, patient communication, MDTs) demonstrating good insight.
-                                </p>
-                            </AccordionDetails>
-                        </Accordion>
-                    </Card>
-                </Grid>
             </Grid>
         </Card>
         <Card className={sections[3]}>
             <Typography level='h2'>My Method</Typography>
-            <Typography>
-                <List>
-                    <li>
-                        Don't stress over a low portfolio score &#8212; mine was one of the lowest of all successful candidates. Focus on nailing the interview for maximum points.
-                    </li>
-                    <li>
-                        Contextualise your Radiology experience in both professional and personal contexts:
-                        <ul>
-                            <li>
-                                <Link href='https://podcasters.spotify.com/pod/show/radcast'>RadCast</Link> is a cheat code for building experience; dive into their library before the interview
-                            </li>
-                            <li>
-                                Familiarise yourself with Radiology jargon and the daily life of registrars and consultants
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        Rehearse sentences for each aspect of the <Link href='https://medical.hee.nhs.uk/medical-training-recruitment/medical-specialty-training/person-specifications/person-specifications-2024/clinical-radiology-st1-2024'>person specification</Link>, e.g.:
-                        <ul>
-                            <li>
-                                For <Typography color='neutral'>"Evidence of involvement in management commensurate with experience"</Typography>: "Radiologists deal with specialties across the hospital, so they're well-placed to lead in healthcare planning and management. I therefore feel that radiology will allow me to continue developing my leadership skills — I'm currently an FY2 rep. for my hospital — and I strongly believe that effective clinical leadership is essential for improving patient care."
-                            </li>
-                            <li>
-                                For <Typography color='neutral'>"an understanding of the structure of training and potential careers in chosen specialty"</Typography>: "Radiology has a five-or-six-year training programme, it's run-through, and the first three years are spent developing core skills. The last few years are then spent on maintaining those skills and, also, sub-specialising."
-                            </li>
-                            <li>
-                                For <Typography color='neutral'>"Demonstrates understanding of the basic principles of audit, clinical risk management, evidence-based practice, patient safety and clinical quality improvement initiatives"</Typography>: "Clinical audits evaluate current practice against a standard or guideline to improve patient care. An audit cycle involves performing an audit, implementing change, and re-auditing to evaluate that change."
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        Show an understanding of Clinical Radiology:
-                        <ul>
-                            <li>
-                                Display enthusiasm and discuss personal experiences in Radiology
-                            </li>
-                            <li>
-                                Be aware of REALMs, IRMER/IRR, clinical governance, and the RCR Workforce Census
-                            </li>
-                            <li>
-                                Know the structure of Clinical Radiology training inside out, including the importance of the FRCR exam schedule and a day in the life of a trainee
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <Typography color='warning'><strong>Prioritisation of Clinical Situations:</strong></Typography>
-                        <ul>
-                            <li>
-                                Demonstrate understanding of clinical concerns when prioritising, such as the need for urgent intervention and the effects of radiation, especially in paediatric or obstetric cases
-                            </li>
-                            <li>
-                                Consider differential diagnoses and alternative investigations
-                            </li>
-                            <li>
-                                Showcase your previous experience and knowledge to present yourself as a well-rounded clinician
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <Typography color='danger'><strong>Specialty Skills:</strong></Typography>
-                        <ul>
-                            <li>
-                                Understand the NHS Constitution and Good Medical Practice
-                            </li>
-                            <li>
-                                Always prioritise patient safety and know your role and escalation procedures
-                            </li>
-                            <li>
-                                Avoid criticising MDT colleagues or RCR/NHS positions, e.g. on the introduction of PAs into the specialty
-                            </li>
-                            <li>
-                                Provide evidence of your communication, stress management, and transferrable skills, as well as additional achievements
-                            </li>
-                        </ul>
-                    </li>
-                </List>
-            </Typography>
+            <Typography>Don't stress over a low portfolio score &#8212; mine was one of the lowest of all successful candidates. Focus on nailing the interview for maximum points.</Typography>
+            <Typography>Contextualise your Radiology experience in both professional and personal contexts:</Typography>
+            <List marker="disc">
+                <ListItem>
+                    <Link href='https://podcasters.spotify.com/pod/show/radcast'>RadCast</Link> is a cheat code for building experience; dive into their library before the interview
+                </ListItem>
+                <ListItem>
+                    Familiarise yourself with Radiology jargon and the daily life of registrars and consultants
+                </ListItem>
+            </List>
+            <Typography>Rehearse sentences for each aspect of the <Link href='https://medical.hee.nhs.uk/medical-training-recruitment/medical-specialty-training/person-specifications/person-specifications-2024/clinical-radiology-st1-2024'>person specification</Link>, e.g.:</Typography>
+            <List marker="disc">
+                <ListItem>
+                    For <Typography color='neutral'>"Evidence of involvement in management commensurate with experience"</Typography>: "Radiologists deal with specialties across the hospital, so they're well-placed to lead in healthcare planning and management. I therefore feel that radiology will allow me to continue developing my leadership skills — I'm currently an FY2 rep. for my hospital — and I strongly believe that effective clinical leadership is essential for improving patient care."
+                </ListItem>
+                <ListItem>
+                    For <Typography color='neutral'>"an understanding of the structure of training and potential careers in chosen specialty"</Typography>: "Radiology has a five-or-six-year training programme, it's run-through, and the first three years are spent developing core skills. The last few years are then spent on maintaining those skills and, also, sub-specialising."
+                </ListItem>
+                <ListItem>
+                    For <Typography color='neutral'>"Demonstrates understanding of the basic principles of audit, clinical risk management, evidence-based practice, patient safety and clinical quality improvement initiatives"</Typography>: "Clinical audits evaluate current practice against a standard or guideline to improve patient care. An audit cycle involves performing an audit, implementing change, and re-auditing to evaluate that change."
+                </ListItem>
+            </List>
+            <Typography>Show an understanding of Clinical Radiology:</Typography>
+            <List marker="disc">
+                <ListItem>
+                    Display enthusiasm and discuss personal experiences in Radiology
+                </ListItem>
+                <ListItem>
+                    Be aware of REALMs, IRMER/IRR, clinical governance, and the RCR Workforce Census
+                </ListItem>
+                <ListItem>
+                    Know the structure of Clinical Radiology training inside out, including the importance of the FRCR exam schedule and a day in the life of a trainee
+                </ListItem>
+            </List>
+            <Typography color='warning'><strong>Prioritisation of Clinical Situations:</strong></Typography>
+            <List marker="disc">
+                <ListItem>
+                    Demonstrate understanding of clinical concerns when prioritising, such as the need for urgent intervention and the effects of radiation, especially in paediatric or obstetric cases
+                </ListItem>
+                <ListItem>
+                    Consider differential diagnoses and alternative investigations
+                </ListItem>
+                <ListItem>
+                    Showcase your previous experience and knowledge to present yourself as a well-rounded clinician
+                </ListItem>
+            </List>
+            <Typography color='danger'><strong>Specialty Skills:</strong></Typography>
+            <List marker="disc">
+                <ListItem>
+                    Understand the NHS Constitution and Good Medical Practice
+                </ListItem>
+                <ListItem>
+                    Always prioritise patient safety and know your role and escalation procedures
+                </ListItem>
+                <ListItem>
+                    Avoid criticising MDT colleagues or RCR/NHS positions, e.g. on the introduction of PAs into the specialty
+                </ListItem>
+                <ListItem>
+                    Provide evidence of your communication, stress management, and transferrable skills, as well as additional achievements
+                </ListItem>
+            </List>
         </Card>
         <Card className={sections[4]} variant='outlined'>
             <Typography level='h2' color='success'>{sectionTitles[sections[4]]}</Typography>

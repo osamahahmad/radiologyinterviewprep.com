@@ -1,28 +1,32 @@
 import { Accordion, AccordionDetails, AccordionGroup, AccordionSummary, Card, Dropdown, IconButton, Menu, MenuButton, MenuItem, Typography } from '@mui/joy';
 import React, { FC, ReactNode, useEffect, useState } from 'react';
-import './Question.css';
+import './QuestionBankItem.css';
 import { MdCircle } from 'react-icons/md';
 import { useAuthentication } from './Authentication.tsx';
+import { ParsedQuestionBank } from '../resources/QuestionBankParser.tsx';
 
-interface QuestionProps {
-    data?: {};
-    chips?: ReactNode[];
-    title?: string;
-    content?: ReactNode;
-    answer?: ReactNode;
-    rationale?: ReactNode;
+interface QuestionBankItemProps {
+    data?: ParsedQuestionBank;
 };
 
-const Question: FC<QuestionProps> = ({ data, chips, title, content, answer, rationale }) => {
-    if (data) {
-        chips = data['chips'];
-        title = data['title'];
-        content = data['content'];
-        answer = data['answer'];
-        rationale = data['ratonale'];
-    }
-
+const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
     const authentication = useAuthentication();
+
+    const [chips, setChips] = useState<ReactNode>();
+    const [title, setTitle] = useState<ReactNode>();
+    const [content, setContent] = useState<ReactNode>();
+    const [answer, setAnswer] = useState<ReactNode>();
+    const [rationale, setRationale] = useState<ReactNode>();
+
+    useEffect(() => {
+        if (data) {
+            data.hasOwnProperty('chips') && setChips(data['chips']);
+            data.hasOwnProperty('title') && setTitle(data['title']);
+            data.hasOwnProperty('content') && setContent(data['content']);
+            data.hasOwnProperty('Answer') && setAnswer(data['Answer']);
+            data.hasOwnProperty('Rationale') && setRationale(data['Rationale']);
+        }
+    }, [data, setChips, setTitle, setContent, setAnswer, setRationale]);
 
     const [showProgress, setShowProgress] = useState<boolean>(false);
 
@@ -32,7 +36,7 @@ const Question: FC<QuestionProps> = ({ data, chips, title, content, answer, rati
 
     const [progress, setProgress] = useState<'neutral' | 'danger' | 'warning' | 'success'>('neutral');
 
-    return <Card className='question' variant='outlined' color={progress}>
+    return <Card className='question-bank-item' variant='outlined' color={progress}>
         {(showProgress || chips) && <div>
             {showProgress && <Dropdown>
                 <MenuButton
@@ -49,12 +53,12 @@ const Question: FC<QuestionProps> = ({ data, chips, title, content, answer, rati
                 </Menu>
             </Dropdown>}
             <div>
-                {chips && chips.map(chip => chip)}
+                {chips}
             </div>
         </div>}
         <Typography>
             <Typography level='h4' color={progress !== 'neutral' ? progress : undefined}>{title}</Typography>
-            {content && <Typography>{content}</Typography>}
+            {content}
         </Typography>
         <AccordionGroup variant='outlined'>
             <Accordion>
@@ -73,4 +77,4 @@ const Question: FC<QuestionProps> = ({ data, chips, title, content, answer, rati
     </Card >
 };
 
-export default Question;
+export default QuestionBankItem;
