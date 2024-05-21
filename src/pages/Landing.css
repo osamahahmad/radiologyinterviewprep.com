@@ -53,21 +53,3 @@
     gap: .5em;
     padding-top: 0;
 }
-
-.landing>.structure>p>ul>li,
-.landing>.method>p>ul>li {
-    font-weight: bold;
-}
-
-
-.landing>.structure>p>ul>li:first-of-type,
-.landing>.method>p>ul>li:first-of-type {
-    font-weight: normal;
-}
-
-.landing>.structure>p>ul>li>ul,
-.landing>.method>p>ul>li>ul {
-    font-weight: normal;
-    list-style-type: disc;
-    padding-left: 1.25em;
-}
