@@ -1,8 +1,14 @@
 .landing {
-    padding: var(--padding-sm);
     display: flex;
     flex-direction: column;
     gap: var(--padding);
+    padding: var(--padding-sm);
+}
+
+@media screen and (min-width: 1024px) {
+    .landing {
+        padding: var(--padding);
+    }
 }
 
 .landing>.welcome {
@@ -36,63 +42,32 @@
     }
 }
 
-@media screen and (min-width: 1024px) {
-    .landing {
-        padding: var(--padding);
-    }
+.landing>.structure>h2,
+.landing>.questions>h2,
+.landing>.method>h2 {
+    margin-bottom: .25em;
 }
 
-/* main points */
 .landing>.structure>p>ul,
 .landing>.method>p>ul {
-    gap: var(--padding);
+    gap: .5em;
+    padding-top: 0;
 }
 
-.landing p>ul>li {
+.landing>.structure>p>ul>li,
+.landing>.method>p>ul>li {
     font-weight: bold;
 }
 
-.landing p>ul>li:first-of-type {
+
+.landing>.structure>p>ul>li:first-of-type,
+.landing>.method>p>ul>li:first-of-type {
     font-weight: normal;
 }
 
-/* bullet points */
-.landing p>ul>li>ul {
+.landing>.structure>p>ul>li>ul,
+.landing>.method>p>ul>li>ul {
     font-weight: normal;
     list-style-type: disc;
     padding-left: 1.25em;
-}
-
-/* accordians */
-.landing .MuiAccordionDetails-content {
-    padding: var(--padding);
-}
-
-.landing .MuiAccordionDetails-content,
-.landing div>div>div>p>ol,
-.landing div>div>div>div>div>div>ol {
-    display: flex;
-    flex-direction: column;
-    gap: var(--padding);
-}
-
-.landing div>div>div>p>ol,
-.landing div>div>div>div>div>div>ol {
-    margin: 0;
-
-}
-
-.landing div>div>div>p>ol,
-.landing div>div>div>div>div>div>ol {
-    padding-left: 1.5em;
-}
-
-.landing .MuiAccordionDetails-content>p,
-.landing div>div>div>p>ol>li,
-.landing div>div>div>div>div>div>ol>li {
-    margin: 0;
-}
-
-footer {
-    text-align: center;
 }

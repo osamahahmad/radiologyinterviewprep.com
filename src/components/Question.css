@@ -1,0 +1,38 @@
+.question>div:first-of-type {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.question>div:first-of-type>div:first-of-type {
+    display: flex;
+    gap: .5em;
+}
+
+.question ol {
+    display: flex;
+    flex-direction: column;
+    gap: .5em;
+}
+
+.question .MuiAccordionGroup-root {
+    border-radius: var(--joy-radius-md);
+    overflow: hidden;
+}
+
+.question .MuiAccordion-root:last-of-type {
+    border-bottom: none;
+}
+
+.question .MuiAccordionGroup-root ol {
+    margin: 0;
+    margin-top: var(--padding-xs);
+}
+
+.question .MuiAccordionSummary-root>[aria-expanded="true"] {
+    background-color: var(--joy-palette-neutral-plainHoverBg);
+}
+
+.question .MuiAccordionSummary-root>[aria-expanded="true"]:hover {
+    background-color: var(--joy-palette-neutral-plainActiveBg);
+}
