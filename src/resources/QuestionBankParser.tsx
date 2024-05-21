@@ -187,16 +187,43 @@ export const parseQuestionBank: (questionBank: QuestionBank) => Promise<ParsedQu
         const paragraph = paragraphs[i];
 
         // get the full text content of each paragraph
+        // get the full text content of each paragraph
         let fullText: string = '';
+        const fullTextParts: ReactNode[] = [];
 
         const texts = paragraph.getElementsByTagName('w:t');
         for (let j = 0; j < texts.length; j++) {
             const text = texts[j];
+            const parentElement = text.parentElement;
+
+            let textContent: string = '';
             if (text.childNodes)
-                fullText += text.childNodes[0].nodeValue;
+                textContent += text.childNodes[0].nodeValue;
+
+            fullText += textContent;
+
+            let formattedTextContent: ReactNode = textContent;
+
+            if (parentElement) {
+                const boldElements = parentElement.getElementsByTagName('w:b');
+                const italicElements = parentElement.getElementsByTagName('w:i');
+                const underlineElements = parentElement.getElementsByTagName('w:u');
+
+                if (boldElements.length > 0)
+                    formattedTextContent = <strong>{formattedTextContent}</strong>;
+
+                if (italicElements.length > 0)
+                    formattedTextContent = <i>{formattedTextContent}</i>;
+
+                if (underlineElements.length > 0)
+                    formattedTextContent = <u>{formattedTextContent}</u>;
+            }
+
+            fullTextParts.push(formattedTextContent);
         }
 
         fullText = fullText.trim();
+        const fullTextNode = <>{fullTextParts}</>;
 
         // stop if paragraph is undesirable
         const isPageNumber = paragraph.getElementsByTagName("w:fldChar").length > 0;
@@ -244,7 +271,7 @@ export const parseQuestionBank: (questionBank: QuestionBank) => Promise<ParsedQu
 
                 currentHeading2 = title;
 
-                output[currentHeading1][title] = { title };
+                output[currentHeading1][title] = { title: fullTextNode };
             }
         } else if (nextStyle === 'Heading3') {
             newHeading3(fullText);
@@ -304,8 +331,8 @@ export const parseQuestionBank: (questionBank: QuestionBank) => Promise<ParsedQu
 
             currentContent.push(
                 currentTag === 'li'
-                    ? <li>{fullText}</li>
-                    : <p>{fullText}</p>
+                    ? <li>{fullTextNode}</li>
+                    : <p>{fullTextNode}</p>
             );
         }
 
