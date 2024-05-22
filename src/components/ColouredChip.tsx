@@ -1,5 +1,5 @@
-import { Chip } from '@mui/joy';
-import React, { FC, ReactNode } from 'react';
+import { Chip, ChipDelete } from '@mui/joy';
+import React, { FC, MouseEventHandler, ReactNode } from 'react';
 
 const getNodeText = (node: ReactNode) => {
     if (['string', 'number'].includes(typeof node)) return node
@@ -8,9 +8,14 @@ const getNodeText = (node: ReactNode) => {
 
 interface ColouredChipProps {
     children: ReactNode;
+    variant?: 'solid' | 'outlined';
+    currentTags?: string[];
+    setCurrentTags?: Function;
+    onClick?: MouseEventHandler;
+    onDelete?: MouseEventHandler;
 }
 
-const ColouredChip: FC<ColouredChipProps> = ({ children }) => {
+const ColouredChip: FC<ColouredChipProps> = ({ children, variant = 'outlined', currentTags, setCurrentTags, onClick, onDelete = null }) => {
     const text = getNodeText(children);
 
     const color =
@@ -20,7 +25,31 @@ const ColouredChip: FC<ColouredChipProps> = ({ children }) => {
                 ? 'danger'
                 : 'neutral';
 
-    return <Chip color={color}>{children}</Chip>
+    const isCurrentTag = currentTags && currentTags.indexOf(text) !== -1;
+
+    return <Chip
+        color={color}
+        variant={
+            currentTags
+                ? isCurrentTag
+                    ? 'solid'
+                    : 'outlined'
+                : variant}
+        onClick={
+            onClick
+                ? onClick
+                : setCurrentTags
+                    ? () => {
+                        const nextTags: string[] = isCurrentTag ? [] : [text];
+
+                        currentTags?.forEach(tag => tag !== text && nextTags.push(tag));
+
+                        setCurrentTags(nextTags)
+                    }
+                    : undefined}
+        endDecorator={onDelete && <ChipDelete onClick={onDelete} />}>
+        {children}
+    </Chip >
 };
 
 export default ColouredChip;

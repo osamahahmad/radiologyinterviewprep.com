@@ -23,10 +23,8 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
         setActiveSection(section);
 
         const element: HTMLElement = document.getElementsByClassName(section)[0] as HTMLElement;
-
         const header = document.getElementsByTagName('header')[0];
         const headerHeight = header.getBoundingClientRect().height;
-
         const top = (sections && sections[0] === section) ? 0 : element.offsetTop - headerHeight;
 
         window.scrollTo({ top: top, behavior: 'smooth' });

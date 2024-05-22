@@ -175,13 +175,15 @@ export const parseQuestionBank: (questionBank: RawQuestionBank) => Promise<Parse
     }
 
     const getCurrentContentAsWrappedReactNode: () => ReactNode = () => {
-        const node: ReactNode = <>{currentContent.map(node => node)}</>;
+        /*let allTypography = true;
+
+        currentContent.forEach(node => allTypography = !!(node && node['type']['muiName'] === 'Typography'));*/
 
         return currentFormat
             ? currentFormat === 'bullet'
-                ? <List marker='disc'>{node}</List>
-                : <List component="ol" marker={convertFormatToType(currentFormat)}>{node}</List>
-            : node;
+                ? <List marker='disc'>{currentContent}</List>
+                : <List component="ol" marker={convertFormatToType(currentFormat)}>{currentContent}</List>
+            : <>{currentContent}</>;
     }
 
     for (let i = 0; i < paragraphs.length; i++) {
@@ -240,14 +242,15 @@ export const parseQuestionBank: (questionBank: RawQuestionBank) => Promise<Parse
 
         if (nextStyle === 'Subtitle') {
             if (currentHeading1 && currentHeading2) {
-                const idMatches = fullText.match(/^\[(\d+)\]/);
+                const idMatches = fullText.match(/^\[(.+)\]/);
 
                 if (idMatches && idMatches.length > 1) {
                     const id = idMatches[1];
                     output[currentHeading1][currentHeading2]['id'] = id;
                     const tags = fullText.substring((id + '[]: ').length);
                     const split = tags.split(" / ");
-                    output[currentHeading1][currentHeading2]['chips'] = <>{split.map(tag => <ColouredChip>{tag}</ColouredChip>)}</>;
+                    output[currentHeading1][currentHeading2]['tags'] = [currentHeading1];
+                    split.forEach(tag => tag.length > 0 && currentHeading1 && output[currentHeading1][currentHeading2]['tags'].push(tag))
                 }
             }
         } else if (nextStyle === 'Heading1') {
@@ -331,7 +334,7 @@ export const parseQuestionBank: (questionBank: RawQuestionBank) => Promise<Parse
 
             currentContent.push(
                 currentTag === 'li'
-                    ? <ListItem>{fullTextNode}</ListItem>
+                    ? <ListItem>{fullTextNode}</ListItem >
                     : <Typography>{fullTextNode}</Typography>
             );
         }

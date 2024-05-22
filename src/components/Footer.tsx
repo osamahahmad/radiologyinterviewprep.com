@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
     if (location.pathname !== pathname)
       _navigate(pathname as any);
     else
-      window.scrollTo({top: 0, behavior: 'smooth'});
+      window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   return <footer>

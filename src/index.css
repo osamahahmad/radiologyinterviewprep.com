@@ -5,6 +5,10 @@ body,
   padding: 0;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   --transition: .3s ease;
   --padding: var(--joy-fontSize-xl);

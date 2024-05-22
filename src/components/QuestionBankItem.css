@@ -34,6 +34,14 @@
     margin-top: -.5em;
 }
 
+.question-bank-item .MuiAccordionDetails-root {
+    margin: 0;
+}
+
 .question-bank-item .MuiAccordionDetails-content {
-    padding: 1em 1.5em;
+    padding: .5em;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .5em;
 }

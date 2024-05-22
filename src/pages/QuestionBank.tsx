@@ -1,17 +1,16 @@
 import React, { FC, MouseEventHandler, ReactNode, useCallback, useEffect, useState } from "react";
 import "./QuestionBank.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-import { Alert, Button, Card, Dropdown, IconButton, Input, Link, List, ListItem, ListItemButton, ListSubheader, Menu, MenuItem, Skeleton, Typography } from "@mui/joy";
+import { Alert, Button, Dropdown, IconButton, Input, Link, List, ListItem, ListItemButton, ListSubheader, Menu, MenuItem, Skeleton, Typography } from "@mui/joy";
 import Paths from '../resources/Paths.ts';
 import { Navigate, useNavigate } from "react-router-dom";
 import MenuButton from "@mui/joy/MenuButton/MenuButton";
-import { MdPerson } from "react-icons/md";
+import { MdClear, MdExpandLess, MdExpandMore, MdPerson } from "react-icons/md";
 import { SxProps } from "@mui/joy/styles/types/theme";
 import { DeleteAccountModal, VerificationAlert, useAuthentication } from "../components/Authentication.tsx";
 import Footer from "../components/Footer.tsx";
 import { ParsedQuestionBank, RawQuestionBank, parseQuestionBank } from "../components/QuestionBankParser.tsx";
 import QuestionBankItem from '../components/QuestionBankItem.tsx';
-import ExampleQuestions from '../components/ExampleQuestions.tsx';
 import ColouredChip from "../components/ColouredChip.tsx";
 
 const skeletonSx = { position: 'relative', width: 'auto', height: 'fit-content' };
@@ -115,11 +114,12 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
     }, [authentication, navigate, setNav]);
 
     /* subscription & question bank */
+    const [subscriptionWasChecked, setSubscriptionWasChecked] = useState<boolean>(false);
     const [subscriptionPortalUrl, setSubscriptionPortalUrl] = useState<string | null>(null);
     const [subscriptionCancelAtPeriodEnd, setSubscriptionCancelAtPeriodEnd] = useState<boolean>();
     const [subscriptionExpiryDate, setSubscriptionExpiryDate] = useState<Date>();
+
     const [questionBank, setQuestionBank] = useState<ParsedQuestionBank>({});
-    const [subscriptionWasChecked, setSubscriptionWasChecked] = useState<boolean>(false);
 
     const checkSubscription = useCallback(async () => {
         setSubscriptionWasChecked(false);
@@ -178,35 +178,151 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
             </Typography>
         </Alert>;
 
+    const skeletonQuestion: ReactNode =
+        <Skeleton sx={skeletonSx}>
+            <QuestionBankItem data={{
+                title: 'Skeleton Title',
+                content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac pharetra nibh. Aenean mollis vestibulum venenatis. Duis suscipit nunc non nisi eleifend tempus. Ut at aliquet sapien. Nulla facilisi. Duis aliquam lobortis pellentesque. Cras tellus massa, viverra nec porta vel, ultrices non enim. Donec sollicitudin, eros vel sollicitudin laoreet, purus massa ornare augue, ut commodo velit mauris a massa. Praesent lobortis libero sed felis tempor mollis. Aliquam quis faucibus nisi, ac volutpat nunc.',
+                answer: 'Skeleton Answer',
+                rationale: 'Skeleton Rationale'
+            }} />
+        </Skeleton>
+
+    const [currentTags, setCurrentTags] = useState<string[]>([]);
+
+    const [chips, setChips] = useState<ReactNode[]>();
+
+    useEffect(() => {
+        const nextTags: string[] = [];
+
+        Object.keys(questionBank).forEach(key => {
+            const section = questionBank[key];
+
+            Object.keys(section).forEach(key => {
+                const questionBankItemData = section[key];
+
+                const tags = questionBankItemData['tags'];
+
+                tags.forEach(tag => {
+                    if (nextTags.indexOf(tag) === -1)
+                        nextTags.push(tag);
+                });
+            });
+        });
+
+        setChips(nextTags.map(tag => {
+            return <ColouredChip
+                currentTags={currentTags}
+                setCurrentTags={setCurrentTags}>
+                {tag}
+            </ColouredChip>;
+        }));
+    }, [setChips, questionBank, currentTags]);
+
+    const [displayedData, setDisplayedData] = useState<ParsedQuestionBank>('');
+
+    const [searchQuery, setSearchQuery] = useState<string>('');
+
+    useEffect(() => {
+        if (searchQuery || currentTags.length > 0) {
+            const nextDisplayedData = {};
+
+            Object.keys(questionBank).forEach(key => {
+                const section = questionBank[key];
+
+                const nextSection = {};
+
+                Object.keys(section).forEach(key => {
+                    const questionBankItemData = section[key];
+
+                    if (key.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1) {
+                        let isInAllCurrentTags = true;
+
+                        currentTags.forEach(tag => isInAllCurrentTags && (isInAllCurrentTags = questionBankItemData['tags'].indexOf(tag) !== -1));
+
+                        if (isInAllCurrentTags)
+                            nextSection[key] = questionBankItemData;
+                    }
+                });
+
+                nextDisplayedData[key] = nextSection;
+            });
+
+            setDisplayedData(nextDisplayedData);
+        }
+        else
+            setDisplayedData(questionBank);
+    }, [searchQuery, currentTags, questionBank, setDisplayedData]);
+
+    const [searchBoxExpanded, setSearchBoxExpanded] = useState<boolean>(false);
+    const [originalScrollPosition, setOriginalScrollPosition] = useState<number>(0);
+
     const searchBox =
-        <Card>
-            <Input placeholder='Search...' />
-            <div className='chips'>
-                <ColouredChip>Prioritisation of Clinical Situations</ColouredChip>
-                <ColouredChip>Speciality Skills</ColouredChip>
+        <div className={'question-bank-search-box' + (searchBoxExpanded ? ' expanded' : '')}>
+            <div>
+                <Input placeholder='Search...'
+                    onChange={e => setSearchQuery(e.target.value)}
+                    value={searchQuery}
+                    endDecorator={
+                        searchQuery && <IconButton onClick={() => setSearchQuery('')}>
+                            <MdClear />
+                        </IconButton>}
+                />
+                <IconButton variant='outlined' onClick={() => {
+                    if (!searchBoxExpanded)
+                        setOriginalScrollPosition(window.scrollY);
+
+                    const element = document.getElementsByClassName('question-bank-search-box')[0];
+
+                    const scrollTo =
+                        searchBoxExpanded
+                            ? originalScrollPosition
+                            : element ? 84 : 0;
+
+                    window.scrollTo({ top: scrollTo, behavior: 'smooth' });
+
+                    setSearchBoxExpanded(!searchBoxExpanded);
+                }}>
+                    {searchBoxExpanded ? <MdExpandLess /> : <MdExpandMore />}
+                </IconButton>
             </div>
+            <div className='chips'>{chips}</div>
             <List component='nav' variant="outlined">
-                {subscriptionExpiryDate && Object.keys(questionBank).map(key => {
-                    const section = questionBank[key];
+                {subscriptionExpiryDate && Object.keys(displayedData).map(key => {
+                    const section = displayedData[key];
 
                     const nodes: ReactNode[] = [];
 
-                    nodes.push(<ListSubheader>{key}</ListSubheader>);
+                    nodes.push(<ListItem sx={{ paddingLeft: 0 }}><ListSubheader>{key}</ListSubheader></ListItem>);
 
                     Object.keys(section).forEach(key => {
                         const questionBankItemData = section[key];
 
                         nodes.push(
                             <ListItemButton
-                                onClick={() => document.getElementById('question-bank-item-' + questionBankItemData.id)?.scrollIntoView({behavior: 'smooth'})}>
-                                {questionBankItemData.title}
+                                onClick={() => {
+                                    const element = document.getElementById('question-bank-item-' + questionBankItemData.id) as HTMLElement;
+                                    const header = document.getElementsByTagName('header')[0];
+                                    const headerHeight = header ? header.getBoundingClientRect().height : 0;
+                                    const searchBox = document.getElementsByClassName('question-bank-search-box expanded')[0];
+                                    const searchBoxHeight = searchBox ? searchBox.getBoundingClientRect().height : 0;
+                                    const top =
+                                        window.matchMedia("(min-width: 1025px)").matches
+                                            ? element.offsetTop - headerHeight - 20
+                                            : element.offsetTop - searchBoxHeight - 100;
+
+                                    window.scrollTo({ top, behavior: 'smooth' });
+
+                                    setSearchBoxExpanded(false);
+                                }}>
+                                <Typography color={questionBankItemData['progress']}>{questionBankItemData.title}</Typography>
                             </ListItemButton>);
                     })
 
                     return <>{nodes}</>
                 })}
             </List>
-        </Card>;
+        </div>;
 
     return <>
         {!authentication.isLoading &&
@@ -214,11 +330,20 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                 ? <div className="question-bank-page">
                     <VerificationAlert />
                     {subscriptionExpiryDate ? subscriptionAlert : <Skeleton sx={skeletonSx}>{subscriptionAlert}</Skeleton>}
-                    <div className="question-bank-page-questions">
+                    <div className="question-bank-page-questions-wrapper">
                         {subscriptionExpiryDate ? searchBox : <Skeleton sx={skeletonSx}>{searchBox}</Skeleton>}
-                        <div>
-                            {subscriptionExpiryDate && Object.keys(questionBank).map(key => {
-                                const section = questionBank[key];
+                        {currentTags && currentTags.length > 0 && <div className='question-bank-filters'>
+                            {currentTags.map(tag =>
+                                <ColouredChip
+                                    currentTags={currentTags}
+                                    setCurrentTags={setCurrentTags}>
+                                    {tag}
+                                </ColouredChip>
+                            )}
+                        </div>}
+                        <div className="question-bank-page-questions">
+                            {subscriptionExpiryDate && Object.keys(displayedData).map(key => {
+                                const section = displayedData[key];
 
                                 const nodes: ReactNode[] = [];
 
@@ -232,7 +357,7 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                             })}
                             {subscriptionWasChecked
                                 ? (!subscriptionExpiryDate || hasSubscriptionExpired) && <Button onClick={() => { authentication.currentUser && (window.location.href = Paths.Subscribe + authentication.currentUser.uid) }}>Purchase</Button>
-                                : <ExampleQuestions Wrapper={Skeleton} wrapperProps={{ sx: skeletonSx }} />
+                                : <>{[0, 0, 0, 0, 0, 0].map(() => skeletonQuestion)}</>
                             }
                         </div>
                     </div>

@@ -1,7 +1,7 @@
 footer {
   display: flex;
   flex-direction: column;
-  padding: var(--padding);
+  padding: var(--padding-sm);
   gap: var(--padding-sm);
   align-items: center;
   justify-content: center;
@@ -10,14 +10,14 @@ footer {
 @media screen and (min-width: 769px) {
   footer {
     flex-direction: row;
-    gap: var(--padding-sm);
+    padding: var(--padding);
   }
 }
 
 footer>*:first-child {
   display: flex;
   justify-content: center;
-  gap: var(--padding-sm);
+  gap: inherit;
 }
 
 footer>p:first-of-type {

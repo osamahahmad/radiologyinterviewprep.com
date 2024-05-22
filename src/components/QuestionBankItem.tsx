@@ -1,35 +1,24 @@
 import { Accordion, AccordionDetails, AccordionGroup, AccordionSummary, Card, Dropdown, IconButton, Menu, MenuButton, MenuItem, Typography } from '@mui/joy';
-import React, { FC, ReactNode, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import './QuestionBankItem.css';
 import { MdCircle } from 'react-icons/md';
 import { useAuthentication } from './Authentication.tsx';
 import { ParsedQuestionBank } from '../components/QuestionBankParser.tsx';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { db } from '../resources/Firebase.js';
+import ColouredChip from './ColouredChip.tsx';
 
 interface QuestionBankItemProps {
     data?: ParsedQuestionBank;
 };
 
 const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
-    // set content
-    const [id, setId] = useState<string>();
-    const [chips, setChips] = useState<ReactNode>();
-    const [title, setTitle] = useState<ReactNode>();
-    const [content, setContent] = useState<ReactNode>();
-    const [answer, setAnswer] = useState<ReactNode>();
-    const [rationale, setRationale] = useState<ReactNode>();
-
-    useEffect(() => {
-        if (data) {
-            data.hasOwnProperty('id') && setId(data['id']);
-            data.hasOwnProperty('chips') && setChips(data['chips']);
-            data.hasOwnProperty('title') && setTitle(data['title']);
-            data.hasOwnProperty('content') && setContent(data['content']);
-            data.hasOwnProperty('Answer') && setAnswer(data['Answer']);
-            data.hasOwnProperty('Rationale') && setRationale(data['Rationale']);
-        }
-    }, [data, setId, setChips, setTitle, setContent, setAnswer, setRationale]);
+    const id = (data && data.hasOwnProperty('id')) ? data['id'] : undefined;
+    const tags: string[] = (data && data.hasOwnProperty('tags')) ? data['tags'] : undefined;
+    const title = (data && data.hasOwnProperty('title')) ? data['title'] : undefined;
+    const content = (data && data.hasOwnProperty('content')) ? data['content'] : undefined;
+    const answer = (data && data.hasOwnProperty('Answer')) ? data['Answer'] : undefined;
+    const rationale = (data && data.hasOwnProperty('Rationale')) ? data['Rationale'] : undefined;
 
     // hooks
     const authentication = useAuthentication();
@@ -72,8 +61,8 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
         setShowProgress(authentication.isLoggedIn);
     }, [setShowProgress, authentication]);
 
-    return <Card key={id} id={'question-bank-item-' + id} className='question-bank-item' variant='outlined' color={progress}>
-        {(showProgress || chips) && <div>
+    return <Card id={'question-bank-item-' + id} className='question-bank-item' variant='outlined' color={progress}>
+        {(showProgress || tags) && <div>
             {showProgress && <Dropdown>
                 <MenuButton
                     slots={{ root: IconButton }}
@@ -82,6 +71,7 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
                 </MenuButton>
                 <Menu>
                     {(['danger', 'warning', 'success'] as typeof progress[]).map(color => <MenuItem
+                        key={color}
                         color={color}
                         onClick={() => setProgress(color)}>
                         <MdCircle />
@@ -89,7 +79,7 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
                 </Menu>
             </Dropdown>}
             <div>
-                {chips}
+                {tags && tags.map(tag => <ColouredChip>{tag}</ColouredChip>)}
             </div>
         </div>}
         <Typography>
