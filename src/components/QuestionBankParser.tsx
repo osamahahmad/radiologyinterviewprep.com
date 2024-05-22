@@ -1,6 +1,5 @@
 import React, { ReactNode } from "react";
 import JSZip from "jszip";
-import ColouredChip from './ColouredChip.tsx';
 import { List, ListItem, Typography } from "@mui/joy";
 
 export type RawQuestionBank = [document: string, numbering: string];
