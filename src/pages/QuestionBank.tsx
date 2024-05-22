@@ -1,4 +1,4 @@
-import React, { FC, MouseEventHandler, ReactNode, useCallback, useEffect, useState } from "react";
+import React, { FC, MouseEventHandler, ReactNode, useEffect, useState } from "react";
 import "./QuestionBank.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import { Alert, Button, Dropdown, IconButton, Input, Link, List, ListItem, ListItemButton, ListSubheader, Menu, MenuItem, Skeleton, Typography } from "@mui/joy";
@@ -12,6 +12,7 @@ import Footer from "../components/Footer.tsx";
 import { ParsedQuestionBank, RawQuestionBank, parseQuestionBank } from "../components/QuestionBankParser.tsx";
 import QuestionBankItem from '../components/QuestionBankItem.tsx';
 import ColouredChip from "../components/ColouredChip.tsx";
+import QuestionBankProgressTitle from "../components/QuestionBankListItem.tsx";
 
 const skeletonSx = { position: 'relative', width: 'auto', height: 'fit-content' };
 
@@ -121,36 +122,39 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
 
     const [questionBank, setQuestionBank] = useState<ParsedQuestionBank>({});
 
-    const checkSubscription = useCallback(async () => {
-        setSubscriptionWasChecked(false);
+    useEffect(() => {
+        const checkSubscription = async () => {
+            if (authentication.currentUser?.uid) {
+                setSubscriptionWasChecked(false);
 
-        try {
-            const response = await fetch('https://radiology-interview-prep-serverless.osamah-ahmad.workers.dev?user-uid=' + authentication.currentUser?.uid);
-            if (response.status === 200) {
-                const data = JSON.parse(await response.text());
+                try {
+                    const response = await fetch('https://radiology-interview-prep-serverless.osamah-ahmad.workers.dev?user-uid=' + authentication.currentUser.uid);
 
-                setSubscriptionPortalUrl(data['url']);
+                    if (response.status === 200) {
+                        const data = JSON.parse(await response.text());
 
-                setSubscriptionCancelAtPeriodEnd(data['cancel_at_period_end']);
+                        setSubscriptionPortalUrl(data['url']);
 
-                const timestamp = data['current_period_end'];
-                const timestampInt = parseInt(timestamp, 10);
-                setSubscriptionExpiryDate(new Date(timestampInt * 1000));
+                        setSubscriptionCancelAtPeriodEnd(data['cancel_at_period_end']);
 
-                const questionBank: RawQuestionBank = JSON.parse(data['question-bank']);
+                        const timestamp = data['current_period_end'];
+                        const timestampInt = parseInt(timestamp, 10);
+                        setSubscriptionExpiryDate(new Date(timestampInt * 1000));
 
-                setQuestionBank(await parseQuestionBank(questionBank));
+                        const questionBank: RawQuestionBank = JSON.parse(data['question-bank']);
+
+                        setQuestionBank(await parseQuestionBank(questionBank));
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+
+                setSubscriptionWasChecked(true);
             }
-        } catch (error) {
-            console.error(error);
         }
 
-        setSubscriptionWasChecked(true);
-    }, [authentication.currentUser?.uid, setSubscriptionPortalUrl, setSubscriptionCancelAtPeriodEnd, setSubscriptionExpiryDate, setQuestionBank, setSubscriptionWasChecked]);
-
-    useEffect(() => {
         checkSubscription();
-    }, [checkSubscription]);
+    }, [authentication, setSubscriptionPortalUrl, setSubscriptionCancelAtPeriodEnd, setSubscriptionExpiryDate, setQuestionBank, setSubscriptionWasChecked]);
 
     const hasSubscriptionExpired: boolean = subscriptionExpiryDate ? subscriptionExpiryDate < new Date(Date.now()) : false;
     const willSubscriptionExpireThisWeek: boolean = (subscriptionExpiryDate && !subscriptionCancelAtPeriodEnd) ? subscriptionExpiryDate < new Date(Date.now() + (7 * 86400000)) : false;
@@ -174,9 +178,12 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                             month: 'long',
                             year: 'numeric'
                         }))
-                }. {subscriptionPortalUrlLink && <>{subscriptionPortalUrlLink}.</>}
+                }. {subscriptionPortalUrlLink
+                    ? subscriptionPortalUrlLink
+                    : <Link onClick={() => window.location.href = Paths.Subscribe + authentication.currentUser.uid}>Reubscribe</Link>
+                }.
             </Typography>
-        </Alert>;
+        </Alert >;
 
     const skeletonQuestion: ReactNode =
         <Skeleton sx={skeletonSx}>
@@ -315,7 +322,7 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
 
                                     setSearchBoxExpanded(false);
                                 }}>
-                                <Typography color={questionBankItemData['progress']}>{questionBankItemData.title}</Typography>
+                                <QuestionBankProgressTitle id={questionBankItemData['id']}>{questionBankItemData.title}</QuestionBankProgressTitle>
                             </ListItemButton>);
                     })
 
@@ -324,54 +331,63 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
             </List>
         </div>;
 
-    return <>
-        {!authentication.isLoading &&
-            (authentication.isLoggedIn
-                ? <div className="question-bank-page">
-                    <VerificationAlert />
-                    {subscriptionExpiryDate ? subscriptionAlert : <Skeleton sx={skeletonSx}>{subscriptionAlert}</Skeleton>}
-                    <div className="question-bank-page-questions-wrapper">
-                        {subscriptionExpiryDate ? searchBox : <Skeleton sx={skeletonSx}>{searchBox}</Skeleton>}
-                        {currentTags && currentTags.length > 0 && <div className='question-bank-filters'>
-                            {currentTags.map(tag =>
-                                <ColouredChip
-                                    currentTags={currentTags}
-                                    setCurrentTags={setCurrentTags}>
-                                    {tag}
-                                </ColouredChip>
-                            )}
-                        </div>}
-                        <div className="question-bank-page-questions">
-                            {subscriptionExpiryDate && Object.keys(displayedData).map(key => {
-                                const section = displayedData[key];
+    const page = <>
+        <VerificationAlert />
+        {subscriptionExpiryDate ? subscriptionAlert : <Skeleton sx={skeletonSx}>{subscriptionAlert}</Skeleton>}
+        <div className="question-bank-page-questions-wrapper">
+            {subscriptionExpiryDate
+                ? searchBox
+                : <Skeleton className='question-bank-search-box-skeleton' sx={skeletonSx}>{searchBox}</Skeleton>}
 
-                                const nodes: ReactNode[] = [];
+            {currentTags && currentTags.length > 0 && <div className='question-bank-filters'>
+                {currentTags.map(tag =>
+                    <ColouredChip
+                        currentTags={currentTags}
+                        setCurrentTags={setCurrentTags}>
+                        {tag}
+                    </ColouredChip>
+                )}
+            </div>}
+            <div className="question-bank-page-questions">
+                {subscriptionExpiryDate && Object.keys(displayedData).map(key => {
+                    const section = displayedData[key];
 
-                                Object.keys(section).forEach(key => {
-                                    const questionBankItemData = section[key];
+                    const nodes: ReactNode[] = [];
 
-                                    nodes.push(<QuestionBankItem data={questionBankItemData} />);
-                                })
+                    Object.keys(section).forEach(key => {
+                        const questionBankItemData = section[key];
 
-                                return <>{nodes}</>
-                            })}
-                            {subscriptionWasChecked
-                                ? (!subscriptionExpiryDate || hasSubscriptionExpired) && <Button onClick={() => { authentication.currentUser && (window.location.href = Paths.Subscribe + authentication.currentUser.uid) }}>Purchase</Button>
-                                : <>{[0, 0, 0, 0, 0, 0].map(() => skeletonQuestion)}</>
-                            }
-                        </div>
-                    </div>
-                    <Footer />
-                    {subscriptionWasChecked && <DeleteAccountModal
-                        nextPath="/"
-                        dangers={(subscriptionWasChecked && subscriptionExpiryDate && !subscriptionCancelAtPeriodEnd) ? [<Typography sx={{ color: 'inherit', fontSize: 'inherit' }}>{subscriptionPortalUrlLink} of your subscription first.</Typography>] : undefined}
-                        open={isDeleteAccountModalOpen}
-                        onClose={() => setIsDeleteAccountModalOpen(false)}
-                    />}
-                </div>
-                : <Navigate to={Paths.SignIn} replace />
-            )}
-    </>
+                        nodes.push(<QuestionBankItem data={questionBankItemData} />);
+                    })
+
+                    return <>{nodes}</>
+                })}
+                {!subscriptionExpiryDate && <>{[0, 0, 0, 0, 0, 0].map(() => skeletonQuestion)}</>}
+            </div>
+        </div>
+        <Footer />
+        {subscriptionWasChecked && <DeleteAccountModal
+            nextPath="/"
+            dangers={(subscriptionWasChecked && subscriptionExpiryDate && !subscriptionCancelAtPeriodEnd) ? [<Typography sx={{ color: 'inherit', fontSize: 'inherit' }}>{subscriptionPortalUrlLink} of your subscription first.</Typography>] : undefined}
+            open={isDeleteAccountModalOpen}
+            onClose={() => setIsDeleteAccountModalOpen(false)}
+        />}
+    </>;
+
+    return <div className="question-bank-page">
+        {authentication.isLoading
+            ? page
+            : authentication.isLoggedIn
+                ? (subscriptionWasChecked && !subscriptionExpiryDate)
+                    ? hasSubscriptionExpired
+                        ? subscriptionAlert
+                        : [0].map(() => {
+                            window.location.replace(Paths.Subscribe + authentication.currentUser.uid);
+                            return <></>
+                        })
+                    : page
+                : <Navigate to={Paths.SignIn} replace />}
+    </div>
 };
 
 export default QuestionBank;

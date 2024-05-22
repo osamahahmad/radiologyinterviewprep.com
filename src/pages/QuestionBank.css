@@ -28,12 +28,16 @@
 }
 
 /* search box */
+.question-bank-search-box-skeleton,
+.question-bank-search-box {
+    padding: 16px;
+}
+
 .question-bank-search-box {
     display: flex;
     flex-direction: column;
     gap: inherit;
     box-sizing: border-box;
-    padding: 16px;
     border-radius: 12px;
     background-color: white;
     border: 1px solid var(--joy-palette-neutral-300);
@@ -47,8 +51,12 @@
 }
 
 @media screen and (min-width: 1025px) {
+    .question-bank-search-box-skeleton,
     .question-bank-search-box {
         flex: 1;
+    }
+
+    .question-bank-search-box {
         height: calc(100svh - (var(--top) + 2 * var(--margin)));
         transition: none;
     }
