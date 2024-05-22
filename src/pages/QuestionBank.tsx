@@ -1,7 +1,7 @@
 import React, { FC, MouseEventHandler, ReactNode, useCallback, useEffect, useState } from "react";
 import "./QuestionBank.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-import { Alert, Button, Dropdown, IconButton, Link, Menu, MenuItem, Skeleton, Typography } from "@mui/joy";
+import { Alert, Button, Card, Dropdown, IconButton, Input, Link, List, ListItem, ListItemButton, ListSubheader, Menu, MenuItem, Skeleton, Typography } from "@mui/joy";
 import Paths from '../resources/Paths.ts';
 import { Navigate, useNavigate } from "react-router-dom";
 import MenuButton from "@mui/joy/MenuButton/MenuButton";
@@ -12,6 +12,7 @@ import Footer from "../components/Footer.tsx";
 import { ParsedQuestionBank, RawQuestionBank, parseQuestionBank } from "../components/QuestionBankParser.tsx";
 import QuestionBankItem from '../components/QuestionBankItem.tsx';
 import ExampleQuestions from '../components/ExampleQuestions.tsx';
+import ColouredChip from "../components/ColouredChip.tsx";
 
 const skeletonSx = { position: 'relative', width: 'auto', height: 'fit-content' };
 
@@ -156,49 +157,85 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
 
     const subscriptionPortalUrlLink = subscriptionPortalUrl ? <Link onClick={() => { window.location.href = subscriptionPortalUrl }}>{subscriptionCancelAtPeriodEnd ? 'Renew' : 'Cancel Renewal'}</Link> : null;
 
-    const subscriptionAlert = <Alert color={hasSubscriptionExpired ? 'danger' : (willSubscriptionExpireThisWeek ? 'warning' : 'success')}>
-        <Typography level="body-sm" sx={{ color: "inherit" }}>
-            Your subscription {hasSubscriptionExpired ? 'expired' : (subscriptionCancelAtPeriodEnd ? 'will expire' : 'will renew')} at {
-                subscriptionExpiryDate && (
-                    subscriptionExpiryDate.toLocaleString('en-GB', {
-                        hour: 'numeric',
-                        minute: 'numeric',
-                        hour12: true
-                    }) +
-                    ' on ' +
-                    subscriptionExpiryDate.toLocaleString('en-GB', {
-                        weekday: 'long',
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                    }))
-            }. {subscriptionPortalUrlLink && <>{subscriptionPortalUrlLink}.</>}
-        </Typography>
-    </Alert>;
+    const subscriptionAlert =
+        <Alert color={hasSubscriptionExpired ? 'danger' : (willSubscriptionExpireThisWeek ? 'warning' : 'success')}>
+            <Typography level="body-sm" sx={{ color: "inherit" }}>
+                Your subscription {hasSubscriptionExpired ? 'expired' : (subscriptionCancelAtPeriodEnd ? 'will expire' : 'will renew')} at {
+                    subscriptionExpiryDate && (
+                        subscriptionExpiryDate.toLocaleString('en-GB', {
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            hour12: true
+                        }) +
+                        ' on ' +
+                        subscriptionExpiryDate.toLocaleString('en-GB', {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        }))
+                }. {subscriptionPortalUrlLink && <>{subscriptionPortalUrlLink}.</>}
+            </Typography>
+        </Alert>;
+
+    const searchBox =
+        <Card>
+            <Input placeholder='Search...' />
+            <div className='chips'>
+                <ColouredChip>Prioritisation of Clinical Situations</ColouredChip>
+                <ColouredChip>Speciality Skills</ColouredChip>
+            </div>
+            <List component='nav' variant="outlined">
+                {subscriptionExpiryDate && Object.keys(questionBank).map(key => {
+                    const section = questionBank[key];
+
+                    const nodes: ReactNode[] = [];
+
+                    nodes.push(<ListSubheader>{key}</ListSubheader>);
+
+                    Object.keys(section).forEach(key => {
+                        const questionBankItemData = section[key];
+
+                        nodes.push(
+                            <ListItemButton
+                                onClick={() => document.getElementById('question-bank-item-' + questionBankItemData.id)?.scrollIntoView({behavior: 'smooth'})}>
+                                {questionBankItemData.title}
+                            </ListItemButton>);
+                    })
+
+                    return <>{nodes}</>
+                })}
+            </List>
+        </Card>;
 
     return <>
         {!authentication.isLoading &&
             (authentication.isLoggedIn
-                ? <div className="question-bank">
+                ? <div className="question-bank-page">
                     <VerificationAlert />
                     {subscriptionExpiryDate ? subscriptionAlert : <Skeleton sx={skeletonSx}>{subscriptionAlert}</Skeleton>}
-                    {subscriptionExpiryDate && Object.keys(questionBank).map(key => {
-                        const section = questionBank[key];
+                    <div className="question-bank-page-questions">
+                        {subscriptionExpiryDate ? searchBox : <Skeleton sx={skeletonSx}>{searchBox}</Skeleton>}
+                        <div>
+                            {subscriptionExpiryDate && Object.keys(questionBank).map(key => {
+                                const section = questionBank[key];
 
-                        const nodes: ReactNode[] = [];
+                                const nodes: ReactNode[] = [];
 
-                        Object.keys(section).forEach(key => {
-                            const questionBankItemData = section[key];
+                                Object.keys(section).forEach(key => {
+                                    const questionBankItemData = section[key];
 
-                            nodes.push(<QuestionBankItem data={questionBankItemData} />);
-                        })
+                                    nodes.push(<QuestionBankItem data={questionBankItemData} />);
+                                })
 
-                        return <>{nodes}</>
-                    })}
-                    {subscriptionWasChecked
-                        ? (!subscriptionExpiryDate || hasSubscriptionExpired) && <Button onClick={() => { authentication.currentUser && (window.location.href = Paths.Subscribe + authentication.currentUser.uid) }}>Purchase</Button>
-                        : <ExampleQuestions Wrapper={Skeleton} wrapperProps={{sx: skeletonSx}} />
-                    }
+                                return <>{nodes}</>
+                            })}
+                            {subscriptionWasChecked
+                                ? (!subscriptionExpiryDate || hasSubscriptionExpired) && <Button onClick={() => { authentication.currentUser && (window.location.href = Paths.Subscribe + authentication.currentUser.uid) }}>Purchase</Button>
+                                : <ExampleQuestions Wrapper={Skeleton} wrapperProps={{ sx: skeletonSx }} />
+                            }
+                        </div>
+                    </div>
                     <Footer />
                     {subscriptionWasChecked && <DeleteAccountModal
                         nextPath="/"

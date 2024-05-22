@@ -72,7 +72,7 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
         setShowProgress(authentication.isLoggedIn);
     }, [setShowProgress, authentication]);
 
-    return <Card className='question-bank-item' variant='outlined' color={progress}>
+    return <Card key={id} id={'question-bank-item-' + id} className='question-bank-item' variant='outlined' color={progress}>
         {(showProgress || chips) && <div>
             {showProgress && <Dropdown>
                 <MenuButton

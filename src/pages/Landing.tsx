@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from "react";
-import { Button, Typography, Card, Accordion, AccordionSummary, AccordionDetails, Grid, Link, List, Dropdown, MenuButton, IconButton, Menu, MenuItem, ListItem } from '@mui/joy';
+import { Button, Typography, Card, Link, List, Dropdown, MenuButton, IconButton, Menu, MenuItem, ListItem } from '@mui/joy';
 import './Landing.css';
 import { useNavigate } from "react-router-dom";
 import Paths from "../resources/Paths.ts";
@@ -236,9 +236,7 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
         </Card>
         <Card className={sections[2]}>
             <Typography level='h2'>Example Questions</Typography>
-            <Grid container spacing={2} sx={{ flexGrow: 1 }}>
-                <ExampleQuestions Wrapper={Grid} wrapperProps={{ xs: 12, md: 6 }} />
-            </Grid>
+            <ExampleQuestions />
         </Card>
         <Card className={sections[3]}>
             <Typography level='h2'>My Method</Typography>
