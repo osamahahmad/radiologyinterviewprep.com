@@ -180,7 +180,7 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                         }))
                 }. {subscriptionPortalUrlLink
                     ? subscriptionPortalUrlLink
-                    : <Link onClick={() => window.location.href = Paths.Subscribe + authentication.currentUser.uid}>Reubscribe</Link>
+                    : <Link onClick={() => window.location.href = Paths.Subscribe + authentication.currentUser.uid}>Resubscribe</Link>
                 }.
             </Typography>
         </Alert >;
