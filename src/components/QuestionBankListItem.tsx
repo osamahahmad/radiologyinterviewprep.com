@@ -15,7 +15,7 @@ const QuestionBankProgressTitle: FC<QuestionBankProgressTitleProps> = ({ childre
     const authentication = useAuthentication();
 
     // set progress
-    const [progress, setProgress] = useState<'neutral' | 'danger' | 'warning' | 'success'>('neutral');
+    const [progress, setProgress] = useState<'danger' | 'warning' | 'success'>();
 
     useEffect(() => {
         let unsubscribe: () => void;
@@ -38,7 +38,7 @@ const QuestionBankProgressTitle: FC<QuestionBankProgressTitleProps> = ({ childre
         };
     }, [id, authentication]);
 
-    return <Typography color={progress}>{children}</Typography>;
+    return <Typography color={progress ? progress : undefined}>{children}</Typography>;
 };
 
 export default QuestionBankProgressTitle;
