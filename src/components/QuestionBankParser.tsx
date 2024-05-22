@@ -249,8 +249,9 @@ export const parseQuestionBank: (questionBank: RawQuestionBank) => Promise<Parse
                     output[currentHeading1][currentHeading2]['id'] = id;
                     const tags = fullText.substring((id + '[]: ').length);
                     const split = tags.split(" / ");
-                    output[currentHeading1][currentHeading2]['tags'] = [currentHeading1];
-                    split.forEach(tag => tag.length > 0 && currentHeading1 && output[currentHeading1][currentHeading2]['tags'].push(tag))
+                    const nextTags = [currentHeading1];
+                    split.forEach(tag => tag.length > 0 && nextTags.push(tag));
+                    output[currentHeading1][currentHeading2]['tags'] = nextTags;
                 }
             }
         } else if (nextStyle === 'Heading1') {
