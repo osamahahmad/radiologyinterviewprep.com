@@ -1,0 +1,31 @@
+footer {
+  display: flex;
+  flex-direction: column;
+  padding: var(--padding-sm);
+  gap: var(--padding-sm);
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (min-width: 769px) {
+  footer {
+    flex-direction: row;
+    padding: var(--padding);
+  }
+}
+
+footer>*:first-child {
+  display: flex;
+  justify-content: center;
+  gap: inherit;
+}
+
+footer>p:first-of-type {
+  display: none;
+}
+
+@media screen and (min-width: 769px) {
+  footer>p:first-of-type {
+    display: block;
+  }
+}

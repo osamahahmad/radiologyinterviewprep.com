@@ -1,0 +1,34 @@
+header {
+    font-size: var(--joy-fontSize-xl);
+    display: flex;
+    align-items: center;
+    padding: var(--padding-xs) var(--padding);
+    background-color: var(--joy-palette-primary-softBg);
+    z-index: 100;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+}
+
+header nav {
+    display: none;
+}
+
+@media screen and (min-width: 1024px) {
+    header .MuiIconButton-root {
+        display: none;
+    }
+
+    header nav {
+        display: flex;
+        align-items: center;
+        justify-content: right;
+        flex: 1;
+        gap: var(--padding-xs);
+        white-space: nowrap;
+    }
+}
+
+header .MuiButton-variantOutlined.MuiButton-colorPrimary:hover {
+    background-color: var(--joy-palette-neutral-100) !important;
+}

@@ -1,0 +1,66 @@
+.landing {
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding);
+    padding: var(--padding-sm);
+}
+
+@media screen and (min-width: 868px) {
+    .landing {
+        padding: var(--padding);
+    }
+}
+
+.landing>.welcome {
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding-sm);
+}
+
+@media screen and (min-width: 868px) {
+    .landing>.welcome {
+        flex-direction: row;
+        gap: var(--joy-fontSize-xl4);
+        align-items: center;
+        padding: var(--padding);
+    }
+}
+
+.landing>.welcome>h1,
+.landing>.welcome>p {
+    flex: 1;
+}
+
+.landing>.welcome>h1 {
+    font-size: var(--joy-fontSize-xl3);
+}
+
+@media screen and (min-width: 868px) {
+    .landing>.welcome>h1 {
+        font-size: var(--joy-fontSize-xl4);
+        text-align: right;
+    }
+}
+
+.landing>.structure>h2,
+.landing>.questions>h2,
+.landing>.method>h2 {
+    margin-bottom: .25em;
+}
+
+.landing>.structure>p,
+.landing>.method>p {
+    font-weight: bold;
+}
+
+.landing>.structure>p:first-of-type,
+.landing>.method>p:first-of-type {
+    font-weight: inherit;
+}
+
+.landing>.structure .MuiList-root,
+.landing>.structure .MuiListItem-root,
+.landing>.method .MuiList-root,
+.landing>.method .MuiListItem-root {
+    margin-top: -.5em;
+}

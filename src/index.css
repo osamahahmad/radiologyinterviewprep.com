@@ -1,16 +1,41 @@
 html,
 body,
-#root,
-.App {
+#root {
   margin: 0;
   padding: 0;
 }
 
 html {
+  -webkit-text-size-adjust: 100%;
 }
 
-.App {
-  display: flex;
-  flex-direction: column;
-  height: 100svh;
+body {
+  --transition: .3s ease;
+  --padding: var(--joy-fontSize-xl);
+  --padding-sm: var(--joy-fontSize-md);
+  --padding-xs: var(--joy-fontSize-xs);
+}
+
+.MuiModal-backdrop {
+  animation: fade-in var(--transition);
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes zoom-in {
+  0% {
+    transform: scale(.5, .5);
+  }
+
+  100% {
+    transform: scale(1, 1);
+  }
 }
