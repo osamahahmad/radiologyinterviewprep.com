@@ -126,6 +126,10 @@
     gap: .5em;
 }
 
+.landing>.question-bank>div:first-child>button {
+    margin-top: .5em;
+}
+
 .landing>.question-bank>div:last-child {
     display: none;
     flex: 1;
