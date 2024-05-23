@@ -7,7 +7,7 @@ import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import Strings from "../resources/Strings.ts";
 import Logo from "../components/Logo.tsx";
 import { AuthenticationUI, AuthenticationUIMode, useAuthentication } from "../components/Authentication.tsx";
-import { MdMoreVert } from "react-icons/md";
+import { MdArrowDownward, MdArrowForward, MdChecklist, MdCurrencyPound, MdMoreVert, MdQuestionAnswer } from "react-icons/md";
 import Footer from "../components/Footer.tsx";
 import ExampleQuestions from "../components/ExampleQuestions.tsx";
 
@@ -103,6 +103,7 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
             {sections.map(section => {
                 return <Button
                     key={section}
+                    id={section + '-nav'}
                     variant='outlined'
                     color='neutral'
                     onClick={() => handleSectionClick(section)}
@@ -143,6 +144,11 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
         setNav(<HeaderNav sections={sections} sectionTitles={sectionTitles} />);
     }, [setNav]);
 
+    const questionBankLinkOnClick = () => {
+        const element = document.getElementById(sections[4] + '-nav');
+        element && element.click();
+    };
+
     return <div className='landing'>
         <div className={sections[0]}>
             <Typography
@@ -155,11 +161,16 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
                 .
             </Typography>
             <Typography>
-                In 2024, I ranked in the <strong>top 1% of all Clinical Radiology ST1 applicants</strong>. 🌟
-                <br />
-                I achieved <strong>90% at interview</strong>. 🎉
-                <br />
-                I've made this site so you can smash yours too. 💪
+                <Typography>
+                    In 2024, I ranked in the <strong>top 1% of all Clinical Radiology ST1 applicants</strong>. 🌟
+                </Typography>
+                <Typography>
+                    I achieved <strong>90% at interview</strong>. 🎉
+                </Typography>
+                <Typography>
+                    I've made this site so you can smash yours too. 💪
+                </Typography>
+                <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowDownward />} onClick={questionBankLinkOnClick}>Go to the Question Bank</Button>
             </Typography>
         </div>
         <Card className={sections[1]}>
@@ -234,6 +245,7 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
         </Card>
         <Card className={sections[2]}>
             <Typography level='h2'>Example Questions</Typography>
+            <Typography><i>From the <Link sx={{ fontSize: 'inherit' }} color='success' onClick={questionBankLinkOnClick}>Question Bank</Link>;:</i></Typography>
             <ExampleQuestions />
         </Card>
         <Card className={sections[3]}>
@@ -301,20 +313,19 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
             </List>
         </Card>
         <Card className={sections[4]} variant='outlined'>
-            <Typography level='h2' color='success'>{sectionTitles[sections[4]]}</Typography>
-            <Typography>
+            <div>
+                <Typography level='h2' color='success'>{sectionTitles[sections[4]]}</Typography>
                 <Typography level='title-md'>Unlock Your Radiology Interview Success! 🔓</Typography>
-                <br />
-                <Typography>Subscribe now for access to the tools you need to stand out from the competition! 🌟</Typography>
-            </Typography>
-            <img alt='Question Bank Screenshot' src={require('../resources/question-bank.png')} />
-            <List>
-                <ListItem>✅ 50+ Expertly Crafted Answers</ListItem>
-                <ListItem>✅ Prioritisation Questions to Sharpen Your Skills</ListItem>
-                <ListItem>✅ Unbeatable Value: Just £18 for 3 Months! 🎉</ListItem>
-            </List>
-            <Button color='success' sx={{ width: 'fit-content' }} onClick={() => navigate(Paths.SignUp)}>{authentication.isLoggedIn ? 'Access' : 'Sign Up for'} the Question Bank</Button>
-            {!authentication.isLoggedIn && <Typography>Or <Link onClick={() => navigate(Paths.SignIn)}>{Strings.SignIn}</Link></Typography>}
+                <img alt='Question Bank Screenshot' src={require('../resources/question-bank.png')} />
+                <Typography><MdQuestionAnswer /> 50+ Expertly Crafted Answers</Typography>
+                <Typography><MdChecklist /> Prioritisation Questions to Sharpen Your Skills</Typography>
+                <Typography><MdCurrencyPound /> Unbeatable Value: Just £18 for 3 Months! 🎉</Typography>
+                <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowForward />} onClick={() => navigate(Paths.SignUp)}>{authentication.isLoggedIn ? 'Access' : 'Sign Up for'} the Question Bank</Button>
+                {!authentication.isLoggedIn && <Typography>Or <Link onClick={() => navigate(Paths.SignIn)}>{Strings.SignIn}</Link></Typography>}
+            </div>
+            <div>
+                <img alt='Question Bank Screenshot' src={require('../resources/question-bank.png')} />
+            </div>
         </Card>
         <Footer />
         {

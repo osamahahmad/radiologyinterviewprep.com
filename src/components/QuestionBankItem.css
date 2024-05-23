@@ -47,6 +47,20 @@
     gap: .5em;
 }
 
+/* lists */
+.question-bank-item .MuiList-root {
+    margin-top: -.25em;
+}
+
+.question-bank-item .MuiListItem-root {
+    margin-top: -.5em;
+}
+
+.question-bank-item .MuiAccordionDetails-content>.MuiList-root,
+.question-bank-item .MuiAccordionDetails-content>p:first-child {
+    margin-top: .375em;
+}
+
 .question-bank-item .MuiAccordionDetails-content>ol {
     margin-left: .25em;
     margin-bottom: -.25em;
@@ -55,8 +69,4 @@
 .question-bank-item .MuiAccordionDetails-content>ul {
     margin-left: -.25em;
     margin-bottom: -.375em;
-}
-
-.question-bank-item .MuiAccordionDetails-content>p:first-child {
-    margin-top: .375em;
 }
