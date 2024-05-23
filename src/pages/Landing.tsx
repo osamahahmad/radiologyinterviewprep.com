@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from "react";
-import { Button, Typography, Card, Link, List, Dropdown, MenuButton, IconButton, Menu, MenuItem, ListItem, Alert } from '@mui/joy';
+import { Button, Typography, Card, Link, List, Dropdown, MenuButton, IconButton, Menu, MenuItem, ListItem } from '@mui/joy';
 import './Landing.css';
 import { useNavigate } from "react-router-dom";
 import Paths from "../resources/Paths.ts";
@@ -7,7 +7,7 @@ import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import Strings from "../resources/Strings.ts";
 import Logo from "../components/Logo.tsx";
 import { AuthenticationUI, AuthenticationUIMode, useAuthentication } from "../components/Authentication.tsx";
-import { MdArrowDownward, MdArrowForward, MdMoreVert } from "react-icons/md";
+import { MdArrowDownward, MdArrowForward, MdChecklist, MdCurrencyPound, MdMoreVert, MdQuestionAnswer } from "react-icons/md";
 import Footer from "../components/Footer.tsx";
 import ExampleQuestions from "../components/ExampleQuestions.tsx";
 
@@ -313,20 +313,19 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
             </List>
         </Card>
         <Card className={sections[4]} variant='outlined'>
-            <Typography level='h2' color='success'>{sectionTitles[sections[4]]}</Typography>
-            <Typography>
+            <div>
+                <Typography level='h2' color='success'>{sectionTitles[sections[4]]}</Typography>
                 <Typography level='title-md'>Unlock Your Radiology Interview Success! 🔓</Typography>
-                <br />
-                <Typography>Subscribe now for access to the tools you need to stand out from the competition! 🌟</Typography>
-            </Typography>
-            <img alt='Question Bank Screenshot' src={require('../resources/question-bank.png')} />
-            <List>
-                <ListItem>✅ 50+ Expertly Crafted Answers</ListItem>
-                <ListItem>✅ Prioritisation Questions to Sharpen Your Skills</ListItem>
-                <ListItem>✅ Unbeatable Value: Just £18 for 3 Months! 🎉</ListItem>
-            </List>
-            <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowForward />} onClick={() => navigate(Paths.SignUp)}>{authentication.isLoggedIn ? 'Access' : 'Sign Up for'} the Question Bank</Button>
-            {!authentication.isLoggedIn && <Typography>Or <Link onClick={() => navigate(Paths.SignIn)}>{Strings.SignIn}</Link></Typography>}
+                <img alt='Question Bank Screenshot' src={require('../resources/question-bank.png')} />
+                <Typography><MdQuestionAnswer /> 50+ Expertly Crafted Answers</Typography>
+                <Typography><MdChecklist /> Prioritisation Questions to Sharpen Your Skills</Typography>
+                <Typography><MdCurrencyPound /> Unbeatable Value: Just £18 for 3 Months! 🎉</Typography>
+                <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowForward />} onClick={() => navigate(Paths.SignUp)}>{authentication.isLoggedIn ? 'Access' : 'Sign Up for'} the Question Bank</Button>
+                {!authentication.isLoggedIn && <Typography>Or <Link onClick={() => navigate(Paths.SignIn)}>{Strings.SignIn}</Link></Typography>}
+            </div>
+            <div>
+                <img alt='Question Bank Screenshot' src={require('../resources/question-bank.png')} />
+            </div>
         </Card>
         <Footer />
         {
