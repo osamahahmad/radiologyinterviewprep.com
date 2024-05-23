@@ -64,3 +64,21 @@
 .landing>.method .MuiListItem-root {
     margin-top: -.5em;
 }
+
+.landing>.question-bank img {
+    --img-padding: var(--padding-sm);
+    margin: var(--img-padding) auto;
+    object-fit: contain;
+    border-radius: var(--joy-radius-md);
+    box-shadow: var(--joy-shadow-md);
+    width: calc(100% - 2 * var(--img-padding));
+    max-width: 868px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+@media screen and (min-width: 868px) {
+    .landing>.question-bank img {
+        --img-padding: var(--padding);
+    }
+}
