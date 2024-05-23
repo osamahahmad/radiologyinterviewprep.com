@@ -307,6 +307,7 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
                 <br />
                 <Typography>Subscribe now for access to the tools you need to stand out from the competition! 🌟</Typography>
             </Typography>
+            <img alt='Question Bank Screenshot' src={require('../resources/question-bank.png')} />
             <List>
                 <ListItem>✅ 50+ Expertly Crafted Answers</ListItem>
                 <ListItem>✅ Prioritisation Questions to Sharpen Your Skills</ListItem>

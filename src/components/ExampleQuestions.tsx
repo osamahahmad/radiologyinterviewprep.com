@@ -11,7 +11,7 @@ const ExampleQuestions: FC<ExampleQuestionsProps> = ({ Wrapper, wrapperProps }) 
     const [questionBank, setQuestionBank] = useState<RawQuestionBank>();
 
     const fetchRawData = useCallback(async () => {
-        const docx = await fetch("/example-question-bank.docx");
+        const docx = await fetch(require("../resources/example-question-bank.docx"));
         const blob = await docx.blob();
         const questionBank = await blobToQuestionBank(blob);
         setQuestionBank(questionBank);
