@@ -14,15 +14,16 @@
 .landing>.welcome {
     display: flex;
     flex-direction: column;
-    gap: var(--padding-sm);
+    gap: inherit;
+    margin: 1em;
 }
 
 @media screen and (min-width: 868px) {
     .landing>.welcome {
         flex-direction: row;
         gap: var(--joy-fontSize-xl4);
+        margin: var(--joy-fontSize-xl4) 0;
         align-items: center;
-        padding: var(--padding);
     }
 }
 
@@ -39,6 +40,22 @@
     .landing>.welcome>h1 {
         font-size: var(--joy-fontSize-xl4);
         text-align: right;
+    }
+}
+
+.landing>.welcome>p {
+    display: flex;
+    flex-direction: column;
+    gap: .25em;
+}
+
+.landing>.welcome>p>button {
+    margin-top: var(--padding);
+}
+
+@media screen and (min-width: 868px) {
+    .landing>.welcome>p>button {
+        margin-top: 1em;
     }
 }
 
