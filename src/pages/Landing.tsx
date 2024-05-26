@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from "react";
-import { Button, Typography, Card, Link, List, Dropdown, MenuButton, IconButton, Menu, MenuItem, ListItem } from '@mui/joy';
+import { Button, Typography, Card, Link, List, Dropdown, MenuButton, IconButton, Menu, MenuItem, ListItem, Alert } from '@mui/joy';
 import './Landing.css';
 import { useNavigate } from "react-router-dom";
 import Paths from "../resources/Paths.ts";
@@ -7,7 +7,7 @@ import useDocumentTitle from "../hooks/useDocumentTitle.ts";
 import Strings from "../resources/Strings.ts";
 import Logo from "../components/Logo.tsx";
 import { AuthenticationUI, AuthenticationUIMode, useAuthentication } from "../components/Authentication.tsx";
-import { MdArrowDownward, MdArrowForward, MdChecklist, MdCurrencyPound, MdMoreVert, MdQuestionAnswer } from "react-icons/md";
+import { MdArrowDownward, MdArrowForward, MdChecklist, MdCurrencyPound, MdInfo, MdMoreVert, MdQuestionAnswer } from "react-icons/md";
 import Footer from "../components/Footer.tsx";
 import ExampleQuestions from "../components/ExampleQuestions.tsx";
 
@@ -127,7 +127,7 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
 }
 
 const sections: string[] = ['welcome', 'structure', 'questions', 'method', 'question-bank'];
-const sectionTitles: { [x: string]: string } = { [sections[0]]: 'Welcome', [sections[1]]: 'Interview Structure', [sections[2]]: 'Example Questions', [sections[3]]: 'My Method', [sections[4]]: 'Question Bank' };
+const sectionTitles: { [x: string]: string } = { [sections[0]]: 'Welcome', [sections[1]]: 'Interview Structure', [sections[2]]: 'Example Questions', [sections[3]]: 'Top Tips', [sections[4]]: 'Question Bank' };
 
 interface LandingProps {
     setNav: Function;
@@ -174,7 +174,7 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
             </Typography>
         </div>
         <Card className={sections[1]}>
-            <Typography className='landing-card-title' level='h2'>Interview Structure</Typography>
+            <Typography className='landing-card-title' level='h2'>{sectionTitles[sections[1]]}</Typography>
             <Typography>In 2024, the radiology interview format underwent an unexpected change, shifting from the familiar <strong>Commitment to Specialty</strong> and <strong>Personal Skills</strong> stations to the newly introduced <Typography color='warning'><strong>Prioritisation of Clinical Situations</strong></Typography> and <Typography color='danger'><strong>Specialty Skills</strong></Typography> stations.</Typography>
             <Typography color='warning'><strong>Prioritisation of Clinical Situations:</strong></Typography>
             <List marker="disc">
@@ -244,12 +244,12 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
             </List>
         </Card>
         <Card className={sections[2]}>
-            <Typography level='h2'>Example Questions</Typography>
-            <Typography><i>From the <Link sx={{ fontSize: 'inherit' }} color='success' onClick={questionBankLinkOnClick}>Question Bank</Link>;:</i></Typography>
+            <Typography level='h2'>{sectionTitles[sections[2]]}</Typography>
+            <Alert color='success' startDecorator={<MdInfo />} sx={{ width: 'fit-content', margin: '0 auto' }}><Typography sx={{ color: 'inherit', fontSize: 'inherit' }}>You can find more like these in the <Link sx={{ fontSize: 'inherit' }} color='success' onClick={questionBankLinkOnClick}>Question Bank</Link>.</Typography></Alert>
             <ExampleQuestions />
         </Card>
         <Card className={sections[3]}>
-            <Typography level='h2'>My Method</Typography>
+            <Typography level='h2'>{sectionTitles[sections[3]]}</Typography>
             <Typography>Don't stress over a low portfolio score &#8212; mine was one of the lowest of all successful candidates. Focus on nailing the interview for maximum points.</Typography>
             <Typography>Contextualise your Radiology experience in both professional and personal contexts:</Typography>
             <List marker="disc">
@@ -313,18 +313,33 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
             </List>
         </Card>
         <Card className={sections[4]} variant='outlined'>
+            <Typography level='h2' color='success'>{sectionTitles[sections[4]]}</Typography>
             <div>
-                <Typography level='h2' color='success'>{sectionTitles[sections[4]]}</Typography>
-                <Typography level='title-md'>Unlock Your Radiology Interview Success! 🔓</Typography>
-                <img alt='Question Bank Screenshot' src={require('../resources/question-bank.png')} />
-                <Typography><MdQuestionAnswer /> 50+ Expertly Crafted Answers</Typography>
-                <Typography><MdChecklist /> Prioritisation Questions to Sharpen Your Skills</Typography>
-                <Typography><MdCurrencyPound /> Unbeatable Value: Just £18 for 3 Months! 🎉</Typography>
-                <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowForward />} onClick={() => navigate(Paths.SignUp)}>{authentication.isLoggedIn ? 'Access' : 'Sign Up for'} the Question Bank</Button>
-                {!authentication.isLoggedIn && <Typography>Or <Link onClick={() => navigate(Paths.SignIn)}>{Strings.SignIn}</Link></Typography>}
-            </div>
-            <div>
-                <img alt='Question Bank Screenshot' src={require('../resources/question-bank.png')} />
+                <div>
+                    <img alt='Question Bank Screenshot' src={require('../resources/question-bank.png')} />
+                    <List>
+                        <ListItem>
+                            <MdQuestionAnswer /> 50+ Expertly Crafted Answers
+                        </ListItem>
+                        <ListItem >
+                            <MdChecklist /> Prioritisation Questions to Sharpen Your Skills
+                        </ListItem>
+                        <ListItem>
+                            <MdCurrencyPound /> Unbeatable Value: Just £18 for 3 Months! 🎉
+                        </ListItem>
+                        <ListItem>
+                        </ListItem>
+                        <ListItem>
+                            <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowForward />} onClick={() => navigate(Paths.SignUp)}>{authentication.isLoggedIn ? 'Access' : 'Sign Up for'} the Question Bank</Button>
+                        </ListItem>
+                        {!authentication.isLoggedIn && <ListItem>
+                            <Typography>Or <Link onClick={() => navigate(Paths.SignIn)}>{Strings.SignIn}</Link></Typography>
+                        </ListItem>}
+                    </List>
+                </div>
+                <div>
+                    <img alt='Question Bank Screenshot' src={require('../resources/question-bank.png')} />
+                </div>
             </div>
         </Card>
         <Footer />
