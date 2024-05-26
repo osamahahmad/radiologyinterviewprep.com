@@ -23,7 +23,7 @@ interface QuestionBankProps {
 const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
     /* hooks */
     const authentication = useAuthentication();
-    useDocumentTitle('My Answers');
+    useDocumentTitle('Question Bank');
     const navigate = useNavigate();
 
     /* header */
