@@ -63,6 +63,9 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
 
     return <Card id={'question-bank-item-' + id} className='question-bank-item' variant='outlined' color={progress}>
         {(showProgress || tags) && <div>
+            <div>
+                {tags && tags.map(tag => <ColouredChip>{tag}</ColouredChip>)}
+            </div>
             {showProgress && <Dropdown>
                 <MenuButton
                     slots={{ root: IconButton }}
@@ -78,9 +81,6 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
                     </MenuItem>)}
                 </Menu>
             </Dropdown>}
-            <div>
-                {tags && tags.map(tag => <ColouredChip>{tag}</ColouredChip>)}
-            </div>
         </div>}
         <Typography>
             <Typography level='h4' color={progress !== 'neutral' ? progress : undefined}>{title}</Typography>
