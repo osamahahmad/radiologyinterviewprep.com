@@ -61,8 +61,8 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
         setShowProgress(authentication.isLoggedIn);
     }, [setShowProgress, authentication]);
 
-    return <Card id={'question-bank-item-' + id} className='question-bank-item' variant='outlined' color={progress} sx={{flexDirection: authentication.isLoggedIn ? 'row' : 'row-reverse'}}>
-        {(showProgress || tags) && <div>
+    return <Card id={'question-bank-item-' + id} className='question-bank-item' variant='outlined' color={progress}>
+        {(showProgress || tags) && <div style={{flexDirection: authentication.isLoggedIn ? 'row' : 'row-reverse'}}>
             {showProgress && <Dropdown>
                 <MenuButton
                     slots={{ root: IconButton }}
