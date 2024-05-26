@@ -1,5 +1,6 @@
 .question-bank-item>div:first-of-type {
     display: flex;
+    flex-direction: row-reverse;
     justify-content: space-between;
     align-items: center;
     gap: .5em;
