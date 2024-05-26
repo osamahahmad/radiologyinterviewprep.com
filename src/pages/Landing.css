@@ -77,7 +77,8 @@
 
 .landing>.structure .MuiList-root,
 .landing>.structure .MuiListItem-root {
-    margin-top: -.5em; /*-.25em*/
+    margin-top: -.5em;
+    /*-.25em*/
 }
 
 .landing>.method .MuiList-root,
@@ -85,8 +86,14 @@
     margin-top: -.5em;
 }
 
+.landing>.question-bank>div {
+    display: flex;
+    flex-direction: column;
+    gap: inherit;
+}
+
 @media screen and (min-width: 868px) {
-    .landing>.question-bank {
+    .landing>.question-bank>div {
         flex-direction: row;
         align-items: center;
         gap: 5em;
@@ -102,41 +109,38 @@
     max-width: 100%;
 }
 
-.landing>.question-bank>div:first-child {
+.landing>.question-bank>div>div:first-child {
     display: flex;
     flex-direction: column;
     gap: var(--padding);
 }
 
-.landing>.question-bank>div:first-child>img {
+.landing>.question-bank>div>div:first-child img {
     display: block;
-    max-width: 75%;
-    margin: var(--padding) auto;
+    margin: var(--padding);
 }
 
 @media screen and (min-width: 868px) {
-    .landing>.question-bank>div:first-child>img {
+    .landing>.question-bank>div>div:first-child img {
         display: none;
     }
 }
 
-.landing>.question-bank>div:first-child>p {
-    display: flex;
-    align-items: center;
-    gap: .5em;
+.landing>.question-bank>div>div:first-child>ul>li {
+    gap: 1em;
 }
 
-.landing>.question-bank>div:first-child>button {
+.landing>.question-bank>div>div:first-child>button {
     margin-top: .375em;
 }
 
-.landing>.question-bank>div:last-child {
+.landing>.question-bank>div>div:last-child {
     display: none;
     flex: 1;
 }
 
 @media screen and (min-width: 868px) {
-    .landing>.question-bank>div:last-child {
+    .landing>.question-bank>div>div:last-child {
         display: block;
     }
 }
