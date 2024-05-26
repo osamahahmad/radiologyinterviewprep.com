@@ -61,11 +61,8 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
         setShowProgress(authentication.isLoggedIn);
     }, [setShowProgress, authentication]);
 
-    return <Card id={'question-bank-item-' + id} className='question-bank-item' variant='outlined' color={progress}>
+    return <Card id={'question-bank-item-' + id} className='question-bank-item' variant='outlined' color={progress} sx={{flexDirection: authentication.isLoggedIn ? 'row' : 'row-reverse'}}>
         {(showProgress || tags) && <div>
-            <div>
-                {tags && tags.map(tag => <ColouredChip>{tag}</ColouredChip>)}
-            </div>
             {showProgress && <Dropdown>
                 <MenuButton
                     slots={{ root: IconButton }}
@@ -81,6 +78,9 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
                     </MenuItem>)}
                 </Menu>
             </Dropdown>}
+            <div>
+                {tags && tags.map(tag => <ColouredChip>{tag}</ColouredChip>)}
+            </div>
         </div>}
         <Typography>
             <Typography level='h4' color={progress !== 'neutral' ? progress : undefined}>{title}</Typography>
