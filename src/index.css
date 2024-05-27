@@ -29,13 +29,3 @@ body {
     opacity: 1;
   }
 }
-
-@keyframes zoom-in {
-  0% {
-    transform: scale(.5, .5);
-  }
-
-  100% {
-    transform: scale(1, 1);
-  }
-}

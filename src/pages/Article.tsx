@@ -17,11 +17,13 @@ const Article: FC<ArticleProps> = ({ setNav, title = '', content = '' }) => {
 
     setNav();
 
-    return <div className='article'>
-        <Typography level='h1'>{title}</Typography>
-        {content}
+    return <>
+        <div className='article'>
+            <Typography level='h1'>{title}</Typography>
+            {content}
+        </div>
         {content && <Footer />}
-    </div>;
+    </>;
 };
 
 export default Article;

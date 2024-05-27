@@ -283,8 +283,10 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
         else if (error.code === "auth/user-not-found")
             setSuccess(AuthenticationUIStrings.PasswordResetLinkSent(email));
         else if (error.code === 'auth/invalid-action-code')
-            setDanger('Reset failed. Try again.')
-        else
+            setDanger('Reset failed. Try again.');
+        else if (error.code !== 'auth/user-cancelled'
+            && error.code !== 'auth/popup-closed-by-user'
+            && error.code !== 'auth/cancelled-popup-request')
             setDanger('Something went wrong.');
     }, [setDanger, setSuccess, email]);
 
@@ -343,11 +345,9 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
         try {
             await signInWithPopup(auth, googleProvider);
         } catch (error) {
-            if (error.code !== 'auth/popup-closed-by-user'
-                && error.code !== 'auth/cancelled-popup-request')
-                setDanger(error.code);
+            setError(error.code);
         }
-    }, [setDanger]);
+    }, [setError]);
 
     useEffect(() => {
         try {
@@ -538,10 +538,10 @@ export const DeleteAccountModal: FC<DeleteAccountModalProps> = ({ warnings, dang
             <DialogTitle>Delete Account</DialogTitle>
             {!dangers && _warnings.map(warning => <Alert color='warning' startDecorator={<MdWarning />}>{warning}</Alert>)}
             {dangers && dangers.map(danger => <Alert color='danger'>{danger}</Alert>)}
-        <DialogActions>
-            <Button color='danger' disabled={!!dangers} loading={isDeletingAccount} onClick={() => handleDeleteAccount()}>Delete Account</Button>
-            <Button color='neutral' variant='outlined' onClick={onClose}>Close</Button>
-        </DialogActions>
-    </ModalDialog>
+            <DialogActions>
+                <Button color='danger' disabled={!!dangers} loading={isDeletingAccount} onClick={() => handleDeleteAccount()}>Delete Account</Button>
+                <Button color='neutral' variant='outlined' onClick={onClose}>Close</Button>
+            </DialogActions>
+        </ModalDialog>
     </Modal >
 }
