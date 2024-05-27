@@ -1,7 +1,8 @@
 footer {
   display: flex;
   flex-direction: column;
-  padding: var(--padding-sm);
+  margin-top: calc(-1 * var(--padding-sm));
+  padding: calc(var(--padding) * 2);
   gap: var(--padding-sm);
   align-items: center;
   justify-content: center;
@@ -10,7 +11,12 @@ footer {
 @media screen and (min-width: 769px) {
   footer {
     flex-direction: row;
-    padding: var(--padding);
+  }
+}
+
+@media screen and (min-width: 868px) {
+  footer {
+    margin-top: calc(-1 * var(--padding));
   }
 }
 
