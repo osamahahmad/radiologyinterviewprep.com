@@ -13,6 +13,7 @@ import { ParsedQuestionBank, RawQuestionBank, parseQuestionBank } from "../compo
 import QuestionBankItem from '../components/QuestionBankItem.tsx';
 import ColouredChip from "../components/ColouredChip.tsx";
 import QuestionBankProgressTitle from "../components/QuestionBankListItem.tsx";
+import useScrollToTop from "../hooks/useScrollToTop.ts";
 
 const skeletonSx = { position: 'relative', width: 'auto', height: 'fit-content' };
 
@@ -25,6 +26,7 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
     const authentication = useAuthentication();
     useDocumentTitle('Question Bank');
     const navigate = useNavigate();
+    useScrollToTop();
 
     /* header */
     const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState<boolean>(false);
