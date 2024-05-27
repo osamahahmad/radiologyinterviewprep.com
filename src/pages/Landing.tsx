@@ -345,15 +345,13 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
             </div>
         </Card>
         <Footer />
-        {
-            authenticationUIMode !== undefined &&
+        {authenticationUIMode !== undefined &&
             <AuthenticationUI
                 authenticationUIMode={authenticationUIMode}
                 logo={<Logo onClick={() => navigate('/')} />}
                 tagline='Smash your interview.'
                 appName={Strings.AppName}
-            />
-        }
+            />}
     </div >
 }
 
