@@ -10,6 +10,7 @@ import { AuthenticationUI, AuthenticationUIMode, useAuthentication } from "../co
 import { MdArrowDownward, MdArrowForward, MdChecklist, MdCurrencyPound, MdInfo, MdMoreVert, MdQuestionAnswer } from "react-icons/md";
 import Footer from "../components/Footer.tsx";
 import ExampleQuestions from "../components/ExampleQuestions.tsx";
+import useScrollToTop from "../hooks/useScrollToTop.ts";
 
 interface HeaderNavProps {
     sections: string[]
@@ -139,6 +140,7 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
     const authentication = useAuthentication();
     useDocumentTitle();
     const navigate = useNavigate();
+    useScrollToTop();
 
     useEffect(() => {
         setNav(<HeaderNav sections={sections} sectionTitles={sectionTitles} />);
