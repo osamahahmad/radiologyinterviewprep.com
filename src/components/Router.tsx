@@ -46,10 +46,10 @@ const Router: FC = () => {
       <Route path='/__/auth/action' element={
         <AuthenticationActions />
       } />
-      <Route path={Paths.TermsOfService} element={
+      <Route path={Paths.Terms} element={
         <Article
           setNav={setNav}
-          title={Strings.TermsOfService}
+          title={Strings.Terms}
           content={
             <>
               <Typography>

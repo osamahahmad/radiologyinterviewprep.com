@@ -18,7 +18,7 @@ const Footer: React.FC = () => {
 
   return <footer>
     <div>
-      <Link color='neutral' onClick={() => navigate(Paths.TermsOfService)}>{Strings.TermsOfService}</Link>
+      <Link color='neutral' onClick={() => navigate(Paths.Terms)}>{Strings.TermsShort}</Link>
       <Link color='neutral' onClick={() => navigate(Paths.PrivacyPolicy)}>{Strings.PrivacyPolicy}</Link>
       <Link color='neutral' href='mailto:hello@radiologyinterviewprep.com'>{Strings.ContactMe}</Link>
     </div>
