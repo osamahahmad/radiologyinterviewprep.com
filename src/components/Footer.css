@@ -39,6 +39,12 @@ footer>*:first-child>* {
   }
 }
 
+@media screen and (min-width: 769px) {
+  footer>*:first-child>* {
+    flex: none;
+  }
+}
+
 footer>p:first-of-type {
   display: none;
 }
