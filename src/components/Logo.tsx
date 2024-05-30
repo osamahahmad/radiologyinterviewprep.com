@@ -1,11 +1,13 @@
 import { Typography } from '@mui/joy';
-import React, { MouseEventHandler } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface LogoProps {
-    onClick?: MouseEventHandler
+    disabled?: boolean,
+    text?: boolean
 }
-
-const Logo: React.FC<LogoProps> = ({ onClick }) => {
+const Logo: React.FC<LogoProps> = ({ disabled, text = true }) => {
+    const navigate = useNavigate();
 
     const image = require('../resources/radiology-interview-prep-logo.png');
 
@@ -14,10 +16,10 @@ const Logo: React.FC<LogoProps> = ({ onClick }) => {
         level='h1'
         fontSize='inherit'
         startDecorator={<img src={image} alt="Logo" style={{ width: '2em' }} />}
-        onClick={onClick}
-        sx={{ cursor: onClick ? 'pointer' : 'auto', pointerEvents: onClick ? 'auto' : 'none', minHeight: '2em' }}
+        onClick={() => navigate('/')}
+        sx={{ cursor: 'pointer', pointerEvents: disabled ? 'none' : 'auto', minHeight: '2em' }}
     >
-        Radiology Interview Prep.
+        {text ? 'Radiology Interview Prep.' : ''}
     </Typography>
 }
 

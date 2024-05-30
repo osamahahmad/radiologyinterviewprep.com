@@ -12,11 +12,7 @@ const Header: FC<HeaderProps> = ({ nav }) => {
     const navigate = useNavigate();
 
     return <header>
-        <Logo onClick={() => {
-            location.pathname === '/'
-                ? window.scrollTo({ top: 0, behavior: 'smooth' })
-                : navigate('/');
-        }} />
+        <Logo disabled={location.pathname === '/'} />
         {nav && nav}
     </header>
 }

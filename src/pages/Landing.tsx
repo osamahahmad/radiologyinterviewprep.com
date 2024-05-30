@@ -350,7 +350,7 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
         {authenticationUIMode !== undefined &&
             <AuthenticationUI
                 authenticationUIMode={authenticationUIMode}
-                logo={<Logo onClick={() => navigate('/')} />}
+                logo={<Logo text={false} />}
                 tagline='Smash your interview.'
                 appName={Strings.AppName}
             />}
