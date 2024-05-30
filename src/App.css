@@ -1,8 +1,16 @@
 body {
   --transition: .3s ease;
   --padding: var(--joy-fontSize-xl);
-  --padding-sm: var(--joy-fontSize-md);
-  --padding-xs: var(--joy-fontSize-xs);
+  --padding-sm: var(--joy-fontSize-xl);
+  --padding-xs: var(--joy-fontSize-md);
+}
+
+@media screen and (min-width: 481px) {
+  body {
+    --padding: var(--joy-fontSize-xl4);
+    --padding-sm: var(--joy-fontSize-xl2);
+    --padding-xs: var(--joy-fontSize-lg);
+  }
 }
 
 .App {

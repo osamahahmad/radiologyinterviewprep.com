@@ -1,21 +1,15 @@
 .landing {
     display: flex;
     flex-direction: column;
-    gap: var(--padding);
-    padding: var(--padding-sm);
-}
-
-@media screen and (min-width: 868px) {
-    .landing {
-        padding: var(--padding);
-    }
+    gap: var(--padding-sm);
+    padding: var(--padding);
 }
 
 .landing>.welcome {
     display: flex;
     flex-direction: column;
     gap: inherit;
-    margin: 1em;
+    margin: var(--padding-sm);
 }
 
 @media screen and (min-width: 868px) {

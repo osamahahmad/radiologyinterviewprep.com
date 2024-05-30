@@ -2,7 +2,7 @@ header {
     font-size: var(--joy-fontSize-xl);
     display: flex;
     align-items: center;
-    padding: var(--padding-xs) var(--padding);
+    padding: var(--padding-xs);
     background-color: var(--joy-palette-primary-softBg);
     z-index: 100;
     justify-content: space-between;
@@ -24,7 +24,7 @@ header nav {
         align-items: center;
         justify-content: right;
         flex: 1;
-        gap: var(--padding-xs);
+        gap: .5em;
         white-space: nowrap;
     }
 }

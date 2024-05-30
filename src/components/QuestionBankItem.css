@@ -4,8 +4,8 @@
     align-items: center;
     gap: .5em;
     overflow: auto;
-    margin: 0 calc(-1 * var(--padding-sm));
-    padding: 0 var(--padding-sm);
+    margin: 0 -16px;
+    padding: 0 16px;
 }
 
 .question-bank-item>div:first-of-type>div:first-of-type {

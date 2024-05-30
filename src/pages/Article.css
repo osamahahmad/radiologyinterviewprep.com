@@ -1,12 +1,6 @@
 .article {
     display: flex;
     flex-direction: column;
-    gap: var(--padding);
-    padding: var(--padding-sm);
-}
-
-@media screen and (min-width: 868px) {
-    .article {
-        padding: var(--padding);
-    }
+    gap: var(--padding-sm);
+    padding: var(--padding);
 }
