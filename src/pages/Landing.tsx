@@ -333,10 +333,10 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
                             <ListItem>
                             </ListItem>
                             <ListItem>
-                                <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowForward />} onClick={() => navigate(Paths.SignUp)}>{authentication.isLoggedIn ? 'Access' : 'Sign Up for'} the Question Bank</Button>
+                                <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowForward />} onClick={() => navigate(Paths.SignUp, {state: Paths.SignUp})}>{authentication.isLoggedIn ? 'Access' : 'Sign Up for'} the Question Bank</Button>
                             </ListItem>
                             {!authentication.isLoggedIn && <ListItem>
-                                <Typography>Or <Link onClick={() => navigate(Paths.SignIn)}>{Strings.SignIn}</Link></Typography>
+                                <Typography>Or <Link onClick={() => navigate(Paths.SignIn, {state: Paths.SignIn})}>{Strings.SignIn}</Link></Typography>
                             </ListItem>}
                         </List>
                     </div>
