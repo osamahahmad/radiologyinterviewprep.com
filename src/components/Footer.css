@@ -2,7 +2,7 @@ footer {
   display: flex;
   flex-direction: column;
   margin-top: calc(-1 * var(--padding-sm));
-  padding: calc(var(--padding) * 2);
+  padding: calc(var(--padding) * 2) var(--padding);
   gap: var(--padding-sm);
   align-items: center;
   justify-content: center;
@@ -24,7 +24,16 @@ footer>*:first-child {
   display: flex;
   justify-content: center;
   gap: inherit;
+  width: 100%;
 }
+
+footer>*:first-child>* {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  flex: 1;
+}
+
 
 footer>p:first-of-type {
   display: none;
