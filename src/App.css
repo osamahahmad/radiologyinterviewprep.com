@@ -1,3 +1,10 @@
+body {
+  --transition: .3s ease;
+  --padding: var(--joy-fontSize-xl);
+  --padding-sm: var(--joy-fontSize-md);
+  --padding-xs: var(--joy-fontSize-xs);
+}
+
 .App {
   margin: 0;
   padding: 0;

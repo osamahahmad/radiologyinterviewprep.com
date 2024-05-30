@@ -1,8 +1,8 @@
 .MuiModal-root {
     --authentication-theme-color: var(--joy-palette-primary-100);
     --authentication-background-color: white;
-    --authentication-padding: var(--joy-fontSize-xl4);
-    --authentication-gap: var(--joy-fontSize-xl);
+    --authentication-padding: var(--padding);
+    --authentication-gap: var(--padding-xs);
     --authentication-animation: .3s ease;
     --authentication-divider: 1px solid rgba(0, 0, 0, .25);
     min-height: 100svh;
