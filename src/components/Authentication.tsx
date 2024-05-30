@@ -359,7 +359,7 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
         }
     }, [authenticationUIMode, danger, success, windowSize]);
 
-    return <Modal open onClose={() => navigate('/')} style={style}>
+    return <Modal open onClose={() => navigate('/', {state: '/'})} style={style}>
         <div className='authentication-wrapper'>
             <form onSubmit={handleSubmit}>
                 {logo && <div className='authentication-logo'>{logo}</div>}

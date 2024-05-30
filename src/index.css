@@ -15,17 +15,3 @@ body {
   --padding-sm: var(--joy-fontSize-md);
   --padding-xs: var(--joy-fontSize-xs);
 }
-
-.MuiModal-backdrop {
-  animation: fade-in var(--transition);
-}
-
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
-  }
-}
