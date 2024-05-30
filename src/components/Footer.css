@@ -24,7 +24,6 @@ footer>*:first-child {
   display: flex;
   justify-content: center;
   gap: inherit;
-  width: 100%;
 }
 
 footer>*:first-child>* {
@@ -34,6 +33,17 @@ footer>*:first-child>* {
   flex: 1;
 }
 
+@media screen and (min-width: 390px) {
+  footer>*:first-child>* {
+    white-space: pre;
+  }
+}
+
+@media screen and (min-width: 769px) {
+  footer>*:first-child>* {
+    flex: none;
+  }
+}
 
 footer>p:first-of-type {
   display: none;

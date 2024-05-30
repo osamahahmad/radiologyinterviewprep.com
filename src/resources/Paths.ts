@@ -2,7 +2,7 @@ enum Paths {
     QuestionBank = '/question-bank',
     SignUp = '/create-account',
     SignIn = '/sign-in',
-    TermsOfService = '/terms-of-service',
+    Terms = '/terms-of-service',
     PrivacyPolicy = '/privacy-policy',
     Subscribe = 'https://buy.stripe.com/14kdUX5Yr9Z49Ec145?client_reference_id=',
     NotFound = '/404',
