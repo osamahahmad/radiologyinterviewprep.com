@@ -1,17 +1,10 @@
 .question-bank-page {
     display: flex;
     flex-direction: column;
-    gap: var(--padding);
-    padding: var(--padding-sm);
-    --margin: var(--padding-sm);
+    gap: var(--padding-sm);
+    padding: var(--padding);
+    --margin: var(--padding);
     align-items: center;
-}
-
-@media screen and (min-width: 868px) {
-    .question-bank-page {
-        padding: var(--padding);
-        --margin: var(--padding);
-    }
 }
 
 .question-bank-page-questions-wrapper {
