@@ -27,8 +27,10 @@
     }
 }
 
-.MuiModal-backdrop {
-  animation: fade-in var(--transition);
+@media screen and (min-width: 481px) {
+    .MuiModal-backdrop {
+        animation: fade-in var(--transition);
+    }
 }
 
 @keyframes fly-in {
@@ -49,7 +51,6 @@
     background-color: var(--authentication-background-color);
     min-height: 100%;
     outline: none !important;
-    animation: fade-in var(--transition), fly-in var(--transition);
 }
 
 @media screen and (min-width: 481px) {
@@ -60,6 +61,7 @@
         min-height: auto;
         max-height: 100%;
         overflow: auto;
+        animation: fade-in var(--transition), fly-in var(--transition);
     }
 }
 
