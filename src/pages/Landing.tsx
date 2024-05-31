@@ -21,12 +21,28 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
     const [activeSection, setActiveSection] = React.useState<string | null>(sections ? sections[0] : null);
 
     const handleSectionClick = (section: string) => {
+        if (!sections) return;
+
         setActiveSection(section);
 
-        const element: HTMLElement = document.getElementsByClassName(section)[0] as HTMLElement;
-        const header = document.getElementsByTagName('header')[0];
-        const headerHeight = header.getBoundingClientRect().height;
-        const top = (sections && sections[0] === section) ? 0 : element.offsetTop - 20 - headerHeight;
+        let top = 0;
+
+        const i = sections.indexOf(section);
+
+        if (i !== 0) {
+            const header = document.getElementsByTagName('header')[0];
+            const headerHeight = header.getBoundingClientRect().height;
+
+            const elements: HTMLCollection = document.getElementsByClassName(section);
+            const element: HTMLElement = elements[0] as HTMLElement;
+
+            const befores: HTMLCollection = document.getElementsByClassName(sections[i - 1]);
+            const before = befores[0] as HTMLElement;
+
+            const gap = element.offsetTop - before.offsetTop - before.offsetHeight;
+
+            top = (sections && sections[0] === section) ? 0 : element.offsetTop - gap - headerHeight;
+        }
 
         window.scrollTo({ top: top, behavior: 'smooth' });
     };
@@ -48,7 +64,7 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
                         const elements: HTMLCollection = document.getElementsByClassName(section);
                         const element: HTMLElement = elements[0] as HTMLElement;
 
-                        const befores: HTMLCollection = document.getElementsByClassName(sections[i-1]);
+                        const befores: HTMLCollection = document.getElementsByClassName(sections[i - 1]);
                         const before = befores[0] as HTMLElement;
 
                         const gap = element.offsetTop - before.offsetTop - before.offsetHeight;
