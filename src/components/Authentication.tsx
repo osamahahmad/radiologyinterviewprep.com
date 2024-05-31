@@ -324,7 +324,7 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
                 try {
                     await confirmPasswordReset(auth, authentication.resetPasswordOobCode, password);
                     setSuccess('Password reset.');
-                    navigate(switchPath);
+                    navigate(switchPath, {state: switchPath});
                 } catch (error) {
                     setError(error);
                 }
@@ -414,7 +414,7 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
                 {authenticationUIMode === 'sign-in' && <Typography><Link onClick={() => {
                     setDanger(null);
                     setSuccess(null);
-                    navigate(resetPasswordPath);
+                    navigate(resetPasswordPath, {state: resetPasswordPath});
                     document.getElementsByName('email')[0].focus();
                 }}>Forgot Password?</Link></Typography>}
                 <Button
@@ -427,7 +427,7 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
                 {!authentication.resetPasswordOobCode && <Typography>{authenticationUIMode === 'sign-up' ? 'Have an account?' : (authenticationUIMode === 'sign-in' ? 'New to us?' : '')} <Link onClick={() => {
                     setDanger(null);
                     setSuccess(null);
-                    navigate(switchPath);
+                    navigate(switchPath, {state: switchPath});
                     document.getElementsByName(isEmailValid ? passwordId : 'email')[0].focus();
                 }}>{switchTitle}</Link></Typography>}
                 {authenticationUIMode !== 'reset-password' && <>
