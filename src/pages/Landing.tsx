@@ -41,12 +41,22 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
             if (sections)
                 for (let i = sections.length - 1; i >= 0; i--) {
                     const section = sections[i];
-                    const elements: HTMLCollection = document.getElementsByClassName(section);
-                    const element: HTMLElement = elements[0] as HTMLElement;
 
-                    if (element && scrollPosition >= element.offsetTop - 20 - headerHeight) {
+                    if (i === 0) {
                         setActiveSection(section);
-                        break;
+                    } else {
+                        const elements: HTMLCollection = document.getElementsByClassName(section);
+                        const element: HTMLElement = elements[0] as HTMLElement;
+
+                        const befores: HTMLCollection = document.getElementsByClassName(sections[i-1]);
+                        const before = befores[0] as HTMLElement;
+
+                        const gap = element.offsetTop - before.offsetTop - before.offsetHeight;
+
+                        if (element && scrollPosition >= element.offsetTop - gap - headerHeight) {
+                            setActiveSection(section);
+                            break;
+                        }
                     }
                 }
         };
@@ -333,10 +343,10 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
                             <ListItem>
                             </ListItem>
                             <ListItem>
-                                <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowForward />} onClick={() => navigate(Paths.SignUp, {state: Paths.SignUp})}>{authentication.isLoggedIn ? 'Access' : 'Sign Up for'} the Question Bank</Button>
+                                <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowForward />} onClick={() => navigate(Paths.SignUp, { state: Paths.SignUp })}>{authentication.isLoggedIn ? 'Access' : 'Sign Up for'} the Question Bank</Button>
                             </ListItem>
                             {!authentication.isLoggedIn && <ListItem>
-                                <Typography>Or <Link onClick={() => navigate(Paths.SignIn, {state: Paths.SignIn})}>{Strings.SignIn}</Link></Typography>
+                                <Typography>Or <Link onClick={() => navigate(Paths.SignIn, { state: Paths.SignIn })}>{Strings.SignIn}</Link></Typography>
                             </ListItem>}
                         </List>
                     </div>
