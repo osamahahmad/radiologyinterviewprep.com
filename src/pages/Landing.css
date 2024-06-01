@@ -12,7 +12,7 @@
     margin: var(--padding-sm);
 }
 
-@media screen and (min-width: 868px) {
+@media screen and (min-width: 849px) {
     .landing>.welcome {
         flex-direction: row;
         gap: var(--joy-fontSize-xl4);
@@ -30,7 +30,7 @@
     font-size: var(--joy-fontSize-xl3);
 }
 
-@media screen and (min-width: 868px) {
+@media screen and (min-width: 849px) {
     .landing>.welcome>h1 {
         font-size: var(--joy-fontSize-xl4);
         text-align: right;
@@ -47,7 +47,7 @@
     margin-top: var(--padding);
 }
 
-@media screen and (min-width: 868px) {
+@media screen and (min-width: 849px) {
     .landing>.welcome>p>button {
         margin-top: 1em;
     }
@@ -86,7 +86,7 @@
     gap: inherit;
 }
 
-@media screen and (min-width: 868px) {
+@media screen and (min-width: 769px) {
     .landing>.question-bank>div {
         flex-direction: row;
         align-items: center;
@@ -114,7 +114,7 @@
     margin: var(--padding);
 }
 
-@media screen and (min-width: 868px) {
+@media screen and (min-width: 769px) {
     .landing>.question-bank>div>div:first-child img {
         display: none;
     }
@@ -133,7 +133,7 @@
     flex: 1;
 }
 
-@media screen and (min-width: 868px) {
+@media screen and (min-width: 769px) {
     .landing>.question-bank>div>div:last-child {
         display: block;
     }
