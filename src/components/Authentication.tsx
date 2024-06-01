@@ -42,7 +42,7 @@ const AuthenticationProvider: FC<AuthenticationProviderProps> = ({
     }, [emailAddressJustVerified, setIsEmailAddressVerified]);
 
     const [accountJustDeleted, setAccountJustDeleted] = useState<boolean>(false);
-    const [accountDeletionFailed, setAccountDeletionFailed] = useState<boolean>(true);
+    const [accountDeletionFailed, setAccountDeletionFailed] = useState<boolean>(false);
     const [resetPasswordOobCode, setResetPasswordOobCode] = useState<string>();
 
     useEffect(() => {
