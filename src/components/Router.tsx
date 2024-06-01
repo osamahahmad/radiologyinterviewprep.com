@@ -105,10 +105,10 @@ const Router: FC = () => {
             </>
           } />
       } />
-      <Route path={Paths.PrivacyPolicy} element={
+      <Route path={Paths.Privacy} element={
         <Article
           setNav={setNav}
-          title={Strings.PrivacyPolicy}
+          title={Strings.Privacy}
           content={
             <>
               <Typography>

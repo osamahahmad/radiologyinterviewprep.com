@@ -184,10 +184,10 @@ interface AuthenticationUIProps {
     resetPasswordPath?: string;
     creatingAnAccount?: string;
     appName?: string;
-    termsOfServiceTitle?: string;
-    termsOfServicePath?: string;
-    privacyPolicyTitle?: string;
-    privacyPolicyPath?: string;
+    termsTitle?: string;
+    termsPath?: string;
+    privacyTitle?: string;
+    privacyPath?: string;
 }
 
 export const AuthenticationUI: FC<AuthenticationUIProps> = ({
@@ -206,10 +206,10 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
     resetPasswordPath = '/reset-password',
     creatingAnAccount = 'creating an account',
     appName,
-    termsOfServiceTitle = 'Terms of Service',
-    termsOfServicePath = 'terms-of-service',
-    privacyPolicyTitle = 'Privacy Policy',
-    privacyPolicyPath = 'privacy-policy',
+    termsTitle = 'Terms of Service',
+    termsPath = 'terms',
+    privacyTitle = 'Privacy Policy',
+    privacyPath = 'privacy-policy',
 }) => {
     /* dynamic prop defaults */
     !title && (title = authenticationUIMode === 'sign-up' ? AuthenticationUIStrings.SignUp : authenticationUIMode === 'sign-in' ? AuthenticationUIStrings.SignIn : AuthenticationUIStrings.ResetPassword);
@@ -324,7 +324,7 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
                 try {
                     await confirmPasswordReset(auth, authentication.resetPasswordOobCode, password);
                     setSuccess('Password reset.');
-                    navigate(switchPath, {state: switchPath});
+                    navigate(switchPath);
                 } catch (error) {
                     setError(error);
                 }
@@ -359,7 +359,7 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
         }
     }, [authenticationUIMode, danger, success, windowSize]);
 
-    return <Modal open onClose={() => navigate('/', {state: '/'})} style={style}>
+    return <Modal open onClose={() => navigate('/')} style={style}>
         <div className='authentication-wrapper'>
             <form onSubmit={handleSubmit}>
                 {logo && <div className='authentication-logo'>{logo}</div>}
@@ -414,7 +414,7 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
                 {authenticationUIMode === 'sign-in' && <Typography><Link onClick={() => {
                     setDanger(null);
                     setSuccess(null);
-                    navigate(resetPasswordPath, {state: resetPasswordPath});
+                    navigate(resetPasswordPath);
                     document.getElementsByName('email')[0].focus();
                 }}>Forgot Password?</Link></Typography>}
                 <Button
@@ -427,14 +427,14 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
                 {!authentication.resetPasswordOobCode && <Typography>{authenticationUIMode === 'sign-up' ? 'Have an account?' : (authenticationUIMode === 'sign-in' ? 'New to us?' : '')} <Link onClick={() => {
                     setDanger(null);
                     setSuccess(null);
-                    navigate(switchPath, {state: switchPath});
+                    navigate(switchPath);
                     document.getElementsByName(isEmailValid ? passwordId : 'email')[0].focus();
                 }}>{switchTitle}</Link></Typography>}
                 {authenticationUIMode !== 'reset-password' && <>
                     <div className='authentication-divider'><Typography level='body-sm'>Or</Typography></div>
                     <Button variant='outlined' onClick={handleSignInOrSignUpWithGoogle}>{title + ' with Google'}</Button>
-                    {authenticationUIMode === 'sign-up' && appName && termsOfServicePath && privacyPolicyPath && <Typography className='authentication-compliance' level='body-sm'>
-                        By {creatingAnAccount}, you agree to {appName}'s <Link onClick={() => navigate(termsOfServicePath)}>{termsOfServiceTitle}</Link> and <Typography sx={{ whiteSpace: 'pre' }}><Link onClick={() => navigate(privacyPolicyPath)}>{privacyPolicyTitle}</Link>.</Typography>
+                    {authenticationUIMode === 'sign-up' && appName && termsPath && privacyPath && <Typography className='authentication-compliance' level='body-sm'>
+                        By {creatingAnAccount}, you agree to {appName}'s <Link onClick={() => navigate(termsPath)}>{termsTitle}</Link> and <Typography sx={{ whiteSpace: 'pre' }}><Link onClick={() => navigate(privacyPath)}>{privacyTitle}</Link>.</Typography>
                     </Typography>}
                 </>}
             </form>
@@ -544,4 +544,4 @@ export const DeleteAccountModal: FC<DeleteAccountModalProps> = ({ warnings, dang
             </DialogActions>
         </ModalDialog>
     </Modal >
-}
+};
