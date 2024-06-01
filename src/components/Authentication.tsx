@@ -18,9 +18,19 @@ export const useAuthentication: Function = () => {
 
 interface AuthenticationProviderProps {
     children: ReactNode;
+    variant?: 'outlined' | 'solid';
+    dangerIcon?: ReactNode;
+    warningIcon?: ReactNode;
+    successIcon?: ReactNode;
 }
 
-const AuthenticationProvider: FC<AuthenticationProviderProps> = ({ children }) => {
+const AuthenticationProvider: FC<AuthenticationProviderProps> = ({
+    children,
+    variant = 'outlined',
+    dangerIcon = <MdError />,
+    warningIcon = <MdWarning />,
+    successIcon = <MdCheckCircle />
+}) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
     const [isEmailAddressVerified, setIsEmailAddressVerified] = useState<boolean>(false);
@@ -32,7 +42,7 @@ const AuthenticationProvider: FC<AuthenticationProviderProps> = ({ children }) =
     }, [emailAddressJustVerified, setIsEmailAddressVerified]);
 
     const [accountJustDeleted, setAccountJustDeleted] = useState<boolean>(false);
-    const [accountDeletionFailed, setAccountDeletionFailed] = useState<boolean>(false);
+    const [accountDeletionFailed, setAccountDeletionFailed] = useState<boolean>(true);
     const [resetPasswordOobCode, setResetPasswordOobCode] = useState<string>();
 
     useEffect(() => {
@@ -55,14 +65,14 @@ const AuthenticationProvider: FC<AuthenticationProviderProps> = ({ children }) =
     const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(true);
 
     const snackbarColor = (emailAddressJustVerified || accountJustDeleted) ? 'success' : 'danger';
-    const snackbarStartDecorator = (emailAddressJustVerified || accountJustDeleted) ? <MdCheckCircle /> : <MdError />;
+    const snackbarStartDecorator = (emailAddressJustVerified || accountJustDeleted) ? successIcon : dangerIcon;
     const snackbarText = emailAddressJustVerified
-        ? 'Email address verified.'
+        ? 'Email Address Verified'
         : emailAddressVerificationFailed
-            ? 'Couldn\'t verify email address.'
+            ? 'Couldn\'t Verify Email Address'
             : accountJustDeleted
-                ? 'Account deleted.'
-                : 'Couldn\'t delete account.';
+                ? 'Account Deleted'
+                : 'Couldn\'t Delete Account';
 
     const closeSnackbar = () => {
         setIsSnackbarOpen(false);
@@ -91,11 +101,15 @@ const AuthenticationProvider: FC<AuthenticationProviderProps> = ({ children }) =
         accountJustDeleted, setAccountJustDeleted,
         accountDeletionFailed, setAccountDeletionFailed,
         currentUser,
-        signOut
+        signOut,
+        variant,
+        dangerIcon,
+        warningIcon
     }}>
         {children}
         <Snackbar
             color={snackbarColor}
+            variant={variant}
             open={isSnackbarOpen && (emailAddressJustVerified || emailAddressVerificationFailed || accountJustDeleted || accountDeletionFailed)}
             onClose={closeSnackbar}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -509,7 +523,7 @@ interface DeleteAccountModalProps {
     onClose?: MouseEventHandler;
 }
 
-export const DeleteAccountModal: FC<DeleteAccountModalProps> = ({ warnings, dangers, nextPath, open = true, onClose }) => {
+export const DeleteAccountModal: FC<DeleteAccountModalProps> = ({ warnings, dangers, nextPath = '/', open = true, onClose }) => {
     const authentication = useAuthentication();
     const navigate = useNavigate();
 
@@ -536,12 +550,12 @@ export const DeleteAccountModal: FC<DeleteAccountModalProps> = ({ warnings, dang
     return <Modal open={open} onClose={onClose}>
         <ModalDialog>
             <DialogTitle>Delete Account</DialogTitle>
-            {!dangers && _warnings.map(warning => <Alert color='warning' startDecorator={<MdWarning />}>{warning}</Alert>)}
-            {dangers && dangers.map(danger => <Alert color='danger'>{danger}</Alert>)}
+            {!dangers && _warnings.map(warning => <Alert color='warning' startDecorator={authentication.warningIcon}>{warning}</Alert>)}
+            {dangers && dangers.map(danger => <Alert color='danger' startDecorator={authentication.dangerIcon}>{danger}</Alert>)}
             <DialogActions>
                 <Button color='danger' disabled={!!dangers} loading={isDeletingAccount} onClick={() => handleDeleteAccount()}>Delete Account</Button>
-                <Button color='neutral' variant='outlined' onClick={onClose}>Close</Button>
+                <Button color='neutral' variant={authentication.variant} onClick={onClose}>Close</Button>
             </DialogActions>
         </ModalDialog>
-    </Modal >
+    </Modal>;
 };
