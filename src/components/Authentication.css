@@ -27,21 +27,34 @@
     }
 }
 
-@media screen and (min-width: 481px) {
-    .MuiModal-backdrop {
-        animation: fade-in var(--transition);
-    }
+.MuiModal-backdrop {
+    animation: fade-in var(--transition);
 }
 
 @keyframes fly-in {
     0% {
-        transform: translateY(-1rem)
+        transform: translateY(-1rem);
     }
 
     100% {
         transform: translateY(0);
     }
 }
+
+@keyframes fly-in-dialog {
+    0% {
+        transform: translate(-50%, calc(-50% - 1rem));
+    }
+
+    100% {
+        transform: translate(-50%, -50%);
+    }
+}
+
+.MuiModalDialog-root {
+    animation: fade-in var(--transition), fly-in-dialog var(--transition);
+}
+
 
 .authentication-wrapper {
     width: 'fit-content';

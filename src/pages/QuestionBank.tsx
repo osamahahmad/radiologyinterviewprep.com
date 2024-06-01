@@ -30,6 +30,7 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
 
     /* header */
     const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState<boolean>(false);
+    
     useEffect(() => {
         const headerNavDefinitions: [
             string,
@@ -369,7 +370,6 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
         </div>
         <Footer />
         {subscriptionWasChecked && <DeleteAccountModal
-            nextPath="/"
             dangers={(subscriptionWasChecked && subscriptionExpiryDate && !subscriptionCancelAtPeriodEnd) ? [<Typography sx={{ color: 'inherit', fontSize: 'inherit' }}>{subscriptionPortalUrlLink} of your subscription first.</Typography>] : undefined}
             open={isDeleteAccountModalOpen}
             onClose={() => setIsDeleteAccountModalOpen(false)}
