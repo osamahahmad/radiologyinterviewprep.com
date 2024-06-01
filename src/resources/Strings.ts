@@ -2,9 +2,9 @@ enum Strings {
     AppName = 'Radiology Interview Prep.',
     Terms = 'Terms of Service',
     TermsShort = 'Terms',
-    PrivacyPolicy = 'Privacy Policy',
+    Privacy = 'Privacy Policy',
     SignIn = 'Sign In',
-    ContactMe = 'Contact Me',
+    ContactUs = 'Contact Me',
     Copyright = '© Osamah Ahmad 2024',
 }
 

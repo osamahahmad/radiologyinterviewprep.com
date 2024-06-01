@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
 
   const navigate: Function = (pathname: String) => {
     if (location.pathname !== pathname)
-      _navigate(pathname as any);
+      _navigate(pathname as string, { state: 'scrollToTop' });
     else
       window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -19,8 +19,8 @@ const Footer: React.FC = () => {
   return <footer>
     <div>
       <Link color='neutral' onClick={() => navigate(Paths.Terms)}>{Strings.TermsShort}</Link>
-      <Link color='neutral' onClick={() => navigate(Paths.PrivacyPolicy)}>{Strings.PrivacyPolicy}</Link>
-      <Link color='neutral' href='mailto:hello@radiologyinterviewprep.com'>{Strings.ContactMe}</Link>
+      <Link color='neutral' onClick={() => navigate(Paths.Privacy)}>{Strings.Privacy}</Link>
+      <Link color='neutral' href='mailto:hello@radiologyinterviewprep.com'>{Strings.ContactUs}</Link>
     </div>
     <Typography color='neutral'>|</Typography>
     <Typography color='neutral'>{Strings.Copyright}</Typography>
