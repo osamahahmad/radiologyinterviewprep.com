@@ -30,7 +30,7 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
 
     /* header */
     const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState<boolean>(false);
-    
+
     useEffect(() => {
         const headerNavDefinitions: [
             string,
@@ -318,8 +318,12 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                                     const searchBoxHeight = searchBox ? searchBox.getBoundingClientRect().height : 0;
                                     const top =
                                         window.matchMedia("(min-width: 1025px)").matches
-                                            ? element.offsetTop - headerHeight - 20
-                                            : element.offsetTop - searchBoxHeight - 100;
+                                            ? element
+                                                ? element.offsetTop - headerHeight - 20
+                                                : 0
+                                            : element
+                                                ? element.offsetTop - searchBoxHeight - 100
+                                                : 0;
 
                                     window.scrollTo({ top, behavior: 'smooth' });
 
@@ -368,28 +372,30 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                 {!subscriptionExpiryDate && <>{[0, 0, 0, 0, 0, 0].map(() => skeletonQuestion)}</>}
             </div>
         </div>
+    </>;
+
+    return <>
+        <div className="question-bank-page">
+            {authentication.isLoading
+                ? page
+                : authentication.isLoggedIn
+                    ? (subscriptionWasChecked && !subscriptionExpiryDate)
+                        ? hasSubscriptionExpired
+                            ? subscriptionAlert
+                            : [0].map(() => {
+                                window.location.replace(Paths.Subscribe + authentication.currentUser.uid);
+                                return <></>
+                            })
+                        : page
+                    : <Navigate to={Paths.SignIn} replace />}
+        </div>
         <Footer />
         {subscriptionWasChecked && <DeleteAccountModal
             dangers={(subscriptionWasChecked && subscriptionExpiryDate && !subscriptionCancelAtPeriodEnd) ? [<Typography sx={{ color: 'inherit', fontSize: 'inherit' }}>{subscriptionPortalUrlLink} of your subscription first.</Typography>] : undefined}
             open={isDeleteAccountModalOpen}
             onClose={() => setIsDeleteAccountModalOpen(false)}
         />}
-    </>;
-
-    return <div className="question-bank-page">
-        {authentication.isLoading
-            ? page
-            : authentication.isLoggedIn
-                ? (subscriptionWasChecked && !subscriptionExpiryDate)
-                    ? hasSubscriptionExpired
-                        ? subscriptionAlert
-                        : [0].map(() => {
-                            window.location.replace(Paths.Subscribe + authentication.currentUser.uid);
-                            return <></>
-                        })
-                    : page
-                : <Navigate to={Paths.SignIn} replace />}
-    </div>
+    </>
 };
 
 export default QuestionBank;
