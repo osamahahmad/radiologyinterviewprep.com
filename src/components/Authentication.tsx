@@ -240,6 +240,10 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
     const style: React.CSSProperties = {};
     themeColor && (style['--authentication-theme-color'] = themeColor);
     backgroundColor && (style['--authentication-background-color'] = backgroundColor);
+    ((themeColor === 'white' && !backgroundColor)
+        || (themeColor && backgroundColor && (themeColor === backgroundColor))
+        || (!themeColor && backgroundColor === 'var(--joy-palette-primary-100)'))
+        && (style['--authentication-dialog-title-padding'] = 0);
     padding && (style['--authentication-padding'] = padding);
     gap && (style['--authentication-gap'] = gap);
     animation && (style['--authentication-animation'] = animation);
@@ -376,7 +380,7 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
     return <Modal open onClose={() => navigate('/')} style={style}>
         <div className='authentication-wrapper'>
             <form onSubmit={handleSubmit}>
-                {logo && <div className='authentication-logo'>{logo}</div>}
+                {logo && <DialogTitle className='authentication-dialog-title'>{logo}</DialogTitle>}
                 <Typography>
                     <Typography level='h1'>{title}</Typography>
                     {authenticationUIMode === 'sign-up' && tagline && <>
