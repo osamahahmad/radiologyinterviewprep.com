@@ -9,6 +9,7 @@ import { confirmPasswordReset, createUserWithEmailAndPassword, sendEmailVerifica
 import { auth, googleProvider } from "../resources/Firebase.js";
 import useWindowSize from "../hooks/useWindowSize.ts";
 import { FirebaseError } from "firebase/app";
+import { SxProps } from '@mui/joy/styles/types/theme';
 
 const AuthenticationContext = createContext({});
 
@@ -460,7 +461,11 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
     </Modal>
 };
 
-export const VerificationAlert: FC = () => {
+interface VerificationAlertProps {
+    sx?: SxProps;
+};
+
+export const VerificationAlert: FC<VerificationAlertProps> = ({sx}) => {
     const authentication = useAuthentication();
 
     const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState<boolean>(false);
@@ -492,7 +497,7 @@ export const VerificationAlert: FC = () => {
     return authentication.isLoggedIn &&
         (authentication.isEmailAddressVerified
             ? <></>
-            : <Alert color='warning'>
+            : <Alert color='warning' sx={sx}>
                 <Typography level="body-sm" sx={{ color: "inherit" }}                    >
                     Please verify your email address using the link we've sent you. {sentVerificationEmail
                         ? <Typography color="success">Sent.</Typography>
