@@ -380,11 +380,7 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
         }
     }, [authenticationUIMode, danger, success, windowSize]);
 
-    return <Modal
-        className='authentication-modal'
-        open
-        onClose={() => navigate('/')}
-        style={style}>
+    return <Modal className='authentication-modal' open onClose={() => navigate('/')} style={style}>
         <div className='authentication-wrapper'>
             <form onSubmit={handleSubmit}>
                 {logo && <DialogTitle className='authentication-dialog-title'>{logo}</DialogTitle>}
@@ -562,10 +558,7 @@ export const DeleteAccountModal: FC<DeleteAccountModalProps> = ({ warnings, dang
         setIsDeletingAccount(false);
     }, [setIsDeletingAccount, authentication, navigate, nextPath]);
 
-    return <Modal
-        className='authentication-modal'
-        open={open}
-        onClose={onClose}>
+    return <Modal className='authentication-modal' open={open} onClose={onClose}>
         <ModalDialog>
             <DialogTitle>Delete Account</DialogTitle>
             {!dangers && _warnings.map(warning => <Alert color='warning' startDecorator={authentication.warningIcon}>{warning}</Alert>)}
