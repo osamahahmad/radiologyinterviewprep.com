@@ -561,7 +561,7 @@ export const DeleteAccountModal: FC<DeleteAccountModalProps> = ({ warnings, dang
     return <Modal className='authentication-modal' open={open} onClose={onClose}>
         <ModalDialog>
             <DialogTitle>Delete Account</DialogTitle>
-            {!dangers && _warnings.map(warning => <Alert color='warning' startDecorator={authentication.warningIcon}>{warning}</Alert>)}
+            {!dangers && _warnings.map((warning, index) => <Alert key={index} color='warning' startDecorator={authentication.warningIcon}>{warning}</Alert>)}
             {dangers && dangers.map(danger => <Alert color='danger' startDecorator={authentication.dangerIcon}>{danger}</Alert>)}
             <DialogActions>
                 <Button color='danger' disabled={!!dangers} loading={isDeletingAccount} onClick={() => handleDeleteAccount()}>Delete Account</Button>
