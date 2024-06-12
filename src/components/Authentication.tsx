@@ -90,7 +90,9 @@ const AuthenticationProvider: FC<AuthenticationProviderProps> = ({
 
     /* transposition */
     const currentUser: User | null = auth.currentUser;
-    const signOut: Function = async () => { await auth.signOut() };
+    const signOut: Function = async () => {
+        await auth.signOut();
+    };
 
     return <AuthenticationContext.Provider value={{
         isLoading, setIsLoading,
@@ -378,7 +380,11 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
         }
     }, [authenticationUIMode, danger, success, windowSize]);
 
-    return <Modal open onClose={() => navigate('/')} style={style}>
+    return <Modal
+        className='authentication-modal'
+        open
+        onClose={() => navigate('/')}
+        style={style}>
         <div className='authentication-wrapper'>
             <form onSubmit={handleSubmit}>
                 {logo && <DialogTitle className='authentication-dialog-title'>{logo}</DialogTitle>}
@@ -465,7 +471,7 @@ interface VerificationAlertProps {
     sx?: SxProps;
 };
 
-export const VerificationAlert: FC<VerificationAlertProps> = ({sx}) => {
+export const VerificationAlert: FC<VerificationAlertProps> = ({ sx }) => {
     const authentication = useAuthentication();
 
     const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState<boolean>(false);
@@ -556,7 +562,10 @@ export const DeleteAccountModal: FC<DeleteAccountModalProps> = ({ warnings, dang
         setIsDeletingAccount(false);
     }, [setIsDeletingAccount, authentication, navigate, nextPath]);
 
-    return <Modal open={open} onClose={onClose}>
+    return <Modal
+        className='authentication-modal'
+        open={open}
+        onClose={onClose}>
         <ModalDialog>
             <DialogTitle>Delete Account</DialogTitle>
             {!dangers && _warnings.map(warning => <Alert color='warning' startDecorator={authentication.warningIcon}>{warning}</Alert>)}
