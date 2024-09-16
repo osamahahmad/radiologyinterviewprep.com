@@ -9,6 +9,7 @@ import { confirmPasswordReset, createUserWithEmailAndPassword, sendEmailVerifica
 import { auth, googleProvider } from "../resources/Firebase.js";
 import useWindowSize from "../hooks/useWindowSize.ts";
 import { FirebaseError } from "firebase/app";
+import { SxProps } from '@mui/joy/styles/types/theme';
 
 const AuthenticationContext = createContext({});
 
@@ -89,7 +90,9 @@ const AuthenticationProvider: FC<AuthenticationProviderProps> = ({
 
     /* transposition */
     const currentUser: User | null = auth.currentUser;
-    const signOut: Function = async () => { await auth.signOut() };
+    const signOut: Function = async () => {
+        await auth.signOut();
+    };
 
     return <AuthenticationContext.Provider value={{
         isLoading, setIsLoading,
@@ -377,7 +380,7 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
         }
     }, [authenticationUIMode, danger, success, windowSize]);
 
-    return <Modal open onClose={() => navigate('/')} style={style}>
+    return <Modal className='authentication-modal' open onClose={() => navigate('/')} style={style}>
         <div className='authentication-wrapper'>
             <form onSubmit={handleSubmit}>
                 {logo && <DialogTitle className='authentication-dialog-title'>{logo}</DialogTitle>}
@@ -460,7 +463,11 @@ export const AuthenticationUI: FC<AuthenticationUIProps> = ({
     </Modal>
 };
 
-export const VerificationAlert: FC = () => {
+interface VerificationAlertProps {
+    sx?: SxProps;
+};
+
+export const VerificationAlert: FC<VerificationAlertProps> = ({ sx }) => {
     const authentication = useAuthentication();
 
     const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState<boolean>(false);
@@ -492,7 +499,7 @@ export const VerificationAlert: FC = () => {
     return authentication.isLoggedIn &&
         (authentication.isEmailAddressVerified
             ? <></>
-            : <Alert color='warning'>
+            : <Alert color='warning' sx={sx}>
                 <Typography level="body-sm" sx={{ color: "inherit" }}                    >
                     Please verify your email address using the link we've sent you. {sentVerificationEmail
                         ? <Typography color="success">Sent.</Typography>
@@ -551,10 +558,10 @@ export const DeleteAccountModal: FC<DeleteAccountModalProps> = ({ warnings, dang
         setIsDeletingAccount(false);
     }, [setIsDeletingAccount, authentication, navigate, nextPath]);
 
-    return <Modal open={open} onClose={onClose}>
+    return <Modal className='authentication-modal' open={open} onClose={onClose}>
         <ModalDialog>
             <DialogTitle>Delete Account</DialogTitle>
-            {!dangers && _warnings.map(warning => <Alert color='warning' startDecorator={authentication.warningIcon}>{warning}</Alert>)}
+            {!dangers && _warnings.map((warning, index) => <Alert key={index} color='warning' startDecorator={authentication.warningIcon}>{warning}</Alert>)}
             {dangers && dangers.map(danger => <Alert color='danger' startDecorator={authentication.dangerIcon}>{danger}</Alert>)}
             <DialogActions>
                 <Button color='danger' disabled={!!dangers} loading={isDeletingAccount} onClick={() => handleDeleteAccount()}>Delete Account</Button>

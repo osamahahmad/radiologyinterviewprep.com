@@ -1,4 +1,4 @@
-.MuiModal-root {
+.authentication-modal {
     --authentication-theme-color: var(--joy-palette-primary-100);
     --authentication-background-color: white;
     --authentication-padding: var(--padding);
@@ -6,14 +6,12 @@
     --authentication-animation: .3s ease;
     --authentication-divider: 1px solid rgba(0, 0, 0, .25);
     --authentication-dialog-title-padding: calc(.5 * var(--authentication-padding));
-    min-height: 100svh;
-    box-sizing: border-box;
     display: flex;
+    align-items: center;
 }
 
 @media screen and (min-width: 481px) {
-    .MuiModal-root {
-        align-items: center;
+    .authentication-modal {
         padding: var(--authentication-padding);
     }
 }
@@ -28,7 +26,7 @@
     }
 }
 
-.MuiModal-backdrop {
+.authentication-modal .MuiModal-backdrop {
     animation: fade-in var(--transition);
 }
 
