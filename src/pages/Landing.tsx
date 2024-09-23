@@ -274,7 +274,7 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
             </Card>
             <Card className={sections[2]}>
                 <Typography level='h2'>{sectionTitles[sections[2]]}</Typography>
-                <Alert color='success' startDecorator={<MdInfo />} sx={{ width: 'fit-content', margin: '0 auto' }}><Typography sx={{ color: 'inherit', fontSize: 'inherit' }}>You can find more like these in the <Link sx={{ fontSize: 'inherit' }} color='success' onClick={questionBankLinkOnClick}>Radiology Interview Question Bank</Link>.</Typography></Alert>
+                <Alert color='success' startDecorator={<MdInfo />} sx={{ width: 'fit-content', margin: '0 auto' }}><Typography sx={{ color: 'inherit', fontSize: 'inherit' }}>Find More in the <Link sx={{ fontSize: 'inherit' }} color='success' onClick={questionBankLinkOnClick}>Radiology Interview Question Bank</Link></Typography></Alert>
                 <ExampleQuestions />
             </Card>
             <Card className={sections[3]}>
