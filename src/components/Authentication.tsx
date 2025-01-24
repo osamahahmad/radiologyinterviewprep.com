@@ -562,7 +562,7 @@ export const DeleteAccountModal: FC<DeleteAccountModalProps> = ({ warnings, dang
         <ModalDialog>
             <DialogTitle>Delete Account</DialogTitle>
             {!dangers && _warnings.map((warning, index) => <Alert key={index} color='warning' startDecorator={authentication.warningIcon}>{warning}</Alert>)}
-            {dangers && dangers.map(danger => <Alert color='danger' startDecorator={authentication.dangerIcon}>{danger}</Alert>)}
+            {dangers && dangers.map((danger, index) => <Alert key={index} color='danger' startDecorator={authentication.dangerIcon}>{danger}</Alert>)}
             <DialogActions>
                 <Button color='danger' disabled={!!dangers} loading={isDeletingAccount} onClick={() => handleDeleteAccount()}>Delete Account</Button>
                 <Button color='neutral' variant={authentication.variant} onClick={onClose}>Close</Button>

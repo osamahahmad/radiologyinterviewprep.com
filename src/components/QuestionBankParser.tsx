@@ -115,7 +115,7 @@ export const parseQuestionBank: (questionBank: RawQuestionBank) => Promise<Parse
         finaliseCurrentContent();
 
         if (currentHeading1 && currentHeading2 && currentHeading3)
-            output[currentHeading1][currentHeading2][currentHeading3] = <>{finalisedContent.map(node => node)}</>;
+            output[currentHeading1][currentHeading2][currentHeading3] = <>{finalisedContent}</>;
 
         finalisedContent = [];
         currentContent = [];
@@ -225,7 +225,7 @@ export const parseQuestionBank: (questionBank: RawQuestionBank) => Promise<Parse
         }
 
         fullText = fullText.trim();
-        const fullTextNode = <Typography>{fullTextParts}</Typography>;
+        const fullTextNode = <Typography key={i}>{fullTextParts}</Typography>;
 
         // stop if paragraph is undesirable
         const isPageNumber = paragraph.getElementsByTagName("w:fldChar").length > 0;
@@ -334,8 +334,8 @@ export const parseQuestionBank: (questionBank: RawQuestionBank) => Promise<Parse
 
             currentContent.push(
                 currentTag === 'li'
-                    ? <ListItem>{fullTextNode}</ListItem >
-                    : <Typography>{fullTextNode}</Typography>
+                    ? <ListItem key={i}>{fullTextNode}</ListItem>
+                    : <Typography key={i}>{fullTextNode}</Typography>
             );
         }
 

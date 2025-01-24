@@ -1,7 +1,7 @@
 import React, { FC, MouseEventHandler, ReactNode, useEffect, useState } from "react";
 import "./QuestionBank.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-import { Alert, Button, Dropdown, IconButton, Input, Link, List, ListItem, ListItemButton, ListSubheader, Menu, MenuItem, Skeleton, Typography } from "@mui/joy";
+import { Alert, Button, Dropdown, IconButton, Input, Link, List, ListItem, ListItemButton, ListSubheader, Menu, MenuItem, Skeleton, SkeletonProps, Typography } from "@mui/joy";
 import Paths from '../resources/Paths.ts';
 import { Navigate, useNavigate } from "react-router-dom";
 import MenuButton from "@mui/joy/MenuButton/MenuButton";
@@ -16,6 +16,16 @@ import QuestionBankProgressTitle from "../components/QuestionBankListItem.tsx";
 import useScrollToTop from "../hooks/useScrollToTop.ts";
 
 const skeletonSx = { position: 'relative', width: 'auto', height: 'fit-content' };
+
+const SkeletonQuestion: FC<SkeletonProps> = ({ children, ...rest }) =>
+    <Skeleton sx={skeletonSx} {...rest}>
+        <QuestionBankItem data={{
+            title: 'Skeleton Title',
+            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac pharetra nibh. Aenean mollis vestibulum venenatis. Duis suscipit nunc non nisi eleifend tempus. Ut at aliquet sapien. Nulla facilisi. Duis aliquam lobortis pellentesque. Cras tellus massa, viverra nec porta vel, ultrices non enim. Donec sollicitudin, eros vel sollicitudin laoreet, purus massa ornare augue, ut commodo velit mauris a massa. Praesent lobortis libero sed felis tempor mollis. Aliquam quis faucibus nisi, ac volutpat nunc.',
+            answer: 'Skeleton Answer',
+            rationale: 'Skeleton Rationale'
+        }} />
+    </Skeleton>;
 
 interface QuestionBankProps {
     setNav: Function;
@@ -78,10 +88,11 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                     ? <Skeleton sx={skeletonSx}>{headerMenuButton}</Skeleton>
                     : headerMenuButton}
                 <Menu>
-                    {headerNavDefinitions.map(headerChild => {
+                    {headerNavDefinitions.map((headerChild, index) => {
                         const email = headerChild[5];
 
                         return <MenuItem
+                            key={index}
                             color={headerChild[1]}
                             onClick={headerChild[2]}
                             sx={headerChild[3]}
@@ -94,10 +105,11 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                 </Menu>
             </Dropdown>
             <nav>
-                {headerNavDefinitions.map(headerChild => {
+                {headerNavDefinitions.map((headerChild, index) => {
                     const email = headerChild[5];
 
                     const button = <Button
+                        key={index}
                         variant={'outlined'}
                         color={headerChild[1]}
                         onClick={headerChild[2]}
@@ -110,7 +122,7 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                     </Button>;
 
                     return authentication.isLoading
-                        ? <Skeleton sx={skeletonSx}>{button}</Skeleton>
+                        ? <Skeleton key={index} sx={skeletonSx}>{button}</Skeleton>
                         : button
                 })}
             </nav>
@@ -188,16 +200,6 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
             </Typography>
         </Alert >;
 
-    const skeletonQuestion: ReactNode =
-        <Skeleton sx={skeletonSx}>
-            <QuestionBankItem data={{
-                title: 'Skeleton Title',
-                content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac pharetra nibh. Aenean mollis vestibulum venenatis. Duis suscipit nunc non nisi eleifend tempus. Ut at aliquet sapien. Nulla facilisi. Duis aliquam lobortis pellentesque. Cras tellus massa, viverra nec porta vel, ultrices non enim. Donec sollicitudin, eros vel sollicitudin laoreet, purus massa ornare augue, ut commodo velit mauris a massa. Praesent lobortis libero sed felis tempor mollis. Aliquam quis faucibus nisi, ac volutpat nunc.',
-                answer: 'Skeleton Answer',
-                rationale: 'Skeleton Rationale'
-            }} />
-        </Skeleton>
-
     const [currentTags, setCurrentTags] = useState<string[]>([]);
 
     const [chips, setChips] = useState<ReactNode[]>();
@@ -213,15 +215,16 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
 
                 const tags = questionBankItemData['tags'];
 
-                tags.forEach(tag => {
+                tags.forEach((tag: string) => {
                     if (nextTags.indexOf(tag) === -1)
                         nextTags.push(tag);
                 });
             });
         });
 
-        setChips(nextTags.map(tag => {
+        setChips(nextTags.map((tag, index) => {
             return <ColouredChip
+                key={index}
                 currentTags={currentTags}
                 setCurrentTags={setCurrentTags}>
                 {tag}
@@ -298,18 +301,16 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
             </div>
             <div className='chips'>{chips}</div>
             <List component='nav' variant="outlined">
-                {subscriptionExpiryDate && Object.keys(displayedData).map(key => {
+                {subscriptionExpiryDate && Object.keys(displayedData).map((key, index) => {
                     const section = displayedData[key];
 
-                    const nodes: ReactNode[] = [];
+                    return <>
+                        <ListItem key={index} sx={{ paddingLeft: 0 }}><ListSubheader>{key}</ListSubheader></ListItem>
+                        {Object.keys(section).map((key, index2) => {
+                            const questionBankItemData = section[key];
 
-                    nodes.push(<ListItem sx={{ paddingLeft: 0 }}><ListSubheader>{key}</ListSubheader></ListItem>);
-
-                    Object.keys(section).forEach(key => {
-                        const questionBankItemData = section[key];
-
-                        nodes.push(
-                            <ListItemButton
+                            return <ListItemButton
+                                key={index + '-' + index2}
                                 onClick={() => {
                                     const element = document.getElementById('question-bank-item-' + questionBankItemData.id) as HTMLElement;
                                     const header = document.getElementsByTagName('header')[0];
@@ -330,10 +331,9 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                                     setSearchBoxExpanded(false);
                                 }}>
                                 <QuestionBankProgressTitle id={questionBankItemData['id']}>{questionBankItemData.title}</QuestionBankProgressTitle>
-                            </ListItemButton>);
-                    })
-
-                    return <>{nodes}</>
+                            </ListItemButton>;
+                        })}
+                    </>;
                 })}
             </List>
         </div>;
@@ -347,8 +347,9 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                 : <Skeleton className='question-bank-search-box-skeleton' sx={skeletonSx}>{searchBox}</Skeleton>}
 
             {currentTags && currentTags.length > 0 && <div className='question-bank-filters'>
-                {currentTags.map(tag =>
+                {currentTags.map((tag, index) =>
                     <ColouredChip
+                        key={index}
                         currentTags={currentTags}
                         setCurrentTags={setCurrentTags}>
                         {tag}
@@ -356,20 +357,20 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                 )}
             </div>}
             <div className="question-bank-page-questions">
-                {subscriptionExpiryDate && Object.keys(displayedData).map(key => {
+                {subscriptionExpiryDate && Object.keys(displayedData).map((key, index) => {
                     const section = displayedData[key];
 
-                    const nodes: ReactNode[] = [];
-
-                    Object.keys(section).forEach(key => {
+                    return Object.keys(section).map((key, index2) => {
                         const questionBankItemData = section[key];
 
-                        nodes.push(<QuestionBankItem data={questionBankItemData} />);
+                        return <QuestionBankItem
+                            key={index + '-' + index2}
+                            data={questionBankItemData}
+                            currentTags={currentTags}
+                            setCurrentTags={setCurrentTags} />;
                     })
-
-                    return <>{nodes}</>
                 })}
-                {!subscriptionExpiryDate && <>{[0, 0, 0, 0, 0, 0].map(() => skeletonQuestion)}</>}
+                {!subscriptionExpiryDate && <>{[0, 1, 2, 3, 4, 5].map((key) => <SkeletonQuestion key={key} />)}</>}
             </div>
         </div>
     </>;
