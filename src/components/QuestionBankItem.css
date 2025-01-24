@@ -36,9 +36,18 @@
 
 .question-bank-item .MuiAccordionDetails-root {
     margin: 0;
+    padding: 0;
+}
+
+.question-bank-item .MuiAccordionDetails-root.Mui-expanded {
+    margin: 0;
+    padding: 0;
+    margin-top: -.5em;
 }
 
 .question-bank-item .MuiAccordionDetails-content {
+    position: relative;
+    top: .5em;
     padding: .5em;
     padding-bottom: 1em;
     margin: 0;

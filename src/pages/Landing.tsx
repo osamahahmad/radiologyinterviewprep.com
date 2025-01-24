@@ -39,9 +39,11 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
             const befores: HTMLCollection = document.getElementsByClassName(sections[i - 1]);
             const before = befores[0] as HTMLElement;
 
-            const gap = element.offsetTop - before.offsetTop - before.offsetHeight;
-
-            top = (sections && sections[0] === section) ? 0 : element.offsetTop - gap - headerHeight;
+            if (element && before) {
+                const gap = element.offsetTop - before.offsetTop - before.offsetHeight;
+                
+                top = (sections && sections[0] === section) ? 0 : element.offsetTop - gap - headerHeight;
+            }
         }
 
         window.scrollTo({ top: top, behavior: 'smooth' });
@@ -67,11 +69,13 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
                         const befores: HTMLCollection = document.getElementsByClassName(sections[i - 1]);
                         const before = befores[0] as HTMLElement;
 
-                        const gap = element.offsetTop - before.offsetTop - before.offsetHeight;
+                        if (element && before) {
+                            const gap = element.offsetTop - before.offsetTop - before.offsetHeight;
 
-                        if (element && scrollPosition >= element.offsetTop - gap - headerHeight) {
-                            setActiveSection(section);
-                            break;
+                            if (scrollPosition >= element.offsetTop - gap - headerHeight) {
+                                setActiveSection(section);
+                                break;
+                            }
                         }
                     }
                 }
@@ -114,9 +118,9 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
                 <MdMoreVert />
             </MenuButton>
             <Menu>
-                {sections.map(section => {
+                {sections.map((section, index) => {
                     return <MenuItem
-                        key={section}
+                        key={index}
                         color={section === 'question-bank' ? 'success' : 'neutral'}
                         onClick={() => handleSectionClick(section)}
                         sx={activeSection === section ? (section === 'question-bank' ? activeSuccessMenuItemSx : activeMenuItemSx) : {}}
@@ -127,9 +131,9 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
             </Menu>
         </Dropdown>
         <nav>
-            {sections.map(section => {
+            {sections.map((section, index) => {
                 return <Button
-                    key={section}
+                    key={index}
                     id={section + '-nav'}
                     variant='outlined'
                     color='neutral'

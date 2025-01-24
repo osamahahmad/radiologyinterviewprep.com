@@ -34,19 +34,21 @@ const ExampleQuestions: FC<ExampleQuestionsProps> = ({ Wrapper, wrapperProps }) 
 
     return (parsedData)
         ? <>
-            {Object.keys(parsedData).map(key => {
+            {Object.keys(parsedData).map((key, index) => {
                 const section = parsedData[key];
 
                 const questionBankItems: ReactNode[] = [];
 
-                Object.keys(section).forEach(key => {
+                Object.keys(section).forEach((key, index2) => {
+                    const reactKey = index + '-' + index2;
+
                     const questionBankItemData = section[key];
 
-                    const questionBankItem = <QuestionBankItem key={questionBankItemData['id']} data={questionBankItemData} />
+                    const questionBankItem = <QuestionBankItem key={reactKey} data={questionBankItemData} />
 
                     questionBankItems.push(
                         Wrapper
-                            ? <Wrapper key={questionBankItemData['id']} {...wrapperProps}>
+                            ? <Wrapper key={reactKey} {...wrapperProps}>
                                 {questionBankItem}
                             </Wrapper>
                             : questionBankItem

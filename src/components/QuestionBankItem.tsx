@@ -10,9 +10,11 @@ import ColouredChip from './ColouredChip.tsx';
 
 interface QuestionBankItemProps {
     data?: ParsedQuestionBank;
+    currentTags?: string[];
+    setCurrentTags?: Function;
 };
 
-const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
+const QuestionBankItem: FC<QuestionBankItemProps> = ({ data, currentTags, setCurrentTags }) => {
     const id = (data && data.hasOwnProperty('id')) ? data['id'] : undefined;
     const tags: string[] = (data && data.hasOwnProperty('tags')) ? data['tags'] : undefined;
     const title = (data && data.hasOwnProperty('title')) ? data['title'] : undefined;
@@ -62,7 +64,7 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
     }, [setShowProgress, authentication]);
 
     return <Card id={'question-bank-item-' + id} className='question-bank-item' variant='outlined' color={progress}>
-        {(showProgress || tags) && <div style={{flexDirection: authentication.isLoggedIn ? 'row' : 'row-reverse'}}>
+        {(showProgress || tags) && <div style={{ flexDirection: authentication.isLoggedIn ? 'row' : 'row-reverse' }}>
             {showProgress && <Dropdown>
                 <MenuButton
                     slots={{ root: IconButton }}
@@ -70,8 +72,8 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
                     <MdCircle />
                 </MenuButton>
                 <Menu>
-                    {(['danger', 'warning', 'success'] as typeof progress[]).map(color => <MenuItem
-                        key={color}
+                    {(['danger', 'warning', 'success'] as typeof progress[]).map((color, index) => <MenuItem
+                        key={index}
                         color={color}
                         onClick={() => setProgress(color)}>
                         <MdCircle />
@@ -79,7 +81,12 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data }) => {
                 </Menu>
             </Dropdown>}
             <div>
-                {tags && tags.map(tag => <ColouredChip>{tag}</ColouredChip>)}
+                {tags && tags.map((tag, index) => <ColouredChip
+                    key={index}
+                    currentTags={currentTags}
+                    setCurrentTags={setCurrentTags}>
+                    {tag}
+                </ColouredChip>)}
             </div>
         </div>}
         <Typography>
