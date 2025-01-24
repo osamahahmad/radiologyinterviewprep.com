@@ -5,7 +5,7 @@ enum Strings {
     Privacy = 'Privacy Policy',
     SignIn = 'Sign In',
     ContactUs = 'Contact Me',
-    Copyright = '© Osamah Ahmad 2024',
+    Copyright = '© Osamah Ahmad 2025',
 }
 
 export default Strings;
