@@ -293,7 +293,7 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
                         Familiarise yourself with Radiology jargon and the daily life of registrars and consultants
                     </ListItem>
                 </List>
-                <Typography>Rehearse sentences for each aspect of the <Link href='https://medical.hee.nhs.uk/medical-training-recruitment/medical-specialty-training/person-specifications/person-specifications-2024/clinical-radiology-st1-2024'>person specification</Link>, e.g.:</Typography>
+                <Typography>Rehearse sentences for each aspect of the <Link href='https://medical.hee.nhs.uk/medical-training-recruitment/medical-specialty-training/person-specifications/person-specifications-2025/clinical-radiology-st1-2025'>person specification</Link>, e.g.:</Typography>
                 <List marker="disc">
                     <ListItem>
                         <Typography>For <Typography color='neutral'>"Evidence of involvement in management commensurate with experience"</Typography>: "Radiologists deal with specialties across the hospital, so they're well-placed to lead in healthcare planning and management. I therefore feel that radiology will allow me to continue developing my leadership skills — I'm currently an FY2 rep. for my hospital — and I strongly believe that effective clinical leadership is essential for improving patient care."</Typography>
