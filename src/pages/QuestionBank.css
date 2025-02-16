@@ -31,7 +31,7 @@
     flex-direction: column;
     gap: inherit;
     box-sizing: border-box;
-    border-radius: 12px;
+    border-radius: var(--joy-radius-md);
     background-color: white;
     border: 1px solid var(--joy-palette-neutral-300);
     box-shadow: var(--joy-shadow-md);
@@ -56,7 +56,7 @@
 }
 
 .question-bank-search-box.expanded {
-    height: calc(100svh - (var(--top) + 2 * var(--margin)));
+    height: calc(100svh - (var(--top) + 2 * var(--margin)) + 12px);
 }
 
 .question-bank-search-box>div:first-of-type {
