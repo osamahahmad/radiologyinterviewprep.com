@@ -290,7 +290,7 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                     const scrollTo =
                         searchBoxExpanded
                             ? originalScrollPosition
-                            : element ? 84 : 0;
+                            : element ? 108 : 0;
 
                     window.scrollTo({ top: scrollTo, behavior: 'smooth' });
 
