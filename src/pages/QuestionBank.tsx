@@ -340,12 +340,13 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
 
     const page = <>
         <VerificationAlert />
-        {subscriptionExpiryDate ? subscriptionAlert : <Skeleton sx={skeletonSx}>{subscriptionAlert}</Skeleton>}
+        {subscriptionExpiryDate
+            ? subscriptionAlert
+            : <Skeleton sx={skeletonSx}>{subscriptionAlert}</Skeleton>}
         <div className="question-bank-page-questions-wrapper">
             {subscriptionExpiryDate
                 ? searchBox
                 : <Skeleton className='question-bank-search-box-skeleton' sx={skeletonSx}>{searchBox}</Skeleton>}
-
             {currentTags && currentTags.length > 0 && <div className='question-bank-filters'>
                 {currentTags.map((tag, index) =>
                     <ColouredChip
@@ -357,20 +358,21 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                 )}
             </div>}
             <div className="question-bank-page-questions">
-                {subscriptionExpiryDate && Object.keys(displayedData).map((key, index) => {
-                    const section = displayedData[key];
+                {subscriptionExpiryDate
+                    ? Object.keys(displayedData).map((key, index) => {
+                        const section = displayedData[key];
 
-                    return Object.keys(section).map((key, index2) => {
-                        const questionBankItemData = section[key];
+                        return Object.keys(section).map((key, index2) => {
+                            const questionBankItemData = section[key];
 
-                        return <QuestionBankItem
-                            key={index + '-' + index2}
-                            data={questionBankItemData}
-                            currentTags={currentTags}
-                            setCurrentTags={setCurrentTags} />;
+                            return <QuestionBankItem
+                                key={index + '-' + index2}
+                                data={questionBankItemData}
+                                currentTags={currentTags}
+                                setCurrentTags={setCurrentTags} />;
+                        })
                     })
-                })}
-                {!subscriptionExpiryDate && <>{[0, 1, 2, 3, 4, 5].map((key) => <SkeletonQuestion key={key} />)}</>}
+                    : [0, 1, 2, 3, 4, 5].map((key) => <SkeletonQuestion key={key} />)}
             </div>
         </div>
     </>;
