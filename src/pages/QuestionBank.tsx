@@ -15,7 +15,7 @@ import ColouredChip from "../components/ColouredChip.tsx";
 import QuestionBankProgressTitle from "../components/QuestionBankListItem.tsx";
 import useScrollToTop from "../hooks/useScrollToTop.ts";
 
-const skeletonSx = { position: 'relative', width: 'auto', height: 'fit-content' };
+const skeletonSx = { position: 'relative', width: 'auto', height: 'fit-content', borderRadius: 'md' };
 
 const SkeletonQuestion: FC<SkeletonProps> = ({ children, ...rest }) =>
     <Skeleton sx={skeletonSx} {...rest}>
@@ -51,7 +51,7 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
             string | undefined
         ][] = [
                 [
-                    authentication.currentUser?.displayName || 'No Name',
+                    authentication.currentUser?.displayName || 'No Display Name',
                     'neutral',
                     () => { },
                     { background: 'var(--joy-palette-neutral-outlinedBg) !important', cursor: 'auto !important', border: 'none' },
