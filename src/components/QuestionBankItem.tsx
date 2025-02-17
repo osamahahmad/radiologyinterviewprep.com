@@ -64,9 +64,10 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data, currentTags, setCur
     }, [setShowProgress, authentication]);
 
     return <Card id={'question-bank-item-' + id} className='question-bank-item' variant='outlined' color={progress}>
-        {(showProgress || tags) && <div style={{ flexDirection: authentication.isLoggedIn ? 'row' : 'row-reverse' }}>
-            {showProgress && <Dropdown>
+        <div style={{ flexDirection: authentication.isLoggedIn ? 'row' : 'row-reverse' }}>
+            <Dropdown>
                 <MenuButton
+                    sx={{visibility: showProgress ? 'visible' : 'hidden'}}
                     slots={{ root: IconButton }}
                     slotProps={{ root: { variant: 'outlined', color: progress } }}>
                     <MdCircle />
@@ -79,7 +80,7 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data, currentTags, setCur
                         <MdCircle />
                     </MenuItem>)}
                 </Menu>
-            </Dropdown>}
+            </Dropdown>
             <div>
                 {tags && tags.map((tag, index) => <ColouredChip
                     key={index}
@@ -88,7 +89,7 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ data, currentTags, setCur
                     {tag}
                 </ColouredChip>)}
             </div>
-        </div>}
+        </div>
         <Typography>
             <Typography level='h4' color={progress !== 'neutral' ? progress : undefined}>{title}</Typography>
         </Typography>
