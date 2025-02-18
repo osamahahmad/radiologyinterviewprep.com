@@ -237,7 +237,10 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
 
         const docRef = doc(db, 'users', authentication.currentUser.uid);
         const unsubscribe = onSnapshot(docRef, snapshot => {
-            snapshot.exists() && setProgress(snapshot.data().progress);
+            if (snapshot.exists())
+                setProgress(snapshot.data().progress);
+            else
+                setProgress({});
         });
 
         return () => unsubscribe && unsubscribe();
