@@ -31,7 +31,7 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ id, data, progress, curre
         if (!authentication.currentUser || !authentication.currentUser.uid)
             return;
 
-        if (!id || !progress || progress === 'neutral')
+        if (!id || progress === 'neutral')
             return;
 
         _setProgress(next);
