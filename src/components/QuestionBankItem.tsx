@@ -9,21 +9,21 @@ import { db } from '../resources/Firebase.js';
 import ColouredChip from './ColouredChip.tsx';
 
 interface QuestionBankItemProps {
-    id?: string;
-    data?: ParsedQuestionBank;
-    progress?: ColorPaletteProp;
-    currentTags?: string[];
-    setCurrentTags?: Function;
+    id: string;
+    tags: string[];
+    data: ParsedQuestionBank;
+    progress: ColorPaletteProp;
+    currentTags: string[];
+    setCurrentTags: Function;
 };
 
-const QuestionBankItem: FC<QuestionBankItemProps> = ({ id, data, progress, currentTags, setCurrentTags }) => {
+const QuestionBankItem: FC<QuestionBankItemProps> = ({ id, tags, data, progress, currentTags, setCurrentTags }) => {
     const authentication = useAuthentication();
 
-    const tags: string[] = (data && data.hasOwnProperty('tags')) ? data['tags'] : undefined;
-    const title = (data && data.hasOwnProperty('title')) ? data['title'] : undefined;
-    const content = (data && data.hasOwnProperty('content')) ? data['content'] : undefined;
-    const answer = (data && data.hasOwnProperty('Answer')) ? data['Answer'] : undefined;
-    const rationale = (data && data.hasOwnProperty('Rationale')) ? data['Rationale'] : undefined;
+    const title = data.hasOwnProperty('title') ? data['title'] : undefined;
+    const content = data.hasOwnProperty('content') ? data['content'] : undefined;
+    const answer = data.hasOwnProperty('Answer') ? data['Answer'] : undefined;
+    const rationale = data.hasOwnProperty('Rationale') ? data['Rationale'] : undefined;
 
     const [_progress, _setProgress] = useState<ColorPaletteProp>(progress || 'neutral');
 
