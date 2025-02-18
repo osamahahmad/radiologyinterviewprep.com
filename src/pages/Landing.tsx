@@ -311,7 +311,7 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
                         Display enthusiasm and discuss personal experiences in Radiology
                     </ListItem>
                     <ListItem>
-                        Be aware of REALMs, IRMER/IRR, clinical governance, and the RCR Workforce Census
+                        Be aware of REALMs, IRMER/IRR, clinical governance, and the latest <Link href='https://www.rcr.ac.uk/news-policy/policy-reports-initiatives/clinical-radiology-census-reports/'>RCR Workforce Census</Link>
                     </ListItem>
                     <ListItem>
                         Know the structure of Clinical Radiology training inside out, including the importance of the FRCR exam schedule and a day in the life of a trainee
