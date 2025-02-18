@@ -12,7 +12,6 @@ import Footer from "../components/Footer.tsx";
 import { ParsedQuestionBank, RawQuestionBank, parseQuestionBank } from "../components/QuestionBankParser.tsx";
 import QuestionBankItem from '../components/QuestionBankItem.tsx';
 import ColouredChip from "../components/ColouredChip.tsx";
-import QuestionBankProgressTitle from "../components/QuestionBankListItem.tsx";
 import useScrollToTop from "../hooks/useScrollToTop.ts";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../resources/Firebase.js";
@@ -248,7 +247,7 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
 
             Object.keys(section).forEach(key => {
                 const data = section[key];
-                
+
                 data.tags.forEach((tag: string) => {
                     if (next.indexOf(tag) === -1)
                         next.push(tag);
@@ -355,12 +354,14 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
                     return <>
                         <ListItem key={index} sx={{ paddingLeft: 0 }}><ListSubheader>{key}</ListSubheader></ListItem>
                         {Object.keys(section).map((key, index2) => {
-                            const questionBankItemData = section[key];
+                            const data = section[key];
+                            const id = (data && data.hasOwnProperty('id')) ? data['id'] : undefined;
+                            const progressForId = (id && progress && progress.hasOwnProperty(id)) ? progress[id] : undefined;
 
                             return <ListItemButton
                                 key={index + '-' + index2}
                                 onClick={() => {
-                                    const element = document.getElementById('question-bank-item-' + questionBankItemData.id) as HTMLElement;
+                                    const element = document.getElementById('question-bank-item-' + id) as HTMLElement;
                                     const header = document.getElementsByTagName('header')[0];
                                     const headerHeight = header ? header.getBoundingClientRect().height : 0;
                                     const searchBox = document.getElementsByClassName('question-bank-search-box expanded')[0];
@@ -378,15 +379,15 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
 
                                     setSearchBoxExpanded(false);
                                 }}>
-                                <QuestionBankProgressTitle id={questionBankItemData['id']}>
-                                    {questionBankItemData.title}
-                                </QuestionBankProgressTitle>
-                            </ListItemButton>;
+                                <Typography color={progressForId ? progressForId : undefined}>
+                                    {data.title}
+                                </Typography>
+                            </ListItemButton >;
                         })}
                     </>;
                 })}
             </List>
-        </div>;
+        </div >;
 
     const page =
         <>
@@ -395,7 +396,7 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
                 ? subscriptionAlert
                 : <CustomSkeleton>{subscriptionAlert}</CustomSkeleton>}
             <div className="question-bank-page-questions-wrapper">
-                {subscriptionExpiryDate
+                {(displayedData && progress)
                     ? searchBox
                     : <CustomSkeleton className='question-bank-search-box-skeleton'>{searchBox}</CustomSkeleton>}
                 {currentTags.length > 0 && <div className='question-bank-filters'>
@@ -415,7 +416,6 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
 
                             return Object.keys(section).map((key, index2) => {
                                 const data = section[key];
-
                                 const id = (data && data.hasOwnProperty('id')) ? data['id'] : undefined;
 
                                 return <QuestionBankItem
