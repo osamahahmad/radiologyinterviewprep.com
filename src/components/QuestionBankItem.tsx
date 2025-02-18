@@ -1,97 +1,89 @@
-import { Accordion, AccordionDetails, AccordionGroup, AccordionSummary, Card, Dropdown, IconButton, Menu, MenuButton, MenuItem, Typography } from '@mui/joy';
-import React, { FC, useEffect, useState } from 'react';
+import { Accordion, AccordionDetails, AccordionGroup, AccordionSummary, Card, ColorPaletteProp, Dropdown, IconButton, Menu, MenuButton, MenuItem, Typography } from '@mui/joy';
+import React, { FC, useCallback, useState } from 'react';
 import './QuestionBankItem.css';
 import { MdCircle } from 'react-icons/md';
 import { useAuthentication } from './Authentication.tsx';
 import { ParsedQuestionBank } from '../components/QuestionBankParser.tsx';
-import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../resources/Firebase.js';
 import ColouredChip from './ColouredChip.tsx';
 
 interface QuestionBankItemProps {
+    id?: string;
     data?: ParsedQuestionBank;
+    progress?: ColorPaletteProp;
     currentTags?: string[];
     setCurrentTags?: Function;
 };
 
-const QuestionBankItem: FC<QuestionBankItemProps> = ({ data, currentTags, setCurrentTags }) => {
-    const id = (data && data.hasOwnProperty('id')) ? data['id'] : undefined;
+const QuestionBankItem: FC<QuestionBankItemProps> = ({ id, data, progress, currentTags, setCurrentTags }) => {
+    const authentication = useAuthentication();
+
     const tags: string[] = (data && data.hasOwnProperty('tags')) ? data['tags'] : undefined;
     const title = (data && data.hasOwnProperty('title')) ? data['title'] : undefined;
     const content = (data && data.hasOwnProperty('content')) ? data['content'] : undefined;
     const answer = (data && data.hasOwnProperty('Answer')) ? data['Answer'] : undefined;
     const rationale = (data && data.hasOwnProperty('Rationale')) ? data['Rationale'] : undefined;
 
-    // hooks
-    const authentication = useAuthentication();
+    const [_progress, _setProgress] = useState<ColorPaletteProp>(progress || 'neutral');
 
-    // set progress
-    const [progress, setProgress] = useState<'neutral' | 'danger' | 'warning' | 'success'>('neutral');
+    const setProgress = useCallback((next: ColorPaletteProp) => {
+        if (!authentication.currentUser || !authentication.currentUser.uid)
+            return;
 
-    useEffect(() => {
-        let unsubscribe: () => void;
+        if (!id || !progress || progress === 'neutral')
+            return;
 
-        if (id && authentication.isLoggedIn) {
-            const userId = authentication.currentUser.uid;
-            const docRef = doc(db, 'users', userId, 'progress', id);
+        _setProgress(next);
 
-            unsubscribe = onSnapshot(docRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    setProgress(docSnap.data().progress);
-                }
-            });
-        }
+        const docRef = doc(db, 'users', authentication.currentUser.uid);
+        setDoc(docRef, { progress: { [id]: next } }, { merge: true });
+    }, [authentication, id, progress, _setProgress]);
 
-        return () => {
-            if (unsubscribe) {
-                unsubscribe();
-            }
-        };
-    }, [id, authentication]);
-
-    const [showProgress, setShowProgress] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (id && authentication.isLoggedIn && progress !== 'neutral') {
-            const userId = authentication.currentUser.uid;
-            const docRef = doc(db, 'users', userId, 'progress', id);
-            setDoc(docRef, { progress }, { merge: true });
-        }
-    }, [id, authentication, progress]);
-
-    useEffect(() => {
-        setShowProgress(authentication.isLoggedIn);
-    }, [setShowProgress, authentication]);
-
-    return <Card id={'question-bank-item-' + id} className='question-bank-item' variant='outlined' color={progress}>
+    return <Card
+        id={'question-bank-item-' + id}
+        className='question-bank-item'
+        variant='outlined'
+        color={_progress}>
         <div style={{ flexDirection: authentication.isLoggedIn ? 'row' : 'row-reverse' }}>
             <Dropdown>
                 <MenuButton
-                    sx={{visibility: showProgress ? 'visible' : 'hidden'}}
                     slots={{ root: IconButton }}
-                    slotProps={{ root: { variant: 'outlined', color: progress } }}>
+                    slotProps={{ root: { variant: 'outlined', color: _progress } }}>
                     <MdCircle />
                 </MenuButton>
                 <Menu>
-                    {(['danger', 'warning', 'success'] as typeof progress[]).map((color, index) => <MenuItem
-                        key={index}
-                        color={color}
-                        onClick={() => setProgress(color)}>
-                        <MdCircle />
-                    </MenuItem>)}
+                    {(['danger', 'warning', 'success'] as typeof _progress[]).map((color, index) =>
+                        <MenuItem
+                            key={index}
+                            color={color}
+                            onClick={() => setProgress(color)}>
+                            <MdCircle />
+                        </MenuItem>
+                    )}
                 </Menu>
             </Dropdown>
             <div>
-                {tags && tags.map((tag, index) => <ColouredChip
-                    key={index}
-                    currentTags={currentTags}
-                    setCurrentTags={setCurrentTags}>
-                    {tag}
-                </ColouredChip>)}
+                {tags && tags.map((tag, index) =>
+                    <ColouredChip
+                        key={index}
+                        currentTags={currentTags}
+                        setCurrentTags={setCurrentTags}>
+                        {tag}
+                    </ColouredChip>
+                )}
             </div>
         </div>
         <Typography>
-            <Typography level='h4' color={progress !== 'neutral' ? progress : undefined}>{title}</Typography>
+            <Typography
+                level='h4'
+                color={
+                    _progress !== 'neutral'
+                        ? _progress
+                        : undefined
+                }>
+                {title}
+            </Typography>
         </Typography>
         {content}
         {(answer || rationale) && <AccordionGroup variant='outlined'>

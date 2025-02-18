@@ -1,7 +1,7 @@
 import React, { FC, MouseEventHandler, ReactNode, useEffect, useState } from "react";
 import "./QuestionBank.css";
 import useDocumentTitle from "../hooks/useDocumentTitle.ts";
-import { Alert, Button, Dropdown, IconButton, Input, Link, List, ListItem, ListItemButton, ListSubheader, Menu, MenuItem, Skeleton, SkeletonProps, Typography } from "@mui/joy";
+import { Alert, Button, ColorPaletteProp, Dropdown, IconButton, Input, Link, List, ListItem, ListItemButton, ListSubheader, Menu, MenuItem, Skeleton, SkeletonProps, Typography } from "@mui/joy";
 import Paths from '../resources/Paths.ts';
 import { Navigate, useNavigate } from "react-router-dom";
 import MenuButton from "@mui/joy/MenuButton/MenuButton";
@@ -14,69 +14,71 @@ import QuestionBankItem from '../components/QuestionBankItem.tsx';
 import ColouredChip from "../components/ColouredChip.tsx";
 import QuestionBankProgressTitle from "../components/QuestionBankListItem.tsx";
 import useScrollToTop from "../hooks/useScrollToTop.ts";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../resources/Firebase.js";
 
-const skeletonSx = { position: 'relative', width: 'auto', height: 'fit-content', borderRadius: 'md' };
+const CustomSkeleton: FC<SkeletonProps> = ({ children, sx, ...rest }) =>
+    <Skeleton
+        sx={{
+            position: 'relative',
+            width: 'auto',
+            height: 'fit-content',
+            borderRadius: 'md',
+            ...sx
+        }}
+        {...rest}>
+        {children}
+    </Skeleton>;
 
-const SkeletonQuestion: FC<SkeletonProps> = ({ children, ...rest }) =>
-    <Skeleton sx={skeletonSx} {...rest}>
+const QuestionSkeleton: FC<SkeletonProps> = ({ ...rest }) =>
+    <CustomSkeleton {...rest}>
         <QuestionBankItem data={{
             title: 'Skeleton Title',
             content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac pharetra nibh. Aenean mollis vestibulum venenatis. Duis suscipit nunc non nisi eleifend tempus. Ut at aliquet sapien. Nulla facilisi. Duis aliquam lobortis pellentesque. Cras tellus massa, viverra nec porta vel, ultrices non enim. Donec sollicitudin, eros vel sollicitudin laoreet, purus massa ornare augue, ut commodo velit mauris a massa. Praesent lobortis libero sed felis tempor mollis. Aliquam quis faucibus nisi, ac volutpat nunc.',
             answer: 'Skeleton Answer',
             rationale: 'Skeleton Rationale'
         }} />
-    </Skeleton>;
+    </CustomSkeleton>;
 
-interface QuestionBankProps {
-    setNav: Function;
-};
-
-const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
-    /* hooks */
+const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
     const authentication = useAuthentication();
     useDocumentTitle('Question Bank');
     const navigate = useNavigate();
     useScrollToTop();
 
-    /* header */
-    const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState<boolean>(false);
+    const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
 
     useEffect(() => {
-        const headerNavDefinitions: [
-            string,
-            'neutral' | 'danger' | 'primary',
-            MouseEventHandler,
-            SxProps | undefined,
-            ReactNode | undefined,
-            string | undefined
-        ][] = [
-                [
-                    authentication.currentUser?.displayName || 'No Display Name',
-                    'neutral',
-                    () => { },
-                    { background: 'var(--joy-palette-neutral-outlinedBg) !important', cursor: 'auto !important', border: 'none' },
-                    <MdPerson />,
-                    authentication.currentUser?.email || 'No Email Address'
-                ],
-                [
-                    'Sign Out',
-                    'primary',
-                    () => { authentication.signOut(); navigate('/'); },
-                    undefined,
-                    undefined,
-                    undefined
-                ],
-                [
-                    'Delete Account',
-                    'danger',
-                    () => { setIsDeleteAccountModalOpen(true) },
-                    undefined,
-                    undefined,
-                    undefined
-                ]
+        const navData:
+            {
+                children: string,
+                color: ColorPaletteProp,
+                onClick?: MouseEventHandler,
+                sx?: SxProps,
+                startDecorator?: ReactNode,
+                email?: string
+            }[]
+            = [
+                {
+                    children: authentication.currentUser?.displayName || 'No Display Name',
+                    color: 'neutral',
+                    sx: { background: 'var(--joy-palette-neutral-outlinedBg) !important', cursor: 'auto !important', border: 'none' },
+                    startDecorator: <MdPerson />,
+                    email: authentication.currentUser?.email || 'No Email Address'
+                },
+                {
+                    children: 'Sign Out',
+                    color: 'primary',
+                    onClick: () => { authentication.signOut(); navigate('/'); }
+                },
+                {
+                    children: 'Delete Account',
+                    color: 'danger',
+                    onClick: () => { setIsDeleteAccountModalOpen(true) }
+                }
             ];
 
-        const headerMenuButton = <MenuButton
+        const navMenuButton = <MenuButton
             slots={{ root: IconButton }}
             slotProps={{ root: { variant: 'outlined' } }}>
             <MdPerson />
@@ -85,190 +87,222 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
         setNav(<>
             <Dropdown>
                 {authentication.isLoading
-                    ? <Skeleton sx={skeletonSx}>{headerMenuButton}</Skeleton>
-                    : headerMenuButton}
+                    ? <CustomSkeleton>{navMenuButton}</CustomSkeleton>
+                    : navMenuButton}
                 <Menu>
-                    {headerNavDefinitions.map((headerChild, index) => {
-                        const email = headerChild[5];
-
-                        return <MenuItem
-                            key={index}
-                            color={headerChild[1]}
-                            onClick={headerChild[2]}
-                            sx={headerChild[3]}
-                            tabIndex={email ? -1 : 1}>
-                            {email
-                                ? <Typography><Typography level='title-lg'>{headerChild[0]}</Typography><br /><Typography level='body-md'>{email}</Typography></Typography>
-                                : headerChild[0]}
-                        </MenuItem>;
-                    })}
+                    {navData.map((data, index) => <MenuItem
+                        key={index}
+                        color={data.color}
+                        onClick={data.onClick}
+                        sx={data.sx}
+                        tabIndex={data.email ? -1 : 1}>
+                        {data.email
+                            ? <Typography>
+                                <Typography level='title-lg'>{data.children}</Typography>
+                                <br />
+                                <Typography level='body-md'>{data.email}</Typography>
+                            </Typography>
+                            : data.children}
+                    </MenuItem>)}
                 </Menu>
             </Dropdown>
             <nav>
-                {headerNavDefinitions.map((headerChild, index) => {
-                    const email = headerChild[5];
-
+                {navData.map((data, index) => {
                     const button = <Button
                         key={index}
                         variant={'outlined'}
-                        color={headerChild[1]}
-                        onClick={headerChild[2]}
-                        sx={headerChild[3]}
-                        startDecorator={headerChild[4]}
-                        tabIndex={email ? -1 : 1}>
-                        {email
-                            ? headerChild[0] + ' (' + email + ')'
-                            : headerChild[0]}
+                        color={data.color}
+                        onClick={data.onClick}
+                        sx={data.sx}
+                        startDecorator={data.startDecorator}
+                        tabIndex={data.email ? -1 : 1}>
+                        {data.email
+                            ? <>{data.children} ({data.email})</>
+                            : data.children}
                     </Button>;
 
                     return authentication.isLoading
-                        ? <Skeleton key={index} sx={skeletonSx}>{button}</Skeleton>
+                        ? <CustomSkeleton key={index}>{button}</CustomSkeleton>
                         : button
                 })}
             </nav>
         </>);
     }, [authentication, navigate, setNav]);
 
-    /* subscription & question bank */
-    const [subscriptionWasChecked, setSubscriptionWasChecked] = useState<boolean>(false);
-    const [subscriptionPortalUrl, setSubscriptionPortalUrl] = useState<string | null>(null);
+    const [subscriptionChecked, setSubscriptionChecked] = useState(false);
+    const [subscriptionPortalUrl, setSubscriptionPortalUrl] = useState<string>();
     const [subscriptionCancelAtPeriodEnd, setSubscriptionCancelAtPeriodEnd] = useState<boolean>();
     const [subscriptionExpiryDate, setSubscriptionExpiryDate] = useState<Date>();
-
-    const [questionBank, setQuestionBank] = useState<ParsedQuestionBank>({});
-
+    const [questionBank, setQuestionBank] = useState<ParsedQuestionBank>();
     useEffect(() => {
         const checkSubscription = async () => {
-            if (authentication.currentUser?.uid) {
-                setSubscriptionWasChecked(false);
+            if (!authentication.currentUser || !authentication.currentUser.uid)
+                return;
 
-                try {
-                    const response = await fetch('https://radiology-interview-prep-serverless.osamah-ahmad.workers.dev?user-uid=' + authentication.currentUser.uid);
+            setSubscriptionChecked(false);
 
-                    if (response.status === 200) {
-                        const data = JSON.parse(await response.text());
+            try {
+                const response = await fetch('https://radiology-interview-prep-serverless.osamah-ahmad.workers.dev?user-uid=' + authentication.currentUser.uid);
 
-                        setSubscriptionPortalUrl(data['url']);
+                if (response.status === 200) {
+                    const data = JSON.parse(await response.text());
 
-                        setSubscriptionCancelAtPeriodEnd(data['cancel_at_period_end']);
+                    setSubscriptionPortalUrl(data['url']);
+                    setSubscriptionCancelAtPeriodEnd(data['cancel_at_period_end']);
 
-                        const timestamp = data['current_period_end'];
-                        const timestampInt = parseInt(timestamp, 10);
-                        setSubscriptionExpiryDate(new Date(timestampInt * 1000));
+                    const timestamp = data['current_period_end'];
+                    const timestampInt = parseInt(timestamp, 10);
+                    setSubscriptionExpiryDate(new Date(timestampInt * 1000));
 
-                        const questionBank: RawQuestionBank = JSON.parse(data['question-bank']);
-
-                        setQuestionBank(await parseQuestionBank(questionBank));
-                    }
-                } catch (error) {
-                    console.error(error);
+                    const rawQuestionBank: RawQuestionBank = JSON.parse(data['question-bank']);
+                    setQuestionBank(await parseQuestionBank(rawQuestionBank));
                 }
-
-                setSubscriptionWasChecked(true);
+            } catch (error) {
+                console.log(error);
+                // ToDo error ui
             }
+
+            setSubscriptionChecked(true);
         }
 
         checkSubscription();
-    }, [authentication, setSubscriptionPortalUrl, setSubscriptionCancelAtPeriodEnd, setSubscriptionExpiryDate, setQuestionBank, setSubscriptionWasChecked]);
+    }, [authentication, setSubscriptionChecked, setSubscriptionPortalUrl, setSubscriptionCancelAtPeriodEnd, setSubscriptionExpiryDate, setQuestionBank]);
 
-    const hasSubscriptionExpired: boolean = subscriptionExpiryDate ? subscriptionExpiryDate < new Date(Date.now()) : false;
-    const willSubscriptionExpireThisWeek: boolean = (subscriptionExpiryDate && !subscriptionCancelAtPeriodEnd) ? subscriptionExpiryDate < new Date(Date.now() + (7 * 86400000)) : false;
+    const hasSubscriptionExpired =
+        subscriptionExpiryDate
+            ? subscriptionExpiryDate < new Date(Date.now())
+            : false;
 
-    const subscriptionPortalUrlLink = subscriptionPortalUrl ? <Link onClick={() => { window.location.href = subscriptionPortalUrl }}>{subscriptionCancelAtPeriodEnd ? 'Renew' : 'Cancel Renewal'}</Link> : null;
+    const willSubscriptionExpireThisWeek =
+        (subscriptionExpiryDate && !subscriptionCancelAtPeriodEnd)
+            ? subscriptionExpiryDate < new Date(Date.now() + (7 * 86400000))
+            : false;
+
+    const subscriptionPortalUrlReactNode =
+        subscriptionPortalUrl
+        && <Link onClick={() => { window.location.href = subscriptionPortalUrl }}>
+            {subscriptionCancelAtPeriodEnd ? 'Renew' : 'Cancel Renewal'}
+        </Link>;
 
     const subscriptionAlert =
-        <Alert color={hasSubscriptionExpired ? 'danger' : (willSubscriptionExpireThisWeek ? 'warning' : 'success')}>
+        <Alert color={
+            hasSubscriptionExpired
+                ? 'danger'
+                : (willSubscriptionExpireThisWeek
+                    ? 'warning'
+                    : 'success')
+        }>
             <Typography level="body-sm" sx={{ color: "inherit" }}>
-                Your subscription {hasSubscriptionExpired ? 'expired' : (subscriptionCancelAtPeriodEnd ? 'will expire' : 'will renew')} at {
-                    subscriptionExpiryDate && (
+                Your subscription {
+                    hasSubscriptionExpired
+                        ? 'expired'
+                        : (subscriptionCancelAtPeriodEnd
+                            ? 'will expire'
+                            : 'will renew')
+                } at {
+                    subscriptionExpiryDate
+                    && (
                         subscriptionExpiryDate.toLocaleString('en-GB', {
                             hour: 'numeric',
                             minute: 'numeric',
                             hour12: true
-                        }) +
-                        ' on ' +
-                        subscriptionExpiryDate.toLocaleString('en-GB', {
+                        })
+                        + ' on '
+                        + subscriptionExpiryDate.toLocaleString('en-GB', {
                             weekday: 'long',
                             day: 'numeric',
                             month: 'long',
                             year: 'numeric'
-                        }))
-                }. {subscriptionPortalUrlLink
-                    ? subscriptionPortalUrlLink
-                    : <Link onClick={() => window.location.href = Paths.Subscribe + authentication.currentUser.uid}>Resubscribe</Link>
+                        })
+                    )
+                }. {
+                    subscriptionPortalUrlReactNode
+                        ? subscriptionPortalUrlReactNode
+                        : <Link onClick={() => window.location.href = Paths.Subscribe + authentication.currentUser.uid}>Resubscribe</Link>
                 }.
             </Typography>
-        </Alert >;
+        </Alert>;
 
-    const [currentTags, setCurrentTags] = useState<string[]>([]);
-
-    const [chips, setChips] = useState<ReactNode[]>();
-
+    const [progress, setProgress] = useState<Record<string, ColorPaletteProp>>();
     useEffect(() => {
-        const nextTags: string[] = [];
+        if (!authentication.currentUser || !questionBank)
+            return;
+
+        const docRef = doc(db, 'users', authentication.currentUser.uid);
+        const unsubscribe = onSnapshot(docRef, snapshot => {
+            snapshot.exists() && setProgress(snapshot.data().progress);
+        });
+
+        return () => unsubscribe && unsubscribe();
+    }, [authentication, questionBank, setProgress]);
+
+    const [tags, setTags] = useState<string[]>([]);
+    useEffect(() => {
+        if (!questionBank)
+            return;
+
+        const next: typeof tags = [];
 
         Object.keys(questionBank).forEach(key => {
             const section = questionBank[key];
 
             Object.keys(section).forEach(key => {
-                const questionBankItemData = section[key];
-
-                const tags = questionBankItemData['tags'];
-
-                tags.forEach((tag: string) => {
-                    if (nextTags.indexOf(tag) === -1)
-                        nextTags.push(tag);
+                const data = section[key];
+                
+                data.tags.forEach((tag: string) => {
+                    if (next.indexOf(tag) === -1)
+                        next.push(tag);
                 });
             });
         });
 
-        setChips(nextTags.map((tag, index) => {
-            return <ColouredChip
-                key={index}
-                currentTags={currentTags}
-                setCurrentTags={setCurrentTags}>
-                {tag}
-            </ColouredChip>;
-        }));
-    }, [setChips, questionBank, currentTags]);
+        setTags(next);
+    }, [questionBank, setTags]);
 
-    const [displayedData, setDisplayedData] = useState<ParsedQuestionBank>('');
+    const [currentTags, setCurrentTags] = useState<string[]>([]);
 
-    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [displayedData, setDisplayedData] = useState<ParsedQuestionBank>();
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        if (searchQuery || currentTags.length > 0) {
-            const nextDisplayedData = {};
+        if (!questionBank)
+            return;
 
-            Object.keys(questionBank).forEach(key => {
-                const section = questionBank[key];
+        if (!searchQuery && currentTags.length === 0) {
+            setDisplayedData(questionBank);
+            return;
+        }
 
-                const nextSection = {};
+        const next = {};
 
-                Object.keys(section).forEach(key => {
-                    const questionBankItemData = section[key];
+        Object.keys(questionBank).forEach(key => {
+            const section = questionBank[key];
 
-                    if (key.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1) {
-                        let isInAllCurrentTags = true;
+            const nextSection = {};
+            Object.keys(section).forEach(key => {
+                const questionBankItemData = section[key];
 
-                        currentTags.forEach(tag => isInAllCurrentTags && (isInAllCurrentTags = questionBankItemData['tags'].indexOf(tag) !== -1));
+                if (key.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1) {
+                    let isInAllCurrentTags = true;
 
+                    currentTags.forEach(tag => {
                         if (isInAllCurrentTags)
-                            nextSection[key] = questionBankItemData;
-                    }
-                });
+                            isInAllCurrentTags = questionBankItemData['tags'].indexOf(tag) !== -1
+                    });
 
-                nextDisplayedData[key] = nextSection;
+                    if (isInAllCurrentTags)
+                        nextSection[key] = questionBankItemData;
+                }
             });
 
-            setDisplayedData(nextDisplayedData);
-        }
-        else
-            setDisplayedData(questionBank);
-    }, [searchQuery, currentTags, questionBank, setDisplayedData]);
+            next[key] = nextSection;
+        });
 
-    const [searchBoxExpanded, setSearchBoxExpanded] = useState<boolean>(false);
-    const [originalScrollPosition, setOriginalScrollPosition] = useState<number>(0);
+        setDisplayedData(next);
+    }, [questionBank, searchQuery, currentTags, setDisplayedData]);
+
+    const [searchBoxExpanded, setSearchBoxExpanded] = useState(false);
+    const [originalScrollPosition, setOriginalScrollPosition] = useState(0);
 
     const searchBox =
         <div className={'question-bank-search-box' + (searchBoxExpanded ? ' expanded' : '')}>
@@ -277,31 +311,45 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                     onChange={e => setSearchQuery(e.target.value)}
                     value={searchQuery}
                     endDecorator={
-                        searchQuery && <IconButton onClick={() => setSearchQuery('')}>
+                        searchQuery
+                        && <IconButton onClick={() => setSearchQuery('')}>
                             <MdClear />
                         </IconButton>}
                 />
-                <IconButton variant='outlined' onClick={() => {
-                    if (!searchBoxExpanded)
-                        setOriginalScrollPosition(window.scrollY);
+                <IconButton
+                    variant='outlined'
+                    onClick={() => {
+                        if (!searchBoxExpanded)
+                            setOriginalScrollPosition(window.scrollY);
 
-                    const element = document.getElementsByClassName('question-bank-search-box')[0];
+                        const element = document.getElementsByClassName('question-bank-search-box')[0];
 
-                    const scrollTo =
-                        searchBoxExpanded
-                            ? originalScrollPosition
-                            : element ? 108 : 0;
+                        const scrollTo =
+                            searchBoxExpanded
+                                ? originalScrollPosition
+                                : element ? 108 : 0;
 
-                    window.scrollTo({ top: scrollTo, behavior: 'smooth' });
+                        window.scrollTo({ top: scrollTo, behavior: 'smooth' });
 
-                    setSearchBoxExpanded(!searchBoxExpanded);
-                }}>
-                    {searchBoxExpanded ? <MdExpandLess /> : <MdExpandMore />}
+                        setSearchBoxExpanded(!searchBoxExpanded);
+                    }}>
+                    {searchBoxExpanded
+                        ? <MdExpandLess />
+                        : <MdExpandMore />}
                 </IconButton>
             </div>
-            <div className='chips'>{chips}</div>
+            <div className='chips'>
+                {tags.map((tag, index) =>
+                    <ColouredChip
+                        key={index}
+                        currentTags={currentTags}
+                        setCurrentTags={setCurrentTags}>
+                        {tag}
+                    </ColouredChip>
+                )}
+            </div>
             <List component='nav' variant="outlined">
-                {subscriptionExpiryDate && Object.keys(displayedData).map((key, index) => {
+                {displayedData && Object.keys(displayedData).map((key, index) => {
                     const section = displayedData[key];
 
                     return <>
@@ -330,7 +378,9 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
 
                                     setSearchBoxExpanded(false);
                                 }}>
-                                <QuestionBankProgressTitle id={questionBankItemData['id']}>{questionBankItemData.title}</QuestionBankProgressTitle>
+                                <QuestionBankProgressTitle id={questionBankItemData['id']}>
+                                    {questionBankItemData.title}
+                                </QuestionBankProgressTitle>
                             </ListItemButton>;
                         })}
                     </>;
@@ -338,51 +388,56 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
             </List>
         </div>;
 
-    const page = <>
-        <VerificationAlert />
-        {subscriptionExpiryDate
-            ? subscriptionAlert
-            : <Skeleton sx={skeletonSx}>{subscriptionAlert}</Skeleton>}
-        <div className="question-bank-page-questions-wrapper">
+    const page =
+        <>
+            <VerificationAlert />
             {subscriptionExpiryDate
-                ? searchBox
-                : <Skeleton className='question-bank-search-box-skeleton' sx={skeletonSx}>{searchBox}</Skeleton>}
-            {currentTags && currentTags.length > 0 && <div className='question-bank-filters'>
-                {currentTags.map((tag, index) =>
-                    <ColouredChip
-                        key={index}
-                        currentTags={currentTags}
-                        setCurrentTags={setCurrentTags}>
-                        {tag}
-                    </ColouredChip>
-                )}
-            </div>}
-            <div className="question-bank-page-questions">
+                ? subscriptionAlert
+                : <CustomSkeleton>{subscriptionAlert}</CustomSkeleton>}
+            <div className="question-bank-page-questions-wrapper">
                 {subscriptionExpiryDate
-                    ? Object.keys(displayedData).map((key, index) => {
-                        const section = displayedData[key];
+                    ? searchBox
+                    : <CustomSkeleton className='question-bank-search-box-skeleton'>{searchBox}</CustomSkeleton>}
+                {currentTags.length > 0 && <div className='question-bank-filters'>
+                    {currentTags.map((tag, index) =>
+                        <ColouredChip
+                            key={index}
+                            currentTags={currentTags}
+                            setCurrentTags={setCurrentTags}>
+                            {tag}
+                        </ColouredChip>
+                    )}
+                </div>}
+                <div className="question-bank-page-questions">
+                    {(displayedData && progress)
+                        ? Object.keys(displayedData).map((key, index) => {
+                            const section = displayedData[key];
 
-                        return Object.keys(section).map((key, index2) => {
-                            const questionBankItemData = section[key];
+                            return Object.keys(section).map((key, index2) => {
+                                const data = section[key];
 
-                            return <QuestionBankItem
-                                key={index + '-' + index2}
-                                data={questionBankItemData}
-                                currentTags={currentTags}
-                                setCurrentTags={setCurrentTags} />;
+                                const id = (data && data.hasOwnProperty('id')) ? data['id'] : undefined;
+
+                                return <QuestionBankItem
+                                    key={index + '-' + index2}
+                                    id={id}
+                                    data={data}
+                                    progress={progress[id]}
+                                    currentTags={currentTags}
+                                    setCurrentTags={setCurrentTags} />;
+                            })
                         })
-                    })
-                    : [0, 1, 2, 3, 4, 5].map((key) => <SkeletonQuestion key={key} />)}
+                        : [0, 1, 2, 3, 4, 5, 6].map((key) => <QuestionSkeleton key={key} />)}
+                </div>
             </div>
-        </div>
-    </>;
+        </>;
 
     return <>
         <div className="question-bank-page">
             {authentication.isLoading
                 ? page
                 : authentication.isLoggedIn
-                    ? (subscriptionWasChecked && !subscriptionExpiryDate)
+                    ? (subscriptionChecked && !subscriptionExpiryDate)
                         ? hasSubscriptionExpired
                             ? subscriptionAlert
                             : [0].map(() => {
@@ -393,8 +448,13 @@ const QuestionBank: FC<QuestionBankProps> = ({ setNav }) => {
                     : <Navigate to={Paths.SignIn} replace />}
         </div>
         <Footer />
-        {subscriptionWasChecked && <DeleteAccountModal
-            dangers={(subscriptionWasChecked && subscriptionExpiryDate && !subscriptionCancelAtPeriodEnd) ? [<Typography sx={{ color: 'inherit', fontSize: 'inherit' }}>{subscriptionPortalUrlLink} of your subscription first.</Typography>] : undefined}
+        {subscriptionChecked && <DeleteAccountModal
+            dangers={
+                (subscriptionChecked
+                    && subscriptionExpiryDate
+                    && !subscriptionCancelAtPeriodEnd)
+                    ? [<Typography sx={{ color: 'inherit', fontSize: 'inherit' }}>{subscriptionPortalUrlReactNode} of your subscription first.</Typography>]
+                    : undefined}
             open={isDeleteAccountModalOpen}
             onClose={() => setIsDeleteAccountModalOpen(false)}
         />}

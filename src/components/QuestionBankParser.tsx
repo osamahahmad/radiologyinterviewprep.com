@@ -245,12 +245,12 @@ export const parseQuestionBank: (questionBank: RawQuestionBank) => Promise<Parse
 
                 if (idMatches && idMatches.length > 1) {
                     const id = idMatches[1];
-                    output[currentHeading1][currentHeading2]['id'] = id;
+                    output[currentHeading1][currentHeading2].id = id;
                     const tags = fullText.substring((id + '[]: ').length);
                     const split = tags.split(" / ");
                     const nextTags = [currentHeading1];
                     split.forEach(tag => tag.length > 0 && nextTags.push(tag));
-                    output[currentHeading1][currentHeading2]['tags'] = nextTags;
+                    output[currentHeading1][currentHeading2].tags = nextTags;
                 }
             }
         } else if (nextStyle === 'Heading1') {
