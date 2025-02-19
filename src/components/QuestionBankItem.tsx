@@ -38,7 +38,7 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ id, tags, data, progress,
 
         const docRef = doc(db, 'users', authentication.currentUser.uid);
         setDoc(docRef, { progress: { [id]: next } }, { merge: true });
-    }, [authentication, id, progress, _setProgress]);
+    }, [authentication, id, _setProgress]);
 
     return <Card
         id={'question-bank-item-' + id}
