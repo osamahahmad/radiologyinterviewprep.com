@@ -50,13 +50,13 @@
     }
 
     .question-bank-search-box {
-        height: calc(100svh - (var(--top) + 2 * var(--margin)) + 12px);
+        height: calc(100svh - (var(--top) + 2 * var(--margin)));
         transition: none;
     }
 }
 
 .question-bank-search-box.expanded {
-    height: calc(100svh - (var(--top) + 2 * var(--margin)) + 12px);
+    height: calc(100svh - (var(--top) + 2 * var(--margin)));
 }
 
 .question-bank-search-box>div:first-of-type {

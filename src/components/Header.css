@@ -1,5 +1,5 @@
 header {
-    font-size: var(--joy-fontSize-xl);
+    font-size: var(--joy-fontSize-sm);
     display: flex;
     align-items: center;
     padding: var(--padding-xs) var(--padding-sm);
@@ -8,6 +8,18 @@ header {
     justify-content: space-between;
     position: sticky;
     top: 0;
+}
+
+@media screen and (min-width: 361px) {
+    header {
+        font-size: var(--joy-fontSize-md);
+    }
+}
+
+@media screen and (min-width: 481px) {
+    header {
+        font-size: var(--joy-fontSize-xl);
+    }
 }
 
 header nav {
