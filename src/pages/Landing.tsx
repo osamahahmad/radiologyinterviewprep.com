@@ -41,7 +41,7 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
 
             if (element && before) {
                 const gap = element.offsetTop - before.offsetTop - before.offsetHeight;
-                
+
                 top = (sections && sections[0] === section) ? 0 : element.offsetTop - gap - headerHeight;
             }
         }
@@ -72,7 +72,7 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
                         if (element && before) {
                             const gap = element.offsetTop - before.offsetTop - before.offsetHeight;
 
-                            if (scrollPosition >= element.offsetTop - gap - headerHeight) {
+                            if (scrollPosition >= element.offsetTop - gap - headerHeight - 100) {
                                 setActiveSection(section);
                                 break;
                             }
@@ -123,8 +123,7 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ sections, sectionTitles }) => {
                         key={index}
                         color={section === 'question-bank' ? 'success' : 'neutral'}
                         onClick={() => handleSectionClick(section)}
-                        sx={activeSection === section ? (section === 'question-bank' ? activeSuccessMenuItemSx : activeMenuItemSx) : {}}
-                    >
+                        sx={activeSection === section ? (section === 'question-bank' ? activeSuccessMenuItemSx : activeMenuItemSx) : {}}>
                         {sectionTitles[section]}
                     </MenuItem>
                 })}
@@ -203,7 +202,7 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
                     <Typography>
                         I've made this site so you can smash yours too. 💪
                     </Typography>
-                    <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowDownward />} onClick={questionBankLinkOnClick}>Go to the Question Bank</Button>
+                    <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowDownward />} onClick={questionBankLinkOnClick}>Go to Question Bank</Button>
                 </Typography>
             </div>
             <Card className={sections[1]}>
@@ -363,7 +362,7 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
                             <ListItem>
                             </ListItem>
                             <ListItem>
-                                <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowForward />} onClick={() => navigate(Paths.SignUp)}>{authentication.isLoggedIn ? 'Access' : 'Sign Up for'} the Question Bank</Button>
+                                <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowForward />} onClick={() => navigate(Paths.SignUp)}>{authentication.isLoggedIn ? 'Access' : 'Sign Up for'} Q{window.matchMedia("(min-width: 361px)").matches ? 'uestion' : '.'} Bank</Button>
                             </ListItem>
                             {!authentication.isLoggedIn && <ListItem>
                                 <Typography>Or <Link onClick={() => navigate(Paths.SignIn)}>{Strings.SignIn}</Link></Typography>

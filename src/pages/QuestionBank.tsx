@@ -29,7 +29,7 @@ const CustomSkeleton: FC<SkeletonProps> = ({ children, sx, ...rest }) =>
         {children}
     </Skeleton>;
 
-const QuestionSkeleton: FC<SkeletonProps> = ({ ...rest }) =>
+export const QuestionSkeleton: FC<SkeletonProps> = ({ ...rest }) =>
     <CustomSkeleton {...rest}>
         <QuestionBankItem
             id=''
@@ -166,7 +166,7 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
                 }
             } catch (error) {
                 console.log(error);
-                // ToDo error ui
+                // ToDo display error
             }
 
             setSubscriptionChecked(true);
@@ -305,7 +305,12 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
                 }
 
                 const id = data.hasOwnProperty('id') ? data['id'] : undefined;
-                const progressForId = (id && progress.hasOwnProperty(id)) ? progress[id] : 'neutral';
+                const progressForId =
+                    progress
+                        ? ((id && progress.hasOwnProperty(id))
+                            ? progress[id]
+                            : 'neutral')
+                        : undefined;
 
                 listItemButtons.push(<ListItemButton
                     key={index + '-' + index2}
@@ -328,7 +333,7 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
 
                         setSearchBoxExpanded(false);
                     }}>
-                    <Typography color={progressForId ? progressForId : undefined}>
+                    <Typography color={progressForId}>
                         {data.title}
                     </Typography>
                 </ListItemButton>);
@@ -353,7 +358,7 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
             </>);
         });
     else
-        [1, 2, 3, 4, 5, 6, 7].forEach((key) => questionBankItems.push(<QuestionSkeleton key={key} />));
+        [0, 1, 2, 3, 4, 5].forEach((key) => questionBankItems.push(<QuestionSkeleton key={key} />));
 
     const page = <>
         <VerificationAlert />
