@@ -35,8 +35,7 @@ export const QuestionSkeleton: FC<SkeletonProps> = ({ ...rest }) =>
             id=''
             tags={[]}
             progress='neutral'
-            currentTags={[]}
-            setCurrentTags={() => { }}
+            currentTags={['Skeleton', 'Tag']}
             data={{
                 title: 'Skeleton Title',
                 content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac pharetra nibh. Aenean mollis vestibulum venenatis. Duis suscipit nunc non nisi eleifend tempus. Ut at aliquet sapien. Nulla facilisi. Duis aliquam lobortis pellentesque. Cras tellus massa, viverra nec porta vel, ultrices non enim. Donec sollicitudin, eros vel sollicitudin laoreet, purus massa ornare augue, ut commodo velit mauris a massa. Praesent lobortis libero sed felis tempor mollis. Aliquam quis faucibus nisi, ac volutpat nunc.',
