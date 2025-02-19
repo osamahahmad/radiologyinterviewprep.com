@@ -275,13 +275,93 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
     const [searchBoxExpanded, setSearchBoxExpanded] = useState(false);
     const [originalScrollPosition, setOriginalScrollPosition] = useState(0);
 
+    const loaded = questionBank && progress;
+
+    const listItems: ReactNode[] = [];
+    const questionBankItems: ReactNode[] = [];
+
+    if (loaded)
+        Object.keys(questionBank).forEach((key, index) => {
+            const section = questionBank[key];
+
+            const listItemButtons: ReactNode[] = [];
+
+            Object.keys(section).forEach((key, index2) => {
+                if (searchQuery && (key.toLowerCase().indexOf(searchQuery.toLowerCase()) === -1))
+                    return null;
+
+                const data = section[key];
+                const tags = (data && data.hasOwnProperty('tags')) ? data['tags'] : undefined;
+
+                if (tags) {
+                    let inCurrentTags = true;
+                    currentTags.forEach(currentTag => {
+                        if (inCurrentTags)
+                            if (tags.indexOf(currentTag) === -1)
+                                inCurrentTags = false;
+                    });
+                    if (!inCurrentTags)
+                        return null;
+                }
+
+                const id = data.hasOwnProperty('id') ? data['id'] : undefined;
+                const progressForId = (id && progress.hasOwnProperty(id)) ? progress[id] : 'neutral';
+
+                listItemButtons.push(<ListItemButton
+                    key={index + '-' + index2}
+                    onClick={() => {
+                        const element = document.getElementById('question-bank-item-' + id) as HTMLElement;
+                        const header = document.getElementsByTagName('header')[0];
+                        const headerHeight = header ? header.getBoundingClientRect().height : 0;
+                        const searchBox = document.getElementsByClassName('question-bank-search-box expanded')[0];
+                        const searchBoxHeight = searchBox ? searchBox.getBoundingClientRect().height : 0;
+                        const top =
+                            window.matchMedia("(min-width: 1025px)").matches
+                                ? element
+                                    ? element.offsetTop - headerHeight - 20
+                                    : 0
+                                : element
+                                    ? element.offsetTop - searchBoxHeight - 100
+                                    : 0;
+
+                        window.scrollTo({ top, behavior: 'smooth' });
+
+                        setSearchBoxExpanded(false);
+                    }}>
+                    <Typography color={progressForId ? progressForId : undefined}>
+                        {data.title}
+                    </Typography>
+                </ListItemButton>);
+
+                questionBankItems.push(<QuestionBankItem
+                    key={index + '-' + index2}
+                    id={id}
+                    tags={tags}
+                    data={data}
+                    progress={progressForId}
+                    currentTags={currentTags}
+                    setCurrentTags={setCurrentTags} />);
+            });
+
+            listItems.push(<>
+                <ListItem
+                    key={index}
+                    sx={{ paddingLeft: 0 }}>
+                    <ListSubheader>{key}</ListSubheader>
+                </ListItem>
+                {listItemButtons}
+            </>);
+        });
+    else
+        [1, 2, 3, 4, 5, 6, 7].forEach((key) => questionBankItems.push(<QuestionSkeleton key={key} />));
+
     const page = <>
         <VerificationAlert />
         {subscriptionExpiryDate
             ? subscriptionAlert
             : <CustomSkeleton>{subscriptionAlert}</CustomSkeleton>}
         <div className="question-bank-page-questions-wrapper">
-            {(questionBank && progress)
+            {loaded
                 ? <div className={'question-bank-search-box' + (searchBoxExpanded ? ' expanded' : '')}>
                     <div>
                         <Input placeholder='Search...'
@@ -326,64 +406,7 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
                         )}
                     </div>
                     <List component='nav' variant="outlined">
-                        {Object.keys(questionBank).map((key, index) => {
-                            const section = questionBank[key];
-
-                            return <>
-                                <ListItem
-                                    key={index}
-                                    sx={{ paddingLeft: 0 }}>
-                                    <ListSubheader>{key}</ListSubheader>
-                                </ListItem>
-                                {Object.keys(section).map((key, index2) => {
-                                    if (searchQuery && (key.toLowerCase().indexOf(searchQuery.toLowerCase()) === -1))
-                                        return null;
-
-                                    const data = section[key];
-                                    const tags = (data && data.hasOwnProperty('tags')) ? data['tags'] : undefined;
-
-                                    if (tags) {
-                                        let inCurrentTags = true;
-                                        currentTags.forEach(currentTag => {
-                                            if (inCurrentTags)
-                                                if (tags.indexOf(currentTag) === -1)
-                                                    inCurrentTags = false;
-                                        });
-                                        if (!inCurrentTags)
-                                            return null;
-                                    }
-
-                                    const id = data.hasOwnProperty('id') ? data['id'] : undefined;
-                                    const progressForId = (id && progress.hasOwnProperty(id)) ? progress[id] : 'neutral';
-
-                                    return <ListItemButton
-                                        key={index + '-' + index2}
-                                        onClick={() => {
-                                            const element = document.getElementById('question-bank-item-' + id) as HTMLElement;
-                                            const header = document.getElementsByTagName('header')[0];
-                                            const headerHeight = header ? header.getBoundingClientRect().height : 0;
-                                            const searchBox = document.getElementsByClassName('question-bank-search-box expanded')[0];
-                                            const searchBoxHeight = searchBox ? searchBox.getBoundingClientRect().height : 0;
-                                            const top =
-                                                window.matchMedia("(min-width: 1025px)").matches
-                                                    ? element
-                                                        ? element.offsetTop - headerHeight - 20
-                                                        : 0
-                                                    : element
-                                                        ? element.offsetTop - searchBoxHeight - 100
-                                                        : 0;
-
-                                            window.scrollTo({ top, behavior: 'smooth' });
-
-                                            setSearchBoxExpanded(false);
-                                        }}>
-                                        <Typography color={progressForId ? progressForId : undefined}>
-                                            {data.title}
-                                        </Typography>
-                                    </ListItemButton >;
-                                })}
-                            </>;
-                        })}
+                        {listItems}
                     </List>
                 </div>
                 : <CustomSkeleton className='question-bank-search-box-skeleton'>
@@ -400,42 +423,7 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
                 )}
             </div>}
             <div className="question-bank-page-questions">
-                {(questionBank && progress)
-                    ? Object.keys(questionBank).map((key, index) => {
-                        const section = questionBank[key];
-
-                        return Object.keys(section).map((key, index2) => {
-                            if (searchQuery && (key.toLowerCase().indexOf(searchQuery.toLowerCase()) === -1))
-                                return null;
-
-                            const data = section[key];
-                            const tags = (data && data.hasOwnProperty('tags')) ? data['tags'] : undefined;
-
-                            if (tags) {
-                                let inCurrentTags = true;
-                                currentTags.forEach(currentTag => {
-                                    if (inCurrentTags)
-                                        if (tags.indexOf(currentTag) === -1)
-                                            inCurrentTags = false;
-                                });
-                                if (!inCurrentTags)
-                                    return null;
-                            }
-
-                            const id = data.hasOwnProperty('id') ? data['id'] : undefined;
-                            const progressForId = (id && progress.hasOwnProperty(id)) ? progress[id] : 'neutral';
-
-                            return <QuestionBankItem
-                                key={index + '-' + index2}
-                                id={id}
-                                tags={tags}
-                                data={data}
-                                progress={progressForId}
-                                currentTags={currentTags}
-                                setCurrentTags={setCurrentTags} />;
-                        })
-                    })
-                    : [1, 2, 3, 4, 5, 6, 7].map((key) => <QuestionSkeleton key={key} />)}
+                {questionBankItems}
             </div>
         </div>
     </>;
