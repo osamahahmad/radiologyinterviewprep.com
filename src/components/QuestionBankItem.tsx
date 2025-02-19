@@ -13,8 +13,8 @@ interface QuestionBankItemProps {
     tags: string[];
     data: ParsedQuestionBank;
     progress?: ColorPaletteProp;
-    currentTags: string[];
-    setCurrentTags: Function;
+    currentTags?: string[];
+    setCurrentTags?: Function;
 };
 
 const QuestionBankItem: FC<QuestionBankItemProps> = ({ id, tags, data, progress, currentTags, setCurrentTags }) => {

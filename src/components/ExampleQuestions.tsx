@@ -66,9 +66,7 @@ const ExampleQuestions: FC<ExampleQuestionsProps> = ({ Wrapper, wrapperProps }) 
                     id={id}
                     tags={tags}
                     data={data}
-                    progress={progressForId}
-                    currentTags={[]}
-                    setCurrentTags={() => { }} />
+                    progress={progressForId} />
             });
         })
         : [0, 1, 2, 3, 4, 5].map((key) => <QuestionSkeleton key={key} />);
