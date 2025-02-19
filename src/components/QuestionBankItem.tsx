@@ -12,7 +12,7 @@ interface QuestionBankItemProps {
     id: string;
     tags: string[];
     data: ParsedQuestionBank;
-    progress: ColorPaletteProp;
+    progress?: ColorPaletteProp;
     currentTags: string[];
     setCurrentTags: Function;
 };
@@ -25,35 +25,42 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ id, tags, data, progress,
     const answer = data.hasOwnProperty('Answer') ? data['Answer'] : undefined;
     const rationale = data.hasOwnProperty('Rationale') ? data['Rationale'] : undefined;
 
-    const [_progress, _setProgress] = useState<ColorPaletteProp>(progress || 'neutral');
+    const [loadingProgress, setLoadingProgress] = useState(false);
 
-    const setProgress = useCallback((next: ColorPaletteProp) => {
+    const setProgress = useCallback(async (next: ColorPaletteProp) => {
         if (!authentication.currentUser || !authentication.currentUser.uid)
             return;
 
         if (!id || next === 'neutral')
             return;
 
-        _setProgress(next);
+        setLoadingProgress(true);
 
-        const docRef = doc(db, 'users', authentication.currentUser.uid);
-        setDoc(docRef, { progress: { [id]: next } }, { merge: true });
-    }, [authentication, id, _setProgress]);
+        try {
+            const docRef = doc(db, 'users', authentication.currentUser.uid);
+            await setDoc(docRef, { progress: { [id]: next } }, { merge: true });
+        } catch (error) {
+            console.log(error);
+            // ToDo display error
+        }
+
+        setLoadingProgress(false);
+    }, [authentication, id]);
 
     return <Card
         id={'question-bank-item-' + id}
         className='question-bank-item'
         variant='outlined'
-        color={_progress}>
+        color={progress}>
         <div style={{ flexDirection: authentication.isLoggedIn ? 'row' : 'row-reverse' }}>
             <Dropdown>
-                <MenuButton
+                {progress && <MenuButton
                     slots={{ root: IconButton }}
-                    slotProps={{ root: { variant: 'outlined', color: _progress } }}>
+                    slotProps={{ root: { variant: 'outlined', color: progress, loading: loadingProgress } }}>
                     <MdCircle />
-                </MenuButton>
+                </MenuButton>}
                 <Menu>
-                    {(['danger', 'warning', 'success'] as typeof _progress[]).map((color, index) =>
+                    {(['danger', 'warning', 'success'] as ColorPaletteProp[]).map((color, index) =>
                         <MenuItem
                             key={index}
                             color={color}
@@ -78,8 +85,8 @@ const QuestionBankItem: FC<QuestionBankItemProps> = ({ id, tags, data, progress,
             <Typography
                 level='h4'
                 color={
-                    _progress !== 'neutral'
-                        ? _progress
+                    progress !== 'neutral'
+                        ? progress
                         : undefined
                 }>
                 {title}

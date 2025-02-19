@@ -1,6 +1,11 @@
-import React, { FC, ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
 import QuestionBankItem from './QuestionBankItem.tsx';
-import { blobToQuestionBank, parseQuestionBank, RawQuestionBank } from './QuestionBankParser.tsx';
+import { blobToQuestionBank, ParsedQuestionBank, parseQuestionBank } from './QuestionBankParser.tsx';
+import { QuestionSkeleton } from '../pages/QuestionBank.tsx';
+import { useAuthentication } from './Authentication.tsx';
+import { ColorPaletteProp } from '@mui/joy';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../resources/Firebase.js';
 
 interface ExampleQuestionsProps {
     Wrapper?: FC<{ children: ReactNode } & Record<string, unknown>>;
@@ -8,57 +13,65 @@ interface ExampleQuestionsProps {
 }
 
 const ExampleQuestions: FC<ExampleQuestionsProps> = ({ Wrapper, wrapperProps }) => {
-    const [questionBank, setQuestionBank] = useState<RawQuestionBank>();
+    const authentication = useAuthentication();
 
-    const fetchRawData = useCallback(async () => {
-        const docx = await fetch(require("../resources/example-question-bank.docx"));
-        const blob = await docx.blob();
-        const questionBank = await blobToQuestionBank(blob);
-        setQuestionBank(questionBank);
+    const [questionBank, setQuestionBank] = useState<ParsedQuestionBank>();
+    useEffect(() => {
+        const getQuestionBank = async () => {
+            const docx = await fetch(require("../resources/example-question-bank.docx"));
+            const blob = await docx.blob();
+            const rawQuestionBank = await blobToQuestionBank(blob);
+            setQuestionBank(await parseQuestionBank(rawQuestionBank));
+        };
+
+        getQuestionBank();
     }, [setQuestionBank]);
 
+    const [progress, setProgress] = useState<Record<string, ColorPaletteProp>>();
     useEffect(() => {
-        fetchRawData();
-    }, [fetchRawData]);
+        if (!authentication.currentUser || !questionBank)
+            return;
 
-    const [parsedData, setParsedData] = useState<{}>();
+        const docRef = doc(db, 'users', authentication.currentUser.uid);
+        const unsubscribe = onSnapshot(docRef, snapshot => {
+            if (snapshot.exists())
+                setProgress(snapshot.data().progress);
+            else
+                setProgress({});
+        });
 
-    const parseData = useCallback(async (questionBank: RawQuestionBank) => {
-        const parsedData = await parseQuestionBank(questionBank);
-        setParsedData(parsedData);
-    }, [setParsedData]);
+        return () => unsubscribe && unsubscribe();
+    }, [authentication, questionBank, setProgress]);
 
-    useEffect(() => {
-        questionBank && parseData(questionBank);
-    }, [questionBank, parseData]);
+    return (questionBank)
+        ? Object.keys(questionBank).map((key, index) => {
+            const section = questionBank[key];
 
-    return (parsedData)
-        ? <>
-            {Object.keys(parsedData).map((key, index) => {
-                const section = parsedData[key];
+            return Object.keys(section).map((key, index2) => {
+                const data = section[key];
+                const tags = (data && data.hasOwnProperty('tags')) ? data['tags'] : undefined;
 
-                const questionBankItems: ReactNode[] = [];
+                const id = data.hasOwnProperty('id') ? data['id'] : undefined;
+                const progressForId =
+                    progress
+                        ? ((id && progress.hasOwnProperty(id))
+                            ? progress[id]
+                            : 'neutral')
+                        : undefined;
 
-                Object.keys(section).forEach((key, index2) => {
-                    const reactKey = index + '-' + index2;
+                console.log(progress, progressForId)
 
-                    const questionBankItemData = section[key];
-
-                    const questionBankItem = <QuestionBankItem key={reactKey} data={questionBankItemData} />
-
-                    questionBankItems.push(
-                        Wrapper
-                            ? <Wrapper key={reactKey} {...wrapperProps}>
-                                {questionBankItem}
-                            </Wrapper>
-                            : questionBankItem
-                    );
-                });
-
-                return <>{questionBankItems}</>;
-            })}
-        </>
-        : <></>
+                return <QuestionBankItem
+                    key={index + '-' + index2}
+                    id={id}
+                    tags={tags}
+                    data={data}
+                    progress={progressForId}
+                    currentTags={[]}
+                    setCurrentTags={() => { }} />
+            });
+        })
+        : [0, 1, 2, 3, 4, 5].map((key) => <QuestionSkeleton key={key} />);
 };
 
 export default ExampleQuestions;

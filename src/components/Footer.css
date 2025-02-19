@@ -11,11 +11,6 @@ footer {
 @media screen and (min-width: 769px) {
   footer {
     flex-direction: row;
-  }
-}
-
-@media screen and (min-width: 769px) {
-  footer {
     margin-top: calc(-1 * var(--padding));
   }
 }
@@ -33,7 +28,7 @@ footer>*:first-child>* {
   flex: 1;
 }
 
-@media screen and (min-width: 390px) {
+@media screen and (min-width: 361px) {
   footer>*:first-child>* {
     white-space: pre;
   }
