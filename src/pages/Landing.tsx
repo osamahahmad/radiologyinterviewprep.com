@@ -364,9 +364,9 @@ const Landing: FC<LandingProps> = ({ setNav, authenticationUIMode }) => {
                             <ListItem>
                                 <Button color='success' sx={{ width: 'fit-content' }} endDecorator={<MdArrowForward />} onClick={() => navigate(Paths.SignUp)}>{authentication.isLoggedIn ? 'Access' : 'Sign Up for'} Q{window.matchMedia("(min-width: 361px)").matches ? 'uestion' : '.'} Bank</Button>
                             </ListItem>
-                            {!authentication.isLoggedIn && <ListItem>
-                                <Typography>Or <Link onClick={() => navigate(Paths.SignIn)}>{Strings.SignIn}</Link></Typography>
-                            </ListItem>}
+                            <ListItem>
+                                <Typography>Or <Link onClick={() => authentication.isLoggedIn ? authentication.signOut() :  navigate(Paths.SignIn)}>{authentication.isLoggedIn ? Strings.SignOut : Strings.SignIn}</Link></Typography>
+                            </ListItem>
                         </List>
                     </div>
                     <div>
