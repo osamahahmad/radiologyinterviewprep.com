@@ -332,7 +332,7 @@ const QuestionBank: FC<{ setNav: Function }> = ({ setNav }) => {
 
                         setSearchBoxExpanded(false);
                     }}>
-                    <Typography color={progressForId}>
+                    <Typography color={progressForId === 'neutral' ? undefined : progressForId}>
                         {data.title}
                     </Typography>
                 </ListItemButton>);
